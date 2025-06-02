@@ -66,7 +66,7 @@ public class Lista_UnidadFamiliar {
     }
 
     public void addProducto(Producto producto) {
-        this.productos.put(producto.getId(), producto); // Añade un producto al mapa
+        this.productos.put(producto.getCodigoBarras(), producto); // Añade un producto al mapa ( no tengo claro si es necesario el codigo de barras como clave o no)
     }
 
 
