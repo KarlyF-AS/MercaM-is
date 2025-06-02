@@ -1,0 +1,8 @@
+Lista de la Compra
+ID: 1
+Familia ID: 1
+Nombre: Lista de la compra
+Completada: No
+Productos:
+  Código de Barras: 1, Cantidad: 2
+Fin de la lista.
