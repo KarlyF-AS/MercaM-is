@@ -3,6 +3,7 @@ public class Usuario {
     private String nombre;
     private String email;
     private String password;
+    private Lista_UnidadFamiliar familia;
 
     public Usuario(int id, String nombre, String email, String password) {
         this.id = id;
@@ -42,5 +43,12 @@ public class Usuario {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Lista_UnidadFamiliar getFamilia() {
+        return familia;
+    }
+    public void setFamilia(Lista_UnidadFamiliar familia) {
+        this.familia = familia;
     }
 }
