@@ -1,25 +1,16 @@
 public class Usuario {
-    private int id;
     private String nombre;
     private String email;
     private String password;
     private Lista_UnidadFamiliar familia;
 
     public Usuario(int id, String nombre, String email, String password) {
-        this.id = id;
         this.nombre = nombre;
         this.email = email;
         this.password = password;
     }
 
     // Getters y Setters
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getNombre() {
         return nombre;
