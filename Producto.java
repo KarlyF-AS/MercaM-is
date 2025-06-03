@@ -25,6 +25,13 @@ public class Producto {
         this.categoria = categoria;
     }
 
+    public Producto(int codigoBarras, String nombre, String marca, double precio, String categoria) {
+        this.codigoBarras = codigoBarras;
+        this.nombre = nombre;
+        this.marca = marca;
+        this.precio = precio;
+        this.categoria = categoria;
+    }
     // Getters y Setters
 
     public int getCodigoBarras() {
