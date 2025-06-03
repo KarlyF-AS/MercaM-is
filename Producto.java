@@ -3,25 +3,36 @@ import java.util.Map;
 import java.util.Set;
 
 public class Producto {
-    private int codigoBarras;
+    private long codigoBarras;
     private String nombre;
     private String marca;
     private int puntuacion;
     private double precio;
     private String categoria;
     private String supermercado;
+    private String descripcion;
 
 
     // Getters y Setters
 
 
-    public Producto(double precio, String categoria, String supermercado, String marca, String nombre, int codigoBarras) {
+    public Producto(double precio, String categoria, String supermercado, String marca, String nombre, long codigoBarras) {
         this.precio = precio;
         this.categoria = categoria;
         this.supermercado = supermercado;
         this.marca = marca;
         this.nombre = nombre;
         this.codigoBarras = codigoBarras;
+    }
+
+    public Producto(long codigoBarras, String nombre, String marca, double precio, String categoria, String supermercado, String descripcion) {
+        this.codigoBarras = codigoBarras;
+        this.nombre = nombre;
+        this.marca = marca;
+        this.precio = precio;
+        this.categoria = categoria;
+        this.supermercado = supermercado;
+        this.descripcion = descripcion;
     }
 
     @Override
@@ -34,14 +45,23 @@ public class Producto {
                 ", precio=" + precio +
                 ", categoria='" + categoria + '\'' +
                 ", supermercado='" + supermercado + '\'' +
+                ", descripcion='" + descripcion + '\'' +
                 '}';
     }
 
-    public int getCodigoBarras() {
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public long getCodigoBarras() {
         return codigoBarras;
     }
 
-    public void setCodigoBarras(int codigoBarras) {
+    public void setCodigoBarras(long codigoBarras) {
         this.codigoBarras = codigoBarras;
     }
 
