@@ -676,6 +676,8 @@ public class VistaConsola {
         }
     }
 
+
+
     // Metodo para cambiar la contraseña
     private void cambiarContrasena() {
         System.out.print("\nContraseña actual: ");
