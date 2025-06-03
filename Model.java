@@ -36,6 +36,29 @@ public class Model {
         stmt.setString(3, u.getPassword());
         return stmt.executeQuery();           // se devuelve como recurso autocerrable
     }
+    public static Usuario validarLogin(String email, String password) {
+        final String SQL = "SELECT * FROM usuarios WHERE email = ? AND contrasena = ?";
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+
+            stmt.setString(1, email);
+            stmt.setString(2, password);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return new Usuario(rs.getInt("id"),
+                                   rs.getString("nombre_usuario"),
+                                   rs.getString("email"),
+                                   rs.getString("contrasena"));
+            } else {
+                return null; // Usuario no encontrado
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null; // Error en la conexión o consulta
+        }
+    }
+
 
 
 
