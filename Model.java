@@ -57,39 +57,36 @@ public class Model {
             return null; // Error en la conexión o consulta
         }
     }
-    //int codigoBarras, String nombre, String marca, double precio, String categoria
-    public static Usuario crearProducto(int codigoBarras,
-                                       String nombre,
-                                       String marca,
-                                       double precio,
-                                       String categoria) {
-        Producto producto = new Producto(codigoBarras, nombre, marca, precio, categoria);
+     public static Producto crearProducto(String nombre,
+                                           String marca,
+                                           double precio,
+                                           String categoria,
+                                           String supermercado,
+                                           int codigoBarras) {
+            Producto producto = new Producto(precio, categoria, supermercado, marca, nombre, codigoBarras);
 
-        final String SQL =
-                "INSERT INTO productos (codigo_barras, nombre, marca, precio, categoria) " +
-                        "VALUES (?, ?, ?, ?, ?) RETURNING codigo_barras";
+            final String SQL =
+                    "INSERT INTO productos (codigo_barras, nombre, marca, precio, categoria, supermercado) " +
+                            "VALUES (?, ?, ?, ?, ?, ?) RETURNING codigo_barras";
 
-        try (Connection conn = Conexion.abrir();
-             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+            try (Connection conn = Conexion.abrir();
+                 PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
-            stmt.setInt(1, producto.getCodigoBarras());
-            stmt.setString(2, producto.getNombre());
-            stmt.setString(3, producto.getMarca());
-            stmt.setDouble(4, producto.getPrecio());
-            stmt.setString(5, producto.getCategoria());
+                stmt.setInt(1, producto.getCodigoBarras());
+                stmt.setString(2, producto.getNombre());
+                stmt.setString(3, producto.getMarca());
+                stmt.setDouble(4, producto.getPrecio());
+                stmt.setString(5, producto.getCategoria());
+                stmt.setString(6, producto.getSupermercado());
 
-            ResultSet rs = stmt.executeQuery();
-            return rs.next() ? producto : null;
+                ResultSet rs = stmt.executeQuery();
+                return rs.next() ? producto : null;
 
-        } catch (SQLException e) {
-            if ("23505".equals(e.getSQLState())) {
-                System.err.println("Código de barras duplicado.");
-            } else {
+            } catch (SQLException e) {
                 e.printStackTrace();
+                return null;
             }
-            return null;
         }
-    }
 
 
 
