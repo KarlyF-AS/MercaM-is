@@ -96,4 +96,24 @@ public class Controlador {
     public static void abandonarUnidadFamiliar(Usuario usuario, Lista_UnidadFamiliar unidad) {
         Model.abandonarUnidadFamiliar(usuario, unidad);
     }
+
+    public static void actualizarPrecioSupermercado(Producto producto, String supermercado, double precio) {
+        Model.actualizarPrecioSupermercado(producto, supermercado, precio);
+    }
+
+    public static void eliminarPrecioSupermercado(Producto producto, String supermercado) {
+        Model.eliminarPrecioSupermercado(producto, supermercado);
+    }
+
+    public static void modificarCantidadProducto(Producto producto, int nuevaCantidad) {
+        Model.modificarCantidadProducto(producto, nuevaCantidad);
+    }
+
+    public static java.util.List<Producto> filtrarPorSupermercado(String supermercado) {
+        return Model.filtrarPorSupermercado(supermercado);
+    }
+
+    public static java.util.List<String> obtenerTodosSupermercados() {
+        return Model.obtenerTodosSupermercados();
+    }
 }
