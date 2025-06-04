@@ -473,6 +473,7 @@ public class VistaConsola {
             System.out.println("2. Ver/modificar puntuaciones");
             System.out.println("3. Modificar supermercados");
             System.out.println("4. Gestionar precios por supermercado");
+            System.out.println("5. Modificar cantidad");
             System.out.println("0. Volver atrás");
             System.out.print("Seleccione una opción: ");
 
@@ -485,6 +486,11 @@ public class VistaConsola {
                 case 2 -> gestionarPuntuaciones(producto);     // Gestión de puntuaciones
                 case 3 -> modificarSupermercados(producto);    // Modificación de supermercados
                 case 4 -> gestionarPreciosSupermercados(producto); // Gestión de precios por supermercado
+                case 5 -> {
+                    System.out.print("Nueva cantidad: ");
+                    int nuevaCantidad = Integer.parseInt(scanner.nextLine());
+                    controlador.modificarCantidadProducto(producto, nuevaCantidad);
+                }
                 case 0 -> System.out.println("Volviendo...");  // Salir del menú
                 default -> System.out.println("Opción inválida."); // Opción no reconocida
             }
@@ -676,6 +682,9 @@ public class VistaConsola {
         System.out.print("Precio: ");
         double precio = Double.parseDouble(scanner.nextLine());
 
+        System.out.print("Cantidad Actual: ");
+        int cantidad = Integer.parseInt(scanner.nextLine());
+
         // Obtiene todas las categorías disponibles
         Map<String, List<String>> categorias = controlador.obtenerCategorias();
         System.out.println("\nCategorías disponibles:");
@@ -750,19 +759,19 @@ public class VistaConsola {
 
     // Metodo auxiliar para mostrar productos en formato de tabla
     private void mostrarProductosTabla(List<Producto> productos) {
-        // Encabezado simple
-        System.out.println("Nombre | Marca | Categoría | Punt. | Precio | Supermercados");
+        // Versión simple sin formato complejo
+        System.out.println("Nombre\t| Marca\t| Cant.\t| Punt.\t| Precio\t| Supermercados");
         System.out.println("-------------------------------------------------------------");
 
-        // Mostrar cada producto sin formato de ancho fijo
         for (Producto p : productos) {
-            System.out.printf("%s | %s | %s | %.1f | %.2f | %s%n",
-                    p.getNombre(),
-                    p.getMarca(),
-                    p.getSubcategoria(),
-                    p.getPuntuacionMedia(),
-                    p.getUltimoPrecio(),
-                    String.join(", ", p.getSupermercados()));
+            System.out.println(
+                    p.getNombre() + "\t| " +
+                    p.getMarca() + "\t| " +
+                    p.getCantidad() + "\t| " +
+                    String.format("%.1f", p.getPuntuacionMedia()) + "\t| " +
+                    String.format("%.2f€", p.getUltimoPrecio()) + "\t| " +
+                    String.join(", ", p.getSupermercados())
+            );
         }
     }
 
