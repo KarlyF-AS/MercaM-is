@@ -26,3 +26,154 @@ controlador.abandonarUnidadFamiliar(usuarioActual, unidadActual) (730)
 
 
 supermercados (Mercadona, Lidl, Alcampo, Carrefour, Aldi, Eroski, Gadis, Dia, Familia, El Corte Inglés)
+
+-Aperitivos
+Aceitunas
+Encurtidos
+Frutos secos
+Patatas fritas
+Snacks salados
+
+-Bazar y hogar
+Automóvil
+Baño
+Bricolaje
+Decoración
+Jardinería
+Limpieza piscinas
+Menaje cocina
+Papelería
+Textil hogar
+Utiles limpieza
+Iluminación (bombillas, pilas)
+
+-Bebés y niños
+Accesorios bebé
+Alimentación infantil (leches, papillas, potitos)
+Higiene infantil (colonias, cremas, champús)
+Pañales y toallitas
+Productos premamá
+Ropa infantil
+
+-Bebidas
+Aguas
+Bebidas energéticas
+Bebidas isotónicas
+Cava y champagne
+Cervezas
+Licores
+Refrescos
+Sidras
+Vinos
+Zumos
+
+-Cafés e infusiones
+Cacaos
+Cafés
+Infusiones
+Tés
+
+-Cereales y galletas
+Cereales desayuno
+Galletas dulces
+Galletas saladas
+
+-Chocolates y dulces
+Bombones
+Chocolates
+Cremas untables
+Golosinas
+
+-Congelados
+Carnes congeladas
+Helados
+Frutas congeladas
+Hielo
+Panadería congelada
+Pescados congelados
+Platos preparados
+Verduras congeladas
+
+-Conservas y condimentos
+Aceites
+Caldos y sopas
+Conservas cárnicas
+Conservas pescado
+Conservas vegetales
+Especias
+Salsas
+Vinagres
+
+-Dietéticos
+Bebidas dietéticas
+Comidas dietéticas
+Complementos nutricionales
+
+-Droguería
+Ambientadores
+Cuidado calzado
+Cuidado ropa
+Desechables (papel higiénico, servilletas)
+Insecticidas
+Lavavajillas
+Limpieza baño
+Limpieza cocina
+Limpieza general
+Bolsas basura
+
+-Frescos
+Carnicería
+Charcutería
+Frutas frescas
+Huevos
+Pescadería
+Platos preparados frescos
+Quesos
+Verduras frescas
+
+-Lácteos
+Batidos
+Leches
+Mantequillas
+Margarinas
+Natas
+Postres lácteos
+Yogures
+
+-Mascotas
+Accesorios mascotas
+Alimento aves
+Alimento gatos
+Alimento perros
+Alimento reptiles
+Alimento roedores
+Acuarios y terrarios
+
+-Panadería y repostería
+Azúcares y edulcorantes
+Bolleria fresca
+Harinas
+Pan fresco
+Pastelería fresca
+Productos salados
+Repostería seca
+
+-Pasta y arroz
+Arroces
+Legumbres cocidas
+Legumbres secas
+Pastas
+Sémolas
+
+-Perfumería y farmacia
+Cuidado corporal
+Cuidado facial
+Cuidado capilar
+Depilación
+Desodorantes
+Higiene bucal
+Higiene íntima
+Maquillaje
+Parafarmacia
+Perfumes
+Productos solares
