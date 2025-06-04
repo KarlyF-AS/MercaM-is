@@ -199,24 +199,35 @@ public class VistaConsola {
             System.out.println("\n=== MENÚ PRINCIPAL ===");
             System.out.println("1. Ver lista");
             System.out.println("2. Ver productos");
-            System.out.println("3. Configuración");
+            System.out.println("3. Gestión de stock");
+            System.out.println("4. Configuración");
             System.out.println("0. Cerrar sesión");
             System.out.print("Seleccione una opción: ");
 
             opcion = Integer.parseInt(scanner.nextLine());
 
             switch (opcion) {
-                case 1 -> verLista(); // Muestra la lista de productos
-                case 2 -> menuProductos(); // Muestra el menú de productos
-                case 3 -> menuConfiguracion(); // Muestra el menú de configuración
-                case 0 -> {
+                case 1 : verLista(); // Muestra la lista de productos
+                case 2 : menuProductos(); // Muestra el menú de productos
+                case 3 : menuStock();
+                case 4 : menuConfiguracion(); // Muestra el menú de configuración
+                case 0 : {
                     usuarioActual = null; // Cierra sesión
                     unidadActual = null;
                     System.out.println("Sesión cerrada.");
                 }
-                default -> System.out.println("Opción inválida.");
+                default : System.out.println("Opción inválida.");
             }
         } while (opcion != 0); // Repite hasta que elija salir
+    }
+
+    // Metodo para mostrar la lista de productos de la unidad familiar
+    private void verLista() {
+        // Obtiene los productos de la unidad familiar
+        List<Producto> productos = controlador.obtenerProductosUnidadFamiliar(unidadActual);
+
+        System.out.println("\n=== LISTA DE PRODUCTOS ===");
+        mostrarProductosTabla(productos); // Muestra en formato de tabla
     }
 
     // Menú de gestión de productos
@@ -235,6 +246,53 @@ public class VistaConsola {
                 case 1 -> verTodosProductos(); // Muestra todos los productos
                 case 2 -> anadirProducto(); // Permite añadir un producto
                 case 0 -> System.out.println("Volviendo..."); // Vuelve al menú anterior
+                default -> System.out.println("Opción inválida.");
+            }
+        } while (opcion != 0);
+    }
+
+    private void menuStock(){
+        int opcion;
+        do {
+            System.out.println("\n=== GESTIÓN DE STOCK ===");
+            System.out.println("1. Ver stock actual");
+            System.out.println("2. Añadir producto al stock");
+            System.out.println("3. Actualizar cantidad en stock");
+            System.out.println("4. Eliminar producto del stock");
+            System.out.println("0. Volver");
+            System.out.print("Seleccione una opción: ");
+
+            opcion = Integer.parseInt(scanner.nextLine());
+
+            switch (opcion) {
+                case 1 -> verStockActual();
+                case 2 -> añadirProductoStock();
+                case 3 -> actualizarCantidadStock();
+                case 4 -> eliminarProductoStock();
+                case 0 -> System.out.println("Volviendo...");
+                default -> System.out.println("Opción inválida.");
+            }
+        } while (opcion != 0);
+    }
+
+    // Menú de configuración
+    private void menuConfiguracion() {
+        int opcion;
+        do {
+            System.out.println("\n=== CONFIGURACIÓN ===");
+            System.out.println("1. Cambiar nombre de usuario");
+            System.out.println("2. Cambiar contraseña");
+            System.out.println("3. Gestionar unidad familiar");
+            System.out.println("0. Volver");
+            System.out.print("Seleccione una opción: ");
+
+            opcion = Integer.parseInt(scanner.nextLine());
+
+            switch (opcion) {
+                case 1 -> cambiarNombreUsuario(); // Cambia nombre de usuario
+                case 2 -> cambiarContraseña(); // Cambia contraseña
+                case 3 -> gestionarUnidadFamiliarConfig(); // Gestiona unidad familiar
+                case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
@@ -264,6 +322,129 @@ public class VistaConsola {
                 default -> System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
+    }
+
+    // Metodo para añadir un nuevo producto
+    private void anadirProducto() {
+        System.out.println("\n=== AÑADIR PRODUCTO ===");
+
+        System.out.print("Nombre del producto: ");
+        String nombre = scanner.nextLine();
+
+        System.out.print("Marca: ");
+        String marca = scanner.nextLine();
+
+        System.out.print("Precio: ");
+        double precio = Double.parseDouble(scanner.nextLine());
+
+        System.out.print("Cantidad Actual: ");
+        int cantidad = Integer.parseInt(scanner.nextLine());
+
+        // Obtiene todas las categorías disponibles
+        Map<String, List<String>> categorias = controlador.obtenerCategorias();
+        System.out.println("\nCategorías disponibles:");
+        int i = 1;
+        // Muestra las categorías numeradas
+        for (String categoria : categorias.keySet()) {
+            System.out.println(i++ + ". " + categoria);
+        }
+
+        System.out.print("Seleccione una categoría: ");
+        int opcionCategoria = Integer.parseInt(scanner.nextLine());
+        String categoriaSeleccionada = (String) categorias.keySet().toArray()[opcionCategoria-1];
+
+        // Obtiene las subcategorías de la categoría seleccionada
+        List<String> subcategorias = categorias.get(categoriaSeleccionada);
+        System.out.println("\nSubcategorías disponibles:");
+        // Muestra las subcategorías numeradas
+        for (i = 0; i < subcategorias.size(); i++) {
+            System.out.println((i+1) + ". " + subcategorias.get(i));
+        }
+
+        System.out.print("Seleccione una subcategoría: ");
+        int opcionSubcategoria = Integer.parseInt(scanner.nextLine());
+        String subcategoriaSeleccionada = subcategorias.get(opcionSubcategoria-1);
+
+        System.out.print("ID/Código de barras: ");
+        String id = scanner.nextLine();
+
+        // Crea el nuevo producto a través del controlador
+        Producto nuevoProducto = controlador.crearProducto(
+                nombre, marca, precio, categoriaSeleccionada,
+                subcategoriaSeleccionada, id, unidadActual );
+
+        // Pregunta si quiere añadir supermercados
+        System.out.print("¿Desea añadir supermercados para este producto? (S/N): ");
+        String respuesta = scanner.nextLine().toUpperCase();
+
+        // Bucle para añadir varios supermercados
+        while (respuesta.equals("S")) {
+            System.out.print("Nombre del supermercado: ");
+            String supermercado = scanner.nextLine();
+            controlador.anadirSupermercadoProducto(nuevoProducto, supermercado);
+
+            System.out.print("¿Añadir otro supermercado? (S/N): ");
+            respuesta = scanner.nextLine().toUpperCase();
+        }
+        System.out.print("¿Desea añadir una puntuación para este producto? (S/N): ");
+        respuesta = scanner.nextLine().toUpperCase();
+        if (respuesta.equals("S")) {
+            int puntuacion;
+            do {
+                System.out.print("Puntuación (0-5): ");
+                puntuacion = Integer.parseInt(scanner.nextLine());
+                if (puntuacion < 0 || puntuacion > 5) {
+                    System.out.println("La puntuación debe estar entre 0 y 5");
+                }
+            } while (puntuacion < 0 || puntuacion > 5);
+            controlador.anadirPuntuacionProducto(nuevoProducto, usuarioActual, puntuacion);
+        }
+
+        System.out.println("Producto añadido correctamente.");
+    }
+
+    private void verStockActual(){
+
+    }
+
+    private void añadirProductoStock(){
+        System.out.print("\nNombre del producto: ");
+        String nombre = scanner.nextLine();
+        Producto producto = controlador.obtenerProductoPorNombre(nombre);
+        if (producto == null) {
+            System.out.println("Producto no encontrado.");
+            return;
+        }
+        System.out.print("Cantidad inicial: ");
+        int cantidad = Integer.parseInt(scanner.nextLine());
+        controlador.añadirProductoStock(unidadActual, producto, cantidad);
+        System.out.println("Producto añadido al stock.");
+    }
+
+    private void actualizarCantidadStock(){
+        System.out.print("\nNombre del producto: ");
+        String nombre = scanner.nextLine();
+        Producto producto = controlador.obtenerProductoPorNombre(nombre);
+        if (producto == null) {
+            System.out.println("Producto no encontrado.");
+            return;
+        }
+        System.out.print("Nueva cantidad: ");
+        int nuevaCantidad = Integer.parseInt(scanner.nextLine());
+        controlador.actualizarCantidadStock(unidadActual, producto, nuevaCantidad);
+        System.out.println("Cantidad actualizada.");
+    }
+
+    private void eliminarProductoStock(){
+        System.out.print("\nNombre del producto: ");
+        String nombre = scanner.nextLine();
+        Producto producto = controlador.obtenerProductoPorNombre(nombre);
+        if (producto == null) {
+            System.out.println("Producto no encontrado.");
+            return;
+        }
+        controlador.eliminarProductoStock(unidadActual, producto);
+        System.out.println("Producto eliminado del stock.");
     }
 
     // Menú de filtros para productos
@@ -332,25 +513,6 @@ public class VistaConsola {
         }
     }
 
-    // Metodo para mostrar las subcategorías de una categoría
-    private void verSubcategorias(String categoria, List<String> subcategorias) {
-        System.out.println("\n=== SUBCATEGORÍAS DE " + categoria.toUpperCase() + " ===");
-        // Muestra todas las subcategorías numeradas
-        for (int i = 0; i < subcategorias.size(); i++) {
-            System.out.println((i+1) + ". " + subcategorias.get(i));
-        }
-
-        System.out.print("\nSeleccione una subcategoría (0 para volver): ");
-        int opcion = Integer.parseInt(scanner.nextLine());
-
-        // Si seleccionó una subcategoría válida, muestra sus productos
-        if (opcion > 0 && opcion <= subcategorias.size()) {
-            String subcategoria = subcategorias.get(opcion-1);
-            List<Producto> productos = controlador.obtenerProductosPorSubcategoria(subcategoria);
-            mostrarProductosTabla(productos); // Muestra en formato de tabla
-        }
-    }
-
     // Metodo para mostrar todas las marcas disponibles
     private void verMarcas() {
         // Obtiene las marcas del controlador
@@ -372,6 +534,41 @@ public class VistaConsola {
             mostrarProductosTabla(productos); // Muestra en formato de tabla
         }
     }
+
+    private void filtrarPorSupermercado() {
+        List<String> supermercados = controlador.obtenerTodosSupermercados();
+        System.out.println("\nSupermercados disponibles:");
+        for (int i = 0; i < supermercados.size(); i++) {
+            System.out.println((i+1) + ". " + supermercados.get(i));
+        }
+        System.out.print("Seleccione supermercado (0 para cancelar): ");
+        int opcion = Integer.parseInt(scanner.nextLine());
+        if (opcion > 0 && opcion <= supermercados.size()) {
+            List<Producto> productos = controlador.filtrarPorSupermercado(supermercados.get(opcion-1));
+            mostrarProductosTabla(productos);
+        }
+    }
+
+    // Metodo para mostrar las subcategorías de una categoría
+    private void verSubcategorias(String categoria, List<String> subcategorias) {
+        System.out.println("\n=== SUBCATEGORÍAS DE " + categoria.toUpperCase() + " ===");
+        // Muestra todas las subcategorías numeradas
+        for (int i = 0; i < subcategorias.size(); i++) {
+            System.out.println((i+1) + ". " + subcategorias.get(i));
+        }
+
+        System.out.print("\nSeleccione una subcategoría (0 para volver): ");
+        int opcion = Integer.parseInt(scanner.nextLine());
+
+        // Si seleccionó una subcategoría válida, muestra sus productos
+        if (opcion > 0 && opcion <= subcategorias.size()) {
+            String subcategoria = subcategorias.get(opcion-1);
+            List<Producto> productos = controlador.obtenerProductosPorSubcategoria(subcategoria);
+            mostrarProductosTabla(productos); // Muestra en formato de tabla
+        }
+    }
+
+
 
     // Metodo para ordenar los productos por diferentes criterios
     private void filtrarPorOrden() {
@@ -400,19 +597,7 @@ public class VistaConsola {
             }
         } while (opcion != 0);
     }
-    private void filtrarPorSupermercado() {
-        List<String> supermercados = controlador.obtenerTodosSupermercados();
-        System.out.println("\nSupermercados disponibles:");
-        for (int i = 0; i < supermercados.size(); i++) {
-            System.out.println((i+1) + ". " + supermercados.get(i));
-        }
-        System.out.print("Seleccione supermercado (0 para cancelar): ");
-        int opcion = Integer.parseInt(scanner.nextLine());
-        if (opcion > 0 && opcion <= supermercados.size()) {
-            List<Producto> productos = controlador.filtrarPorSupermercado(supermercados.get(opcion-1));
-            mostrarProductosTabla(productos);
-        }
-    }
+
 
     /**
      * Metodo para seleccionar un producto específico de la lista
@@ -669,93 +854,8 @@ public class VistaConsola {
         }
     }
 
-    // Metodo para añadir un nuevo producto
-    private void anadirProducto() {
-        System.out.println("\n=== AÑADIR PRODUCTO ===");
 
-        System.out.print("Nombre del producto: ");
-        String nombre = scanner.nextLine();
 
-        System.out.print("Marca: ");
-        String marca = scanner.nextLine();
-
-        System.out.print("Precio: ");
-        double precio = Double.parseDouble(scanner.nextLine());
-
-        System.out.print("Cantidad Actual: ");
-        int cantidad = Integer.parseInt(scanner.nextLine());
-
-        // Obtiene todas las categorías disponibles
-        Map<String, List<String>> categorias = controlador.obtenerCategorias();
-        System.out.println("\nCategorías disponibles:");
-        int i = 1;
-        // Muestra las categorías numeradas
-        for (String categoria : categorias.keySet()) {
-            System.out.println(i++ + ". " + categoria);
-        }
-
-        System.out.print("Seleccione una categoría: ");
-        int opcionCategoria = Integer.parseInt(scanner.nextLine());
-        String categoriaSeleccionada = (String) categorias.keySet().toArray()[opcionCategoria-1];
-
-        // Obtiene las subcategorías de la categoría seleccionada
-        List<String> subcategorias = categorias.get(categoriaSeleccionada);
-        System.out.println("\nSubcategorías disponibles:");
-        // Muestra las subcategorías numeradas
-        for (i = 0; i < subcategorias.size(); i++) {
-            System.out.println((i+1) + ". " + subcategorias.get(i));
-        }
-
-        System.out.print("Seleccione una subcategoría: ");
-        int opcionSubcategoria = Integer.parseInt(scanner.nextLine());
-        String subcategoriaSeleccionada = subcategorias.get(opcionSubcategoria-1);
-
-        System.out.print("ID/Código de barras: ");
-        String id = scanner.nextLine();
-
-        // Crea el nuevo producto a través del controlador
-        Producto nuevoProducto = controlador.crearProducto(
-                nombre, marca, precio, categoriaSeleccionada,
-                subcategoriaSeleccionada, id, unidadActual );
-
-        // Pregunta si quiere añadir supermercados
-        System.out.print("¿Desea añadir supermercados para este producto? (S/N): ");
-        String respuesta = scanner.nextLine().toUpperCase();
-
-        // Bucle para añadir varios supermercados
-        while (respuesta.equals("S")) {
-            System.out.print("Nombre del supermercado: ");
-            String supermercado = scanner.nextLine();
-            controlador.anadirSupermercadoProducto(nuevoProducto, supermercado);
-
-            System.out.print("¿Añadir otro supermercado? (S/N): ");
-            respuesta = scanner.nextLine().toUpperCase();
-        }
-        System.out.print("¿Desea añadir una puntuación para este producto? (S/N): ");
-        respuesta = scanner.nextLine().toUpperCase();
-        if (respuesta.equals("S")) {
-            int puntuacion;
-            do {
-                System.out.print("Puntuación (0-5): ");
-                puntuacion = Integer.parseInt(scanner.nextLine());
-                if (puntuacion < 0 || puntuacion > 5) {
-                    System.out.println("La puntuación debe estar entre 0 y 5");
-                }
-            } while (puntuacion < 0 || puntuacion > 5);
-            controlador.anadirPuntuacionProducto(nuevoProducto, usuarioActual, puntuacion);
-        }
-
-        System.out.println("Producto añadido correctamente.");
-    }
-
-    // Metodo para mostrar la lista de productos de la unidad familiar
-    private void verLista() {
-        // Obtiene los productos de la unidad familiar
-        List<Producto> productos = controlador.obtenerProductosUnidadFamiliar(unidadActual);
-
-        System.out.println("\n=== LISTA DE PRODUCTOS ===");
-        mostrarProductosTabla(productos); // Muestra en formato de tabla
-    }
 
     // Metodo auxiliar para mostrar productos en formato de tabla
     private void mostrarProductosTabla(List<Producto> productos) {
@@ -776,28 +876,6 @@ public class VistaConsola {
     }
 
 
-    // Menú de configuración
-    private void menuConfiguracion() {
-        int opcion;
-        do {
-            System.out.println("\n=== CONFIGURACIÓN ===");
-            System.out.println("1. Cambiar nombre de usuario");
-            System.out.println("2. Cambiar contraseña");
-            System.out.println("3. Gestionar unidad familiar");
-            System.out.println("0. Volver");
-            System.out.print("Seleccione una opción: ");
-
-            opcion = Integer.parseInt(scanner.nextLine());
-
-            switch (opcion) {
-                case 1 -> cambiarNombreUsuario(); // Cambia nombre de usuario
-                case 2 -> cambiarContraseña(); // Cambia contraseña
-                case 3 -> gestionarUnidadFamiliarConfig(); // Gestiona unidad familiar
-                case 0 -> System.out.println("Volviendo...");
-                default -> System.out.println("Opción inválida.");
-            }
-        } while (opcion != 0);
-    }
 
     // Metodo para cambiar el nombre de usuario
     private void cambiarNombreUsuario() {
@@ -811,8 +889,6 @@ public class VistaConsola {
             System.out.println("El nombre de usuario ya existe. Elija otro.");
         }
     }
-
-
 
     // Metodo para cambiar la contraseña
     private void cambiarContraseña() {
