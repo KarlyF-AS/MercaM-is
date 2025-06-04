@@ -177,3 +177,170 @@ Maquillaje
 Parafarmacia
 Perfumes
 Productos solares
+
+
+
+---x---
+// =================================================================
+// MÉTODO AUXILIAR PARA BÚSQUEDA CON SUGERENCIAS
+// =================================================================
+
+/**
+ * Muestra sugerencias de productos basadas en un fragmento de nombre
+ * y permite al usuario seleccionar uno.
+ *
+ * @return Producto seleccionado o null si se cancela
+ */
+private Producto buscarProductoConSugerencias() {
+    System.out.print("\nIntroduce parte del nombre del producto: ");
+    String fragmento = scanner.nextLine().toLowerCase();
+
+    // Obtener productos que coinciden con el fragmento
+    List<Producto> sugerencias = controlador.buscarProductosPorFragmento(fragmento);
+
+    if (sugerencias.isEmpty()) {
+        System.out.println("No se encontraron productos coincidentes.");
+        return null;
+    }
+
+    // Agrupar sugerencias por nombre
+    Map<String, List<String>> productosPorNombre = new LinkedHashMap<>();
+    for (Producto p : sugerencias) {
+        productosPorNombre
+            .computeIfAbsent(p.getNombre(), k -> new ArrayList<>())
+            .add(p.getMarca());
+    }
+
+    // Mostrar nombres únicos numerados
+    System.out.println("\nProductos encontrados:");
+    int index = 1;
+    String[] nombres = new String[productosPorNombre.size()];
+    for (String nombre : productosPorNombre.keySet()) {
+        System.out.println(index + ". " + nombre);
+        nombres[index-1] = nombre;
+        index++;
+    }
+
+    // Selección de nombre
+    System.out.print("\nSelecciona un producto (0 para cancelar): ");
+    int opcionNombre = Integer.parseInt(scanner.nextLine());
+
+    if (opcionNombre < 1 || opcionNombre > nombres.length) {
+        return null;
+    }
+
+    String nombreSeleccionado = nombres[opcionNombre-1];
+    List<String> marcas = productosPorNombre.get(nombreSeleccionado);
+
+    // Si solo hay una marca, retornar directamente
+    if (marcas.size() == 1) {
+        return controlador.obtenerProductoPorNombreYMarca(nombreSeleccionado, marcas.get(0));
+    }
+
+    // Mostrar marcas disponibles para el producto seleccionado
+    System.out.println("\nMarcas disponibles para " + nombreSeleccionado + ":");
+    for (int i = 0; i < marcas.size(); i++) {
+        System.out.println((i+1) + ". " + marcas.get(i));
+    }
+
+    // Selección de marca
+    System.out.print("\nSelecciona una marca (0 para cancelar): ");
+    int opcionMarca = Integer.parseInt(scanner.nextLine());
+
+    if (opcionMarca < 1 || opcionMarca > marcas.size()) {
+        return null;
+    }
+
+    return controlador.obtenerProductoPorNombreYMarca(nombreSeleccionado, marcas.get(opcionMarca-1));
+}
+
+// =================================================================
+// MODIFICACIÓN DE MÉTODOS EXISTENTES PARA USAR EL NUEVO SISTEMA
+// =================================================================
+
+// Modificar seleccionarProducto()
+private void seleccionarProducto() {
+    System.out.println("\n=== SELECCIONAR PRODUCTO ===");
+    Producto producto = buscarProductoConSugerencias();
+
+    if (producto != null) {
+        verDetalleProducto(producto);
+    }
+}
+
+// Modificar anadirFavorito()
+private void anadirFavorito() {
+    System.out.println("\n=== AÑADIR A FAVORITOS ===");
+    Producto producto = buscarProductoConSugerencias();
+
+    if (producto != null) {
+        controlador.anadirFavorito(usuarioActual, producto);
+        System.out.println("¡Producto añadido a favoritos!");
+    }
+}
+
+// Modificar eliminarFavorito()
+private void eliminarFavorito() {
+    System.out.println("\n=== ELIMINAR DE FAVORITOS ===");
+    Producto producto = buscarProductoConSugerencias();
+
+    if (producto != null) {
+        controlador.eliminarFavorito(usuarioActual, producto);
+        System.out.println("Producto eliminado de favoritos.");
+    }
+}
+
+// Modificar métodos de stock
+private void anadirProductoStock() {
+    System.out.println("\n=== AÑADIR PRODUCTO AL STOCK ===");
+    Producto producto = buscarProductoConSugerencias();
+
+    if (producto != null) {
+        System.out.print("Cantidad inicial: ");
+        int cantidad = Integer.parseInt(scanner.nextLine());
+        controlador.anadirProductoStock(unidadActual, producto, cantidad);
+        System.out.println("Producto añadido al stock.");
+    }
+}
+
+private void actualizarCantidadStock() {
+    System.out.println("\n=== ACTUALIZAR CANTIDAD EN STOCK ===");
+    Producto producto = buscarProductoConSugerencias();
+
+    if (producto != null) {
+        System.out.print("Nueva cantidad: ");
+        int nuevaCantidad = Integer.parseInt(scanner.nextLine());
+        controlador.actualizarCantidadStock(unidadActual, producto, nuevaCantidad);
+        System.out.println("Cantidad actualizada.");
+    }
+}
+
+private void eliminarProductoStock() {
+    System.out.println("\n=== ELIMINAR PRODUCTO DEL STOCK ===");
+    Producto producto = buscarProductoConSugerencias();
+
+    if (producto != null) {
+        controlador.eliminarProductoStock(unidadActual, producto);
+        System.out.println("Producto eliminado del stock.");
+    }
+}
+
+// ... [código existente] ...
+
+// =================================================================
+// MÉTODOS PARA BÚSQUEDA CON SUGERENCIAS
+// =================================================================
+
+/**
+ * Busca productos cuyo nombre contenga el fragmento especificado
+ */
+public List<Producto> buscarProductosPorFragmento(String fragmento) {
+    // Lógica para buscar productos que contengan el fragmento en su nombre
+}
+
+/**
+ * Obtiene un producto específico por nombre y marca
+ */
+public Producto obtenerProductoPorNombreYMarca(String nombre, String marca) {
+    // Lógica para obtener un producto específico
+}

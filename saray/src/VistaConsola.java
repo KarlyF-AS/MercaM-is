@@ -403,14 +403,84 @@ public class VistaConsola {
         System.out.println("Producto añadido correctamente.");
     }
 
-    private void verStockActual(){
+    private void verStockActual() {
+        // Imprime el encabezado de la sección de stock
+        System.out.println("\n=== STOCK ACTUAL ===");
 
+        /**
+         * Obtiene el mapa de stock de la unidad familiar actual
+         * - Clave: Producto
+         * - Valor: Cantidad en stock
+         */
+        Map<Producto, Integer> stock = controlador.obtenerStock(unidadActual);
+
+        // Verifica si el stock está vacío
+        if (stock.isEmpty()) {
+            System.out.println("El stock está vacío.");
+            return;  // Sale del metodo si no hay productos
+        }
+
+        /**
+         * Obtiene todos los productos de la lista de compra actual
+         * de la unidad familiar para verificar qué productos están
+         * tanto en stock como en la lista de compra
+         */
+        List<Producto> productosListaCompra = controlador.obtenerProductosUnidadFamiliar(unidadActual);
+
+        System.out.println("Nombre\t| Marca\t| Stock\t| En Lista\t| Punt.\t| Precio\t| Supermercados");
+        System.out.println("--------------------------------------------------------------------------");
+
+        /**
+         * Itera a través de todas las entradas del mapa de stock
+         * - entry.getKey(): Producto
+         * - entry.getValue(): Cantidad en stock
+         */
+        for (Map.Entry<Producto, Integer> entry : stock.entrySet()) {
+            Producto p = entry.getKey();  // Obtiene el producto actual
+            int cantidadStock = entry.getValue();  // Obtiene la cantidad en stock
+
+            // Variables para verificar presencia en lista de compra
+            String enLista = "No";  // Valor por defecto: no está en lista
+            int cantidadLista = 0;  // Cantidad en lista (0 por defecto)
+
+            /**
+             * Verifica si este producto está en la lista de compra
+             * Compara por ID para asegurar que es el mismo producto
+             */
+            for (Producto productoLista : productosListaCompra) {
+                if (productoLista.getId().equals(p.getId())) {
+                    enLista = "Sí";  // Marca como presente en lista
+                    cantidadLista = productoLista.getCantidad();  // Captura la cantidad deseada
+                    break;  // Termina el bucle al encontrar coincidencia
+                }
+            }
+
+            /**
+             * Construye la línea de la tabla con formato:
+             * 1. Nombre del producto
+             * 2. Marca
+             * 3. Cantidad actual en stock
+             * 4. Indicador si está en lista + cantidad deseada (si aplica)
+             * 5. Puntuación media formateada a 1 decimal
+             * 6. Último precio formateado a 2 decimales con símbolo €
+             * 7. Lista de supermercados separados por coma
+             */
+            System.out.println(
+                    p.getNombre() + "\t| " +  // Columna 1: Nombre
+                            p.getMarca() + "\t| " +   // Columna 2: Marca
+                            cantidadStock + "\t| " +  // Columna 3: Stock actual
+                            enLista + (enLista.equals("Sí") ? " (" + cantidadLista + ")" : "") + "\t| " +  // Columna 4: En lista con cantidad
+                            String.format("%.1f", p.getPuntuacionMedia()) + "\t| " +  // Columna 5: Puntuación
+                            String.format("%.2f€", p.getUltimoPrecio()) + "\t| " +  // Columna 6: Precio
+                            String.join(", ", p.getSupermercados())  // Columna 7: Supermercados
+            );
+        }
     }
 
     private void añadirProductoStock(){
         System.out.print("\nNombre del producto: ");
         String nombre = scanner.nextLine();
-        Producto producto = controlador.obtenerProductoPorNombre(nombre);
+        Producto producto = buscarProductoConSugerencias();
         if (producto == null) {
             System.out.println("Producto no encontrado.");
             return;
@@ -424,7 +494,7 @@ public class VistaConsola {
     private void actualizarCantidadStock(){
         System.out.print("\nNombre del producto: ");
         String nombre = scanner.nextLine();
-        Producto producto = controlador.obtenerProductoPorNombre(nombre);
+        Producto producto = buscarProductoConSugerencias();
         if (producto == null) {
             System.out.println("Producto no encontrado.");
             return;
@@ -438,7 +508,7 @@ public class VistaConsola {
     private void eliminarProductoStock(){
         System.out.print("\nNombre del producto: ");
         String nombre = scanner.nextLine();
-        Producto producto = controlador.obtenerProductoPorNombre(nombre);
+        Producto producto = buscarProductoConSugerencias();
         if (producto == null) {
             System.out.println("Producto no encontrado.");
             return;
@@ -608,7 +678,7 @@ public class VistaConsola {
         String nombre = scanner.nextLine();
 
         // Obtener el producto del controlador usando el nombre
-        Producto producto = controlador.obtenerProductoPorNombre(nombre);
+        Producto producto = buscarProductoConSugerencias();
 
         // Verificar si el producto existe
         if (producto == null) {
@@ -950,5 +1020,87 @@ public class VistaConsola {
                 default -> System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
+    }
+
+
+// =================================================================
+// METODO AUXILIAR PARA BÚSQUEDA CON SUGERENCIAS
+// =================================================================
+
+    /**
+     * Muestra sugerencias de productos basadas en un fragmento de nombre
+     * y permite al usuario seleccionar uno.
+     *
+     * @return Producto seleccionado o null si se cancela
+     */
+    private Producto buscarProductoConSugerencias() {
+        // Solicita al usuario parte del nombre del producto
+        System.out.print("\nIntroduce parte del nombre del producto: ");
+        String fragmento = scanner.nextLine().toLowerCase();  // Normaliza a minúsculas
+
+        // Obtiene productos que coinciden con el fragmento usando el controlador
+        List<Producto> sugerencias = controlador.buscarProductosPorFragmento(fragmento);
+
+        // Maneja caso donde no hay coincidencias
+        if (sugerencias.isEmpty()) {
+            System.out.println("No se encontraron productos coincidentes.");
+            return null;  // Retorna nulo para indicar fallo en búsqueda
+        }
+
+        // Agrupa productos por nombre y marcas usando LinkedHashMap para mantener orden
+        Map<String, List<String>> productosPorNombre = new LinkedHashMap<>();
+        for (Producto p : sugerencias) {
+            // Agrega la marca al listado correspondiente al nombre del producto
+            productosPorNombre
+                    .computeIfAbsent(p.getNombre(), k -> new ArrayList<>())
+                    .add(p.getMarca());
+        }
+
+        // Muestra lista de nombres únicos numerados
+        System.out.println("\nProductos encontrados:");
+        int index = 1;
+        String[] nombres = new String[productosPorNombre.size()];  // Almacena nombres para acceso rápido
+        for (String nombre : productosPorNombre.keySet()) {
+            System.out.println(index + ". " + nombre);  // Muestra nombre con índice
+            nombres[index-1] = nombre;  // Guarda nombre en array
+            index++;
+        }
+
+        // Permite al usuario seleccionar un nombre de producto
+        System.out.print("\nSelecciona un producto (0 para cancelar): ");
+        int opcionNombre = Integer.parseInt(scanner.nextLine());
+
+        // Valida selección del usuario
+        if (opcionNombre < 1 || opcionNombre > nombres.length) {
+            return null;  // Selección inválida = cancelar
+        }
+
+        // Obtiene nombre seleccionado y sus marcas asociadas
+        String nombreSeleccionado = nombres[opcionNombre-1];
+        List<String> marcas = productosPorNombre.get(nombreSeleccionado);
+
+        // Atajo para productos con única marca
+        if (marcas.size() == 1) {
+            // Retorna directamente el producto sin pedir selección de marca
+            return controlador.obtenerProductoPorNombreYMarca(nombreSeleccionado, marcas.get(0));
+        }
+
+        // Muestra marcas disponibles para el producto seleccionado
+        System.out.println("\nMarcas disponibles para " + nombreSeleccionado + ":");
+        for (int i = 0; i < marcas.size(); i++) {
+            System.out.println((i+1) + ". " + marcas.get(i));  // Enumera marcas
+        }
+
+        // Permite al usuario seleccionar una marca específica
+        System.out.print("\nSelecciona una marca (0 para cancelar): ");
+        int opcionMarca = Integer.parseInt(scanner.nextLine());
+
+        // Valida selección de marca
+        if (opcionMarca < 1 || opcionMarca > marcas.size()) {
+            return null;  // Selección inválida = cancelar
+        }
+
+        // Retorna el producto específico seleccionado
+        return controlador.obtenerProductoPorNombreYMarca(nombreSeleccionado, marcas.get(opcionMarca-1));
     }
 }
