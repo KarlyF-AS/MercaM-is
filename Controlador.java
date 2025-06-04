@@ -72,9 +72,9 @@ public class Controlador {
         Model.eliminarSupermercadoProducto(producto, supermercado);
     }
 
-    public static Producto crearProducto(String nombre, String marca, double precio, String categoria, String subcategoria, String id, Lista_UnidadFamiliar unidadActual) {
-        String categoriaCompleta = categoria +"."+ subcategoria
-        return Model.crearProducto(nombre, marca, precio, categoriaCompleta, id, unidadActual);
+    public static Producto crearProducto(String nombre, String marca, double precio, String categoria, String subcategoria, String supermercado, long codigoBarras, String descripcion) {
+        String categoriaCompleta = categoria +"."+ subcategoria;
+        return Model.crearProducto(nombre, marca, precio, categoriaCompleta, supermercado, codigoBarras, descripcion);
     }
 
     public static java.util.List<Producto> obtenerProductosUnidadFamiliar(Lista_UnidadFamiliar unidadActual) {
