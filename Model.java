@@ -135,6 +135,32 @@ public class Model {
             return null; // Error en la conexión o consulta
         }
     }
+    /**
+     * Verifica si un email ya existe en la base de datos.
+     * El email es la clave unica en la tabla usuarios.
+     * @param email El email a verificar.
+     * @return true si el email existe, false en caso contrario.
+     * @author Daniel Figueroa
+     */
+    public static boolean existeEmail(String email) {
+        final String SQL = "SELECT COUNT(*) FROM usuarios WHERE email = ?";
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0; // Si el conteo es mayor que 0, el email existe
+            } else {
+                return false; // No se encontró el email
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Error en la conexión o consulta
+        }
+    }
+    public static U crearUnidadFamiliar
 
 
 

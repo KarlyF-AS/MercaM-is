@@ -19,6 +19,20 @@ public class Lista_UnidadFamiliar {
         this.productos = new HashMap<>();
     }
 
+    /**
+     * Constructor para crear una unidad familiar con solo un miembro y sin productos.
+     * @author Daniel Figueroa
+     * @return
+     */
+    public Lista_UnidadFamiliar(String nombre, String codigo, Usuario miembro) {
+        this.nombre = nombre;
+        this.codigo = codigo;
+        this.miembros = new ArrayList<>();
+        this.productos = new HashMap<>();
+        addMiembro(miembro); // Añade el miembro al crear la unidad familiar
+    }
+
+
     // Getters y Setters
     public int getId() {
         return id;
@@ -62,7 +76,6 @@ public class Lista_UnidadFamiliar {
 
     public  void addMiembro(Usuario miembro) {
         this.miembros.add(miembro); // Añade un miembro a la lista y quizas tengo que hacerlo a la inversa???
-        miembro.setFamilia(this); // Establece la familia del miembro
     }
 
     public void addProducto(Producto producto) {
