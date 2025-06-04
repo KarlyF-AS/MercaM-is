@@ -82,13 +82,13 @@ public class Model {
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
-            stmt.setLong  (1, p.getCodigoBarras());
-            stmt.setString(2, p.getNombre());
-            stmt.setString(3, p.getMarca());
-            stmt.setDouble(4, p.getPrecio());
-            stmt.setString(5, p.getCategoria());
-            stmt.setString(6, p.getSupermercado());
-            stmt.setString(7, p.getDescripcion());
+            stmt.setString(1, p.getNombre());
+            stmt.setString(2, p.getMarca());
+            stmt.setString(3, p.getSupermercado());
+            stmt.setLong  (4, p.getCodigoBarras());
+            stmt.setString(5, p.getDescripcion());
+            stmt.setDouble(6, p.getPrecio());
+            stmt.setString(7, p.getCategoria());
 
             ResultSet rs = stmt.executeQuery();
             return rs.next() ? p : null;
@@ -221,16 +221,15 @@ public class Model {
      * @return
      * @author Daniel Figueroa
      */
-public static Lista_UnidadFamiliar obtenerUnidadFamiliar(Usuario usuario) {
+    public static Lista_UnidadFamiliar obtenerUnidadFamiliar(Usuario usuario) {
 
-    final String SQL =
-            """
+        final String SQL = """
             SELECT l.id_lista, l.nombre, l.descripcion
             FROM lista l
             JOIN decision d ON d.id_lista = l.id_lista
             WHERE d.email = ?
             LIMIT 1
-            """;
+        """;
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement ps = conn.prepareStatement(SQL)) {
@@ -241,7 +240,7 @@ public static Lista_UnidadFamiliar obtenerUnidadFamiliar(Usuario usuario) {
             if (rs.next()) {
                 return new Lista_UnidadFamiliar(
                         rs.getInt("id_lista"),
-                        rs.getString("titulo"),
+                        rs.getString("nombre"),
                         rs.getString("descripcion")
                 );
             }
@@ -308,7 +307,7 @@ public static List<Producto> obtenerTodosProductos(Lista_UnidadFamiliar unidadFa
     final String SQL = """
         SELECT p.codigo_barras, p.nombre, p.marca, p.precio, p.categoria, p.supermercado, p.descripcion
         FROM producto p
-        JOIN contiene c ON c.id_lista = p.codigo_barras
+        JOIN contiene c ON c.codigo_barras = p.codigo_barras
         WHERE c.id_lista = ?
     """;
 
@@ -560,7 +559,7 @@ public static List<Producto> obtenerTodosProductos(Lista_UnidadFamiliar unidadFa
      * @param puntuacion
      * @author Daniel Figueroa
      */
-    public static Producto void anadirPuntuacionProducto(Producto producto, Usuario usuario, int puntuacion) {
+    public static Producto anadirPuntuacionProducto(Producto producto, Usuario usuario, int puntuacion) {
         final String SQL = """
                 INSERT INTO puntua (email_usuario, nombre_producto, marca_producto, supermercado_producto, puntuacion)
                 VALUES (?, ?, ?, ?, ?)
@@ -672,11 +671,11 @@ public static List<Producto> obtenerTodosProductos(Lista_UnidadFamiliar unidadFa
      * @param producto
      * @author Daniel Figueroa
      */
-    public static Producto eliminarSupermercadoProducto(Producto criterio) {
+    public static Producto eliminarSupermercadoProducto(Producto producto) {
 
         final String SQL = """
         DELETE FROM producto
-        WHERE nombre = ? AND marca = ? AND supermercado = ?
+        WHERE codigo_barras = ?
         RETURNING  codigo_barras,
                   nombre,
                   marca,
@@ -689,9 +688,7 @@ public static List<Producto> obtenerTodosProductos(Lista_UnidadFamiliar unidadFa
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
-            stmt.setString(1, criterio.getNombre());
-            stmt.setString(2, criterio.getMarca());
-            stmt.setString(3, criterio.getSupermercado());
+            stmt.setLong(1, producto.getCodigoBarras());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (!rs.next()) {
@@ -726,11 +723,11 @@ public static List<Producto> obtenerTodosProductos(Lista_UnidadFamiliar unidadFa
      */
     public static List<Producto> obtenerProductosUnidadFamiliar(Lista_UnidadFamiliar unidadFamiliar) {
         final String SQL = """
-            SELECT p.codigo_barras, p.nombre, p.marca, p.precio, p.categoria, p.supermercado, p.descripcion
-            FROM producto p
-            JOIN contiene c ON c.id_lista = p.codigo_barras
-            WHERE c.id_lista = ?
-        """;
+        SELECT p.codigo_barras, p.nombre, p.marca, p.precio, p.categoria, p.supermercado, p.descripcion
+        FROM producto p
+        JOIN contiene c ON c.codigo_barras = p.codigo_barras
+        WHERE c.id_lista = ?
+    """;
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
@@ -796,7 +793,7 @@ public static List<Producto> obtenerTodosProductos(Lista_UnidadFamiliar unidadFa
      */
     public static boolean cambiarContrasena(Usuario usuario, String actual, String nueva) {
         // Verifica si la contraseña actual es correcta
-        if (!validarLogin(usuario.getEmail(), actual)) {
+        if (validarLogin(usuario.getEmail(), actual) == null) {
             return false; // Contraseña actual incorrecta
         }
 
@@ -816,8 +813,156 @@ public static List<Producto> obtenerTodosProductos(Lista_UnidadFamiliar unidadFa
             return false; // Error en la conexión o consulta
         }
     }
+    /**
+     * Cambia el nombre de una unidad familiar.
+     * Se actualiza el nombre de la unidad familiar en la tabla lista.
+     * Si la actualización es exitosa, se devuelve true.
+     * Si ocurre un error, se imprime el error y se devuelve false.
+     *
+     * @param unidadFamiliar
+     * @param nuevoNombre
+     * @return
+     * @author Daniel Figueroa
+     */
+    public static boolean cambiarNombreUnidadFamiliar(Lista_UnidadFamiliar unidadFamiliar, String nuevoNombre) {
+        final String SQL = "UPDATE lista SET nombre = ? WHERE id_lista = ?";
 
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
+            stmt.setString(1, nuevoNombre);
+            stmt.setInt(2, unidadFamiliar.getId());
+            int filasActualizadas = stmt.executeUpdate();
 
+            return filasActualizadas > 0; // Retorna true si se actualizó al menos una fila
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Error en la conexión o consulta
+        }
+    }
+    /**
+     * Permite a un usuario abandonar una unidad familiar.
+     * Se elimina la relación entre el usuario y la unidad familiar en la tabla decision.
+     * Si la eliminación es exitosa, se devuelve true.
+     * Si ocurre un error, se imprime el error y se devuelve false.
+     *
+     * @param usuario
+     * @param unidadFamiliar
+     * @return
+     * @author Daniel Figueroa
+     */
+    public static boolean abandonarUnidadFamiliar(Usuario usuario, Lista_UnidadFamiliar unidadFamiliar) {
+        final String SQL = "DELETE FROM decision WHERE email = ? AND id_lista = ?";
+
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+
+            stmt.setString(1, usuario.getEmail());
+            stmt.setInt(2, unidadFamiliar.getId());
+            int filasEliminadas = stmt.executeUpdate();
+
+            return filasEliminadas > 0; // Retorna true si se eliminó al menos una fila
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Error en la conexión o consulta
+        }
+    }
+    /**
+     * Actualiza el precio de un producto en un supermercado específico.
+     * Se actualiza el precio del producto en la tabla producto.
+     * Si la actualización es exitosa, se devuelve true.
+     * Si ocurre un error, se imprime el error y se devuelve false.
+     *
+     * @param producto
+     * @param nuevoPrecio
+     * @return
+     * @author Daniel Figueroa
+     */
+    public static boolean actualizarPrecioSupermercado(Producto producto, double nuevoPrecio) {
+        final String SQL = "UPDATE producto SET precio = ? WHERE codigo_barras = ?";
+
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+
+            stmt.setDouble(1, nuevoPrecio);
+            stmt.setLong(2, producto.getCodigoBarras());
+            int filasActualizadas = stmt.executeUpdate();
+
+            return filasActualizadas > 0; // Retorna true si se actualizó al menos una fila
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Error en la conexión o consulta
+        }
+    }
+    /**
+     * Modifica la cantidad de un producto en una unidad familiar.
+     * Se actualiza la cantidad del producto en la tabla contiene.
+     * Si la actualización es exitosa, se devuelve el producto modificado.
+     * Si ocurre un error, se imprime el error y se devuelve null.
+     * la cantidad es un campo que se añade a la tabla contiene.
+     * @return
+     * @author Daniel Figueroa
+     */
+    public static Producto modificarCantidadProducto(Producto producto, int cantidad) {
+        final String SQL = "UPDATE contiene SET cantidad = ? WHERE id_lista = ? AND codigo_barras = ? RETURNING codigo_barras, nombre, marca, precio, categoria, supermercado, descripcion";
+
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+
+            stmt.setInt(1, cantidad);
+            stmt.setInt(2, producto.getIdUnidadFamiliar());
+            stmt.setLong(3, producto.getCodigoBarras());
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new Producto(
+                        rs.getLong("codigo_barras"),
+                        rs.getString("nombre"),
+                        rs.getString("marca"),
+                        rs.getDouble("precio"),
+                        rs.getString("categoria"),
+                        rs.getString("supermercado"),
+                        rs.getString("descripcion")
+                );
+            } else {
+                return null; // No se encontró el producto o no se actualizó
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Manejo de errores
+            return null; // Error en la conexión o consulta
+        }
+    }
+    public static List<Producto> filtrarPorSupermercado(String supermercado) {
+        final String SQL = "SELECT * FROM producto WHERE supermercado = ?";
+
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+
+            stmt.setString(1, supermercado);
+            ResultSet rs = stmt.executeQuery();
+
+            List<Producto> productos = new ArrayList<>();
+            while (rs.next()) {
+                productos.add(new Producto(
+                        rs.getLong("codigo_barras"),
+                        rs.getString("nombre"),
+                        rs.getString("marca"),
+                        rs.getDouble("precio"),
+                        rs.getString("categoria"),
+                        rs.getString("supermercado"),
+                        rs.getString("descripcion")
+                ));
+            }
+            return productos;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null; // Error en la conexión o consulta
+        }
+    }
 
 }
