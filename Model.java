@@ -758,6 +758,65 @@ public static List<Producto> obtenerTodosProductos(Lista_UnidadFamiliar unidadFa
         }
     }
 
+    /**
+     * Cambia el nombre de usuario de un usuario.
+     * Se actualiza el nombre de usuario en la tabla usuarios.
+     * Si la actualización es exitosa, se devuelve true.
+     * Si ocurre un error, se imprime el error y se devuelve false.
+     * @author Daniel Figueroa
+     * @param usuario
+     * @param nuevoNombre
+     * @return
+     */
+    public static boolean cambiarNombreUsuario(Usuario usuario, String nuevoNombre) {
+        final String SQL = "UPDATE usuarios SET nombre_usuario = ? WHERE email = ?";
+
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+
+            stmt.setString(1, nuevoNombre);
+            stmt.setString(2, usuario.getEmail());
+            int filasActualizadas = stmt.executeUpdate();
+
+            return filasActualizadas > 0; // Retorna true si se actualizó al menos una fila
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Error en la conexión o consulta
+        }
+    }
+    /**
+     * Obtiene un producto por su nombre.
+     * Se consulta la tabla producto y se filtra por el nombre especificado.
+     * Esta consulta devuelve el producto que coincide con el nombre especificado.
+     *
+     * @param nombre
+     * @return
+     * @author Daniel Figueroa
+     */
+    public static boolean cambiarContrasena(Usuario usuario, String actual, String nueva) {
+        // Verifica si la contraseña actual es correcta
+        if (!validarLogin(usuario.getEmail(), actual)) {
+            return false; // Contraseña actual incorrecta
+        }
+
+        final String SQL = "UPDATE usuarios SET contrasena = ? WHERE email = ?";
+
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+
+            stmt.setString(1, nueva);
+            stmt.setString(2, usuario.getEmail());
+            int filasActualizadas = stmt.executeUpdate();
+
+            return filasActualizadas > 0; // Retorna true si se actualizó al menos una fila
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Error en la conexión o consulta
+        }
+    }
+
 
 
 
