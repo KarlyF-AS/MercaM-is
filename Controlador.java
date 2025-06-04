@@ -9,6 +9,9 @@ public class Controlador {
     }
 
     public static Usuario registrarUsuario(String nombre, String correo, String contraseña) {
+        if (!Controller2.filtroContrasena(contraseña) && !Controller2.validarEmail(correo)) {
+            return null;
+        }
         return Model.crearUsuario(nombre, correo, contraseña);
     }
 
@@ -45,6 +48,7 @@ public class Controlador {
     }
 
     public static java.util.List<Producto> ordenarProductos(int opcion) {
+        Controller2.ordenarProductos(opcion);
         return Model.ordenarProductos(opcion);
     }
 
@@ -69,7 +73,8 @@ public class Controlador {
     }
 
     public static Producto crearProducto(String nombre, String marca, double precio, String categoria, String subcategoria, String id, Lista_UnidadFamiliar unidadActual) {
-        return Model.crearProducto(nombre, marca, precio, categoria, subcategoria, id, unidadActual);
+        String categoriaCompleta = categoria +"."+ subcategoria
+        return Model.crearProducto(nombre, marca, precio, categoriaCompleta, id, unidadActual);
     }
 
     public static java.util.List<Producto> obtenerProductosUnidadFamiliar(Lista_UnidadFamiliar unidadActual) {

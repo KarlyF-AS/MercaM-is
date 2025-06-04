@@ -9,7 +9,7 @@ public class Lista_UnidadFamiliar {
     private String nombre;
     private String codigo;
     private List<Usuario> miembros;
-    private Map<Integer, Producto> productos;
+    private Map<Integer, Producto> productos; // La cantidad del producto y el producto
 
     public Lista_UnidadFamiliar(int id, String nombre, String codigo, List<Usuario> miembros, Map<Integer, Producto> productos) {
         this.id = id;
