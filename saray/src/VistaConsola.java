@@ -291,9 +291,10 @@ public class VistaConsola {
     private void filtrarPorCategoriaMarca() {
         int opcion;
         do {
-            System.out.println("\n=== FILTRAR POR CATEGORÍA/MARCA ===");
+            System.out.println("\n=== FILTRAR POR ... ===");
             System.out.println("1. Ver categorías");
             System.out.println("2. Ver marcas");
+            System.out.println("3. Ver supermercado");
             System.out.println("0. Volver atrás");
             System.out.print("Seleccione una opción: ");
 
@@ -302,6 +303,7 @@ public class VistaConsola {
             switch (opcion) {
                 case 1 -> verCategorias(); // Muestra categorías
                 case 2 -> verMarcas(); // Muestra marcas
+                case 3 -> filtrarPorSupermercado();
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción inválida.");
             }
@@ -397,6 +399,19 @@ public class VistaConsola {
                 System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
+    }
+    private void filtrarPorSupermercado() {
+        List<String> supermercados = controlador.obtenerTodosSupermercados();
+        System.out.println("\nSupermercados disponibles:");
+        for (int i = 0; i < supermercados.size(); i++) {
+            System.out.println((i+1) + ". " + supermercados.get(i));
+        }
+        System.out.print("Seleccione supermercado (0 para cancelar): ");
+        int opcion = Integer.parseInt(scanner.nextLine());
+        if (opcion > 0 && opcion <= supermercados.size()) {
+            List<Producto> productos = controlador.filtrarPorSupermercado(supermercados.get(opcion-1));
+            mostrarProductosTabla(productos);
+        }
     }
 
     /**
