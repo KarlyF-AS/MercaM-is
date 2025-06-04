@@ -59,10 +59,10 @@ public class VistaConsola {
 
         // Solicita la contraseña
         System.out.print("Contraseña: ");
-        String contrasena = scanner.nextLine();
+        String contraseña = scanner.nextLine();
 
         // Intenta iniciar sesión a través del controlador
-        usuarioActual = controlador.iniciarSesion(correo, contrasena);
+        usuarioActual = controlador.iniciarSesion(correo, contraseña);
 
         // Verifica si el inicio de sesión fue exitoso
         if (usuarioActual == null) {
@@ -83,11 +83,6 @@ public class VistaConsola {
         while (true) {
             System.out.print("Nombre de usuario: ");
             nombreUsuario = scanner.nextLine();
-            // Verifica con el controlador si el usuario ya existe
-            if (!controlador.existeUsuario(nombreUsuario)) {
-                break; // Sale del bucle si el nombre está disponible
-            }
-            System.out.println("Este nombre de usuario ya existe. Elija otro.");
         }
 
         // Validación del formato de correo electrónico
@@ -99,23 +94,28 @@ public class VistaConsola {
                 break;
             }
             System.out.println("El correo debe tener formato válido (ejemplo@dominio.com)");
+            // Verifica con el controlador si el usuario ya existe
+            if (!controlador.existeEmail(nombreEmail)) {
+                break; // Sale del bucle si el nombre está disponible
+            }
+            System.out.println("Este email ya existe. Elija otro.");
         }
 
         // Validación de que ambas contraseñas coincidan
-        String contrasena, confirmacion;
+        String contraseña, confirmacion;
         while (true) {
             System.out.print("Contraseña: ");
-            contrasena = scanner.nextLine();
+            contraseña = scanner.nextLine();
             System.out.print("Confirmar contraseña: ");
             confirmacion = scanner.nextLine();
-            if (contrasena.equals(confirmacion)) {
+            if (contraseña.equals(confirmacion)) {
                 break;
             }
             System.out.println("Las contraseñas no coinciden. Intente de nuevo.");
         }
 
         // Registra el usuario a través del controlador
-        usuarioActual = controlador.registrarUsuario(nombreUsuario, correo, contrasena);
+        usuarioActual = controlador.registrarUsuario(nombreUsuario, correo, contraseña);
         System.out.println("¡Registro exitoso!");
 
         // Después de registrar, gestiona la unidad familiar
@@ -471,7 +471,7 @@ public class VistaConsola {
             System.out.print("Introduce el nuevo precio: ");
             double nuevoPrecio = Double.parseDouble(scanner.nextLine());
             // Añade el nuevo precio a través del controlador
-            controlador.anadirPrecioProducto(producto, nuevoPrecio);
+            controlador.actualizarPrecioProducto(producto, nuevoPrecio);
             System.out.println("Precio actualizado correctamente.");
         }
     }
