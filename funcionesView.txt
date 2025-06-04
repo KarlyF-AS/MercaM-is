@@ -344,3 +344,22 @@ public List<Producto> buscarProductosPorFragmento(String fragmento) {
 public Producto obtenerProductoPorNombreYMarca(String nombre, String marca) {
     // Lógica para obtener un producto específico
 }
+
+
+
+
+ejemplo exportacion lista compra (+puntuacionmedia+supermercado)
+=== LISTA DE COMPRA ===
+Unidad Familiar: Familia Pérez
+Fecha: 05/06/2025 14:30
+Total de productos: 4
+
+PRODUCTO                      MARCA          CANTIDAD  PRECIO
+------------------------------------------------------------
+1. Leche Entera               Asturiana      2         2.20€
+2. Pan Integral               Bimbo          1         1.50€
+3. Manzanas Royal Gala        Mercadona      5         3.75€
+4. Filete de Ternera          Carrefour      3        12.00€
+
+------------------------------------------------------------
+TOTAL ESTIMADO:                                    19.45€

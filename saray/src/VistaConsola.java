@@ -513,6 +513,11 @@ public class VistaConsola {
             System.out.println("Producto no encontrado.");
             return;
         }
+        System.out.print("¿Está seguro de eliminar "+producto.getNombre()+"? (S/N): ");
+        if (!scanner.nextLine().equalsIgnoreCase("S")) {
+            System.out.println("Operación cancelada");
+            return;
+        }
         controlador.eliminarProductoStock(unidadActual, producto);
         System.out.println("Producto eliminado del stock.");
     }
@@ -803,6 +808,11 @@ public class VistaConsola {
                         // Validar que la selección esté dentro del rango
                         if (numEliminar > 0 && numEliminar <= precios.size()) {
                             String superEliminar = (String) precios.keySet().toArray()[numEliminar-1];
+                            System.out.print("¿Está seguro de eliminar"+ producto.getNombre()+"? (S/N): ");
+                            if (!scanner.nextLine().equalsIgnoreCase("S")) {
+                                System.out.println("Operación cancelada");
+                                return;
+                            }
                             // Eliminar el precio a través del controlador
                             controlador.eliminarPrecioSupermercado(producto, superEliminar);
                             System.out.println("Precio eliminado correctamente.");
@@ -912,6 +922,11 @@ public class VistaConsola {
                 // Elimina un supermercado existente
                 System.out.print("Introduce el número del supermercado a eliminar: ");
                 int numEliminar = Integer.parseInt(scanner.nextLine());
+                System.out.print("¿Está seguro de eliminar "+producto.getNombre()+"? (S/N): ");
+                if (!scanner.nextLine().equalsIgnoreCase("S")) {
+                    System.out.println("Operación cancelada");
+                    return;
+                }
                 if (numEliminar > 0 && numEliminar <= supermercados.size()) {
                     controlador.eliminarSupermercadoProducto(producto, supermercados.get(numEliminar-1));
                     System.out.println("Supermercado eliminado correctamente.");
