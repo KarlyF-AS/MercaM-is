@@ -3,35 +3,65 @@ import java.util.Map;
 import java.util.Set;
 
 public class Producto {
-    private int codigoBarras;
+    private long codigoBarras;
     private String nombre;
     private String marca;
     private int puntuacion;
     private double precio;
     private String categoria;
-    private Set<Supermercado> supermercados;
+    private String supermercado;
+    private String descripcion;
 
-    // Datos específicos por familia
-    private Map<Integer, Integer> stockPorFamilia;
-    private Map<Integer, Integer> minimoPorFamilia;
-    private Map<Integer, List<Double>> puntuacionesPorFamilia;
-
-    public Producto(int codigoBarras, String nombre, String marca, int puntuacion, double precio, String categoria) {
-        this.codigoBarras = codigoBarras;
-        this.nombre = nombre;
-        this.marca = marca;
-        this.puntuacion = puntuacion;
-        this.precio = precio;
-        this.categoria = categoria;
-    }
 
     // Getters y Setters
 
-    public int getCodigoBarras() {
+
+    public Producto(double precio, String categoria, String supermercado, String marca, String nombre, long codigoBarras) {
+        this.precio = precio;
+        this.categoria = categoria;
+        this.supermercado = supermercado;
+        this.marca = marca;
+        this.nombre = nombre;
+        this.codigoBarras = codigoBarras;
+    }
+
+    public Producto(long codigoBarras, String nombre, String marca, double precio, String categoria, String supermercado, String descripcion) {
+        this.codigoBarras = codigoBarras;
+        this.nombre = nombre;
+        this.marca = marca;
+        this.precio = precio;
+        this.categoria = categoria;
+        this.supermercado = supermercado;
+        this.descripcion = descripcion;
+    }
+
+    @Override
+    public String toString() {
+        return "Producto{" +
+                "codigoBarras=" + codigoBarras +
+                ", nombre='" + nombre + '\'' +
+                ", marca='" + marca + '\'' +
+                ", puntuacion=" + puntuacion +
+                ", precio=" + precio +
+                ", categoria='" + categoria + '\'' +
+                ", supermercado='" + supermercado + '\'' +
+                ", descripcion='" + descripcion + '\'' +
+                '}';
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public long getCodigoBarras() {
         return codigoBarras;
     }
 
-    public void setCodigoBarras(int codigoBarras) {
+    public void setCodigoBarras(long codigoBarras) {
         this.codigoBarras = codigoBarras;
     }
 
@@ -75,81 +105,11 @@ public class Producto {
         this.categoria = categoria;
     }
 
-    public Set<Supermercado> getSupermercados() {
-        return supermercados;
+    public String getSupermercado() {
+        return supermercado;
     }
 
-    public void setSupermercados(Set<Supermercado> supermercados) {
-        this.supermercados = supermercados;
+    public void setSupermercado(String supermercado) {
+        this.supermercado = supermercado;
     }
-
-    public Map<Integer, Integer> getStockPorFamilia() {
-        return stockPorFamilia;
-    }
-
-    public void setStockPorFamilia(Map<Integer, Integer> stockPorFamilia) {
-        this.stockPorFamilia = stockPorFamilia;
-    }
-
-    public Map<Integer, Integer> getMinimoPorFamilia() {
-        return minimoPorFamilia;
-    }
-
-    public void setMinimoPorFamilia(Map<Integer, Integer> minimoPorFamilia) {
-        this.minimoPorFamilia = minimoPorFamilia;
-    }
-
-    public Map<Integer, List<Double>> getPuntuacionesPorFamilia() {
-        return puntuacionesPorFamilia;
-    }
-
-    public void setPuntuacionesPorFamilia(Map<Integer, List<Double>> puntuacionesPorFamilia) {
-        this.puntuacionesPorFamilia = puntuacionesPorFamilia;
-    }
-
-    @Override
-    public String toString() {
-        return "Producto{" +
-                "codigoBarras=" + codigoBarras +
-                ", nombre='" + nombre + '\'' +
-                ", marca='" + marca + '\'' +
-                ", puntuacion=" + puntuacion +
-                ", precio=" + precio +
-                ", categoria='" + categoria + '\'' +
-                ", supermercados=" + supermercados +
-                ", stockPorFamilia=" + stockPorFamilia +
-                ", minimoPorFamilia=" + minimoPorFamilia +
-                ", puntuacionesPorFamilia=" + puntuacionesPorFamilia +
-                '}';
-    }
-
-    public int setStockPorFamilia(int familiaId, int stock) {
-        return stockPorFamilia.put(familiaId, stock);
-    }
-
-    public int getStockPorFamilia(int familiaId) {
-        return stockPorFamilia.getOrDefault(familiaId, 0);
-    }
-
-    public int setMinimoPorFamilia(int familiaId, int minimo) {
-        return minimoPorFamilia.put(familiaId, minimo);
-    }
-    public int getMinimoPorFamilia(int familiaId) {
-        return minimoPorFamilia.getOrDefault(familiaId, 0);
-    }
-    public List<Double> setPuntuacionesPorFamilia(int familiaId, List<Double> puntuaciones) {
-        return puntuacionesPorFamilia.put(familiaId, puntuaciones);
-    }
-    public List<Double> getPuntuacionesPorFamilia(int familiaId) {
-        return puntuacionesPorFamilia.getOrDefault(familiaId, List.of());
-    }
-    public void addSupermercado(Supermercado supermercado) {
-        this.supermercados.add(supermercado);
-    }
-    public void removeSupermercado(Supermercado supermercado) {
-        this.supermercados.remove(supermercado);
-    }
-
-
-
 }
