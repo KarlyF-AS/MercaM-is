@@ -27,6 +27,8 @@ controlador.abandonarUnidadFamiliar(usuarioActual, unidadActual) (730)
 
 supermercados (Mercadona, Lidl, Alcampo, Carrefour, Aldi, Eroski, Gadis, Dia, Familia, El Corte Inglés)
 
+
+
 -Aperitivos
 Aceitunas
 Encurtidos
