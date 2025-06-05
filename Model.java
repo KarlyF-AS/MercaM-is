@@ -1056,6 +1056,48 @@ public class Model {
             return null; // Error en la conexión o consulta
         }
     }
+    /**
+     * Añade “cantidad” al stock de un producto en la unidad familiar dada.
+     * Si el producto ya estaba en la lista, incrementa la cantidad; si no,
+     * lo inserta con la cantidad indicada.
+     *
+     * @param unidad   La unidad familiar (provee id_lista).
+     * @param producto El producto a añadir (usa nombre, marca, supermercado).
+     * @param cantidad Cantidad a sumar.
+     */
+    public static void añadirProductoStock(Lista_UnidadFamiliar unidad,
+                                           Producto producto,
+                                           int cantidad) {
+
+        final String SQL = """
+            INSERT INTO contiene (
+                id_lista,
+                nombre,
+                marca,
+                supermercado,
+                cantidad
+            ) VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT (id_lista, nombre, marca, supermercado)
+            DO UPDATE
+              SET cantidad = contiene.cantidad + EXCLUDED.cantidad;
+            """;
+
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+
+            stmt.setInt(1, unidad.getId());                     // id_lista
+            stmt.setString(2, producto.getNombre());            // nombre
+            stmt.setString(3, producto.getMarca());             // marca
+            stmt.setString(4, producto.getSupermercado());      // supermercado
+            stmt.setInt(5, cantidad);                           // cantidad a añadir
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Aquí podrías lanzar una excepción propia o propagarla según tu lógica
+        }
+    }
 
 
 }
