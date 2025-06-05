@@ -33,10 +33,10 @@ public class VistaConsola {
 
             // Switch para manejar las diferentes opciones
             switch (opcion) {
-                case 1 -> iniciarSesion(); // Llama al metodo de inicio de sesión
-                case 2 -> registrarUsuario(); // Llama al metodo de registro
-                case 3 -> { System.out.println("Saliendo..."); return; } // Sale del programa
-                default -> System.out.println("Opción inválida."); // Opción no válida
+                case 1 : iniciarSesion(); // Llama al metodo de inicio de sesión
+                case 2 : registrarUsuario(); // Llama al metodo de registro
+                case 3 : { System.out.println("Saliendo..."); return; } // Sale del programa
+                default : System.out.println("Opción inválida."); // Opción no válida
             }
         }
     }
@@ -199,22 +199,24 @@ public class VistaConsola {
             System.out.println("\n=== MENÚ PRINCIPAL ===");
             System.out.println("1. Ver lista");
             System.out.println("2. Ver productos");
-            System.out.println("3. Configuración");
+            System.out.println("3. Gestión de stock");
+            System.out.println("4. Configuración");
             System.out.println("0. Cerrar sesión");
             System.out.print("Seleccione una opción: ");
 
             opcion = Integer.parseInt(scanner.nextLine());
 
             switch (opcion) {
-                case 1 -> verLista(); // Muestra la lista de productos
-                case 2 -> menuProductos(); // Muestra el menú de productos
-                case 3 -> menuConfiguracion(); // Muestra el menú de configuración
-                case 0 -> {
+                case 1 : verLista(); // Muestra la lista de productos
+                case 2 : menuProductos(); // Muestra el menú de productos
+                case 3 : menuStock(); // Muestra el menú de gestión de stock
+                case 4 : menuConfiguracion(); // Muestra el menú de configuración
+                case 0 : {
                     usuarioActual = null; // Cierra sesión
                     unidadActual = null;
                     System.out.println("Sesión cerrada.");
                 }
-                default -> System.out.println("Opción inválida.");
+                default : System.out.println("Opción inválida.");
             }
         } while (opcion != 0); // Repite hasta que elija salir
     }
@@ -232,10 +234,34 @@ public class VistaConsola {
             opcion = Integer.parseInt(scanner.nextLine());
 
             switch (opcion) {
-                case 1 -> verTodosProductos(); // Muestra todos los productos
-                case 2 -> anadirProducto(); // Permite añadir un producto
-                case 0 -> System.out.println("Volviendo..."); // Vuelve al menú anterior
-                default -> System.out.println("Opción inválida.");
+                case 1 : verTodosProductos(); // Muestra todos los productos
+                case 2 : anadirProducto(); // Permite añadir un producto
+                case 0 : System.out.println("Volviendo..."); // Vuelve al menú anterior
+                default : System.out.println("Opción inválida.");
+            }
+        } while (opcion != 0);
+    }
+
+    private void menuStock(){
+        int opcion;
+        do {
+            System.out.println("\n=== GESTIÓN DE STOCK ===");
+            System.out.println("1. Ver stock actual");
+            System.out.println("2. Añadir producto al stock");
+            System.out.println("3. Actualizar cantidad en stock");
+            System.out.println("4. Eliminar producto del stock");
+            System.out.println("0. Volver");
+            System.out.print("Seleccione una opción: ");
+
+            opcion = Integer.parseInt(scanner.nextLine());
+
+            switch (opcion) {
+                case 1 : verStockActual();
+                case 2 : añadirProductoStock();
+                case 3 : actualizarCantidadStock();
+                case 4 : eliminarProductoStock();
+                case 0 : System.out.println("Volviendo...");
+                default : System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
     }
@@ -258,12 +284,131 @@ public class VistaConsola {
             opcion = Integer.parseInt(scanner.nextLine());
 
             switch (opcion) {
-                case 1 -> menuFiltros(); // Muestra menú de filtros
-                case 2 -> seleccionarProducto(); // Permite seleccionar un producto
-                case 0 -> System.out.println("Volviendo...");
-                default -> System.out.println("Opción inválida.");
+                case 1 : menuFiltros(); // Muestra menú de filtros
+                case 2 : seleccionarProducto(); // Permite seleccionar un producto
+                case 0 : System.out.println("Volviendo...");
+                default : System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
+    }
+
+    private void verStockActual() {
+        // Imprime el encabezado de la sección de stock
+        System.out.println("\n=== STOCK ACTUAL ===");
+
+        /**
+         * Obtiene el mapa de stock de la unidad familiar actual
+         * - Clave: Producto
+         * - Valor: Cantidad en stock
+         */
+        Map<Producto, Integer> stock = controlador.obtenerStock(unidadActual);
+
+        // Verifica si el stock está vacío
+        if (stock.isEmpty()) {
+            System.out.println("El stock está vacío.");
+            return;  // Sale del metodo si no hay productos
+        }
+
+        /**
+         * Obtiene todos los productos de la lista de compra actual
+         * de la unidad familiar para verificar qué productos están
+         * tanto en stock como en la lista de compra
+         */
+        List<Producto> productosListaCompra = controlador.obtenerProductosUnidadFamiliar(unidadActual);
+
+        System.out.println("Nombre\t| Marca\t| Stock\t| En Lista\t| Punt.\t| Precio\t| Supermercados");
+        System.out.println("--------------------------------------------------------------------------");
+
+        /**
+         * Itera a través de todas las entradas del mapa de stock
+         * - entry.getKey(): Producto
+         * - entry.getValue(): Cantidad en stock
+         */
+        for (Map.Entry<Producto, Integer> entry : stock.entrySet()) {
+            Producto p = entry.getKey();  // Obtiene el producto actual
+            int cantidadStock = entry.getValue();  // Obtiene la cantidad en stock
+
+            // Variables para verificar presencia en lista de compra
+            String enLista = "No";  // Valor por defecto: no está en lista
+            int cantidadLista = 0;  // Cantidad en lista (0 por defecto)
+
+            /**
+             * Verifica si este producto está en la lista de compra
+             * Compara por ID para asegurar que es el mismo producto
+             */
+            for (Producto productoLista : productosListaCompra) {
+                if (productoLista.getId().equals(p.getId())) {
+                    enLista = "Sí";  // Marca como presente en lista
+                    cantidadLista = productoLista.getCantidad();  // Captura la cantidad deseada
+                    break;  // Termina el bucle al encontrar coincidencia
+                }
+            }
+
+            /**
+             * Construye la línea de la tabla con formato:
+             * 1. Nombre del producto
+             * 2. Marca
+             * 3. Cantidad actual en stock
+             * 4. Indicador si está en lista + cantidad deseada (si aplica)
+             * 5. Puntuación media formateada a 1 decimal
+             * 6. Último precio formateado a 2 decimales con símbolo €
+             * 7. Lista de supermercados separados por coma
+             */
+            System.out.println(
+                    p.getNombre() + "\t| " +  // Columna 1: Nombre
+                            p.getMarca() + "\t| " +   // Columna 2: Marca
+                            cantidadStock + "\t| " +  // Columna 3: Stock actual
+                            enLista + (enLista.equals("Sí") ? " (" + cantidadLista + ")" : "") + "\t| " +  // Columna 4: En lista con cantidad
+                            String.format("%.1f", p.getPuntuacionMedia()) + "\t| " +  // Columna 5: Puntuación
+                            String.format("%.2f€", p.getUltimoPrecio()) + "\t| " +  // Columna 6: Precio
+                            String.join(", ", p.getSupermercados())  // Columna 7: Supermercados
+            );
+        }
+    }
+
+    private void añadirProductoStock(){
+        System.out.print("\nNombre del producto: ");
+        String nombre = scanner.nextLine();
+        Producto producto = buscarProductoConSugerencias();
+        if (producto == null) {
+            System.out.println("Producto no encontrado.");
+            return;
+        }
+        System.out.print("Cantidad inicial: ");
+        int cantidad = Integer.parseInt(scanner.nextLine());
+        controlador.añadirProductoStock(unidadActual, producto, cantidad);
+        System.out.println("Producto añadido al stock.");
+    }
+
+    private void actualizarCantidadStock(){
+        System.out.print("\nNombre del producto: ");
+        String nombre = scanner.nextLine();
+        Producto producto = buscarProductoConSugerencias();
+        if (producto == null) {
+            System.out.println("Producto no encontrado.");
+            return;
+        }
+        System.out.print("Nueva cantidad: ");
+        int nuevaCantidad = Integer.parseInt(scanner.nextLine());
+        controlador.actualizarCantidadStock(unidadActual, producto, nuevaCantidad);
+        System.out.println("Cantidad actualizada.");
+    }
+
+    private void eliminarProductoStock(){
+        System.out.print("\nNombre del producto: ");
+        String nombre = scanner.nextLine();
+        Producto producto = buscarProductoConSugerencias();
+        if (producto == null) {
+            System.out.println("Producto no encontrado.");
+            return;
+        }
+        System.out.print("¿Está seguro de eliminar "+producto.getNombre()+"? (S/N): ");
+        if (!scanner.nextLine().equalsIgnoreCase("S")) {
+            System.out.println("Operación cancelada");
+            return;
+        }
+        controlador.eliminarProductoStock(unidadActual, producto);
+        System.out.println("Producto eliminado del stock.");
     }
 
     // Menú de filtros para productos
@@ -279,10 +424,10 @@ public class VistaConsola {
             opcion = Integer.parseInt(scanner.nextLine());
 
             switch (opcion) {
-                case 1 -> filtrarPorCategoriaMarca(); // Filtra por categoría/marca
-                case 2 -> filtrarPorOrden(); // Ordena los productos
-                case 0 -> System.out.println("Volviendo...");
-                default -> System.out.println("Opción inválida.");
+                case 1 : filtrarPorCategoriaMarca(); // Filtra por categoría/marca
+                case 2 : filtrarPorOrden(); // Ordena los productos
+                case 0 : System.out.println("Volviendo...");
+                default : System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
     }
@@ -294,16 +439,18 @@ public class VistaConsola {
             System.out.println("\n=== FILTRAR POR CATEGORÍA/MARCA ===");
             System.out.println("1. Ver categorías");
             System.out.println("2. Ver marcas");
+            System.out.println("3. Ver supermercado");
             System.out.println("0. Volver atrás");
             System.out.print("Seleccione una opción: ");
 
             opcion = Integer.parseInt(scanner.nextLine());
 
             switch (opcion) {
-                case 1 -> verCategorias(); // Muestra categorías
-                case 2 -> verMarcas(); // Muestra marcas
-                case 0 -> System.out.println("Volviendo...");
-                default -> System.out.println("Opción inválida.");
+                case 1 : verCategorias(); // Muestra categorías
+                case 2 : verMarcas(); // Muestra marcas
+                case 3 : filtrarPorSupermercado(); // Muestra supermercados
+                case 0 : System.out.println("Volviendo...");
+                default : System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
     }
@@ -368,6 +515,19 @@ public class VistaConsola {
             String marca = marcas.get(opcion-1);
             List<Producto> productos = controlador.obtenerProductosPorMarca(marca);
             mostrarProductosTabla(productos); // Muestra en formato de tabla
+        }
+    }
+    private void filtrarPorSupermercado() {
+        List<String> supermercados = controlador.obtenerTodosSupermercados();
+        System.out.println("\nSupermercados disponibles:");
+        for (int i = 0; i < supermercados.size(); i++) {
+            System.out.println((i+1) + ". " + supermercados.get(i));
+        }
+        System.out.print("Seleccione supermercado (0 para cancelar): ");
+        int opcion = Integer.parseInt(scanner.nextLine());
+        if (opcion > 0 && opcion <= supermercados.size()) {
+            List<Producto> productos = controlador.filtrarPorSupermercado(supermercados.get(opcion-1));
+            mostrarProductosTabla(productos);
         }
     }
 
@@ -438,11 +598,11 @@ public class VistaConsola {
             opcion = Integer.parseInt(scanner.nextLine());
 
             switch (opcion) {
-                case 1 -> gestionarHistorialPrecios(producto); // Gestiona precios
-                case 2 -> gestionarPuntuaciones(producto); // Gestiona puntuaciones
-                case 3 -> modificarSupermercados(producto); // Modifica supermercados
-                case 0 -> System.out.println("Volviendo...");
-                default -> System.out.println("Opción inválida.");
+                case 1 : gestionarHistorialPrecios(producto); // Gestiona precios
+                case 2 : gestionarPuntuaciones(producto); // Gestiona puntuaciones
+                case 3 : modificarSupermercados(producto); // Modifica supermercados
+                case 0 : System.out.println("Volviendo...");
+                default : System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
     }
@@ -525,14 +685,14 @@ public class VistaConsola {
         int opcion = Integer.parseInt(scanner.nextLine());
 
         switch (opcion) {
-            case 1 -> {
+            case 1 : {
                 // Añade un nuevo supermercado
                 System.out.print("Introduce el nombre del nuevo supermercado: ");
                 String nuevoSuper = scanner.nextLine();
                 controlador.anadirSupermercadoProducto(producto, nuevoSuper);
                 System.out.println("Supermercado añadido correctamente.");
             }
-            case 2 -> {
+            case 2 : {
                 // Elimina un supermercado existente
                 System.out.print("Introduce el número del supermercado a eliminar: ");
                 int numEliminar = Integer.parseInt(scanner.nextLine());
@@ -543,8 +703,8 @@ public class VistaConsola {
                     System.out.println("Número inválido.");
                 }
             }
-            case 0 -> System.out.println("Volviendo...");
-            default -> System.out.println("Opción inválida.");
+            case 0 : System.out.println("Volviendo...");
+            default : System.out.println("Opción inválida.");
         }
     }
 
@@ -653,11 +813,11 @@ public class VistaConsola {
             opcion = Integer.parseInt(scanner.nextLine());
 
             switch (opcion) {
-                case 1 -> cambiarNombreUsuario(); // Cambia nombre de usuario
-                case 2 -> cambiarContrasena(); // Cambia contraseña
-                case 3 -> gestionarUnidadFamiliarConfig(); // Gestiona unidad familiar
-                case 0 -> System.out.println("Volviendo...");
-                default -> System.out.println("Opción inválida.");
+                case 1 : cambiarNombreUsuario(); // Cambia nombre de usuario
+                case 2 : cambiarContrasena(); // Cambia contraseña
+                case 3 : gestionarUnidadFamiliarConfig(); // Gestiona unidad familiar
+                case 0 : System.out.println("Volviendo...");
+                default : System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
     }
@@ -715,14 +875,14 @@ public class VistaConsola {
             opcion = Integer.parseInt(scanner.nextLine());
 
             switch (opcion) {
-                case 1 -> {
+                case 1 : {
                     // Cambia el nombre de la unidad familiar
                     System.out.print("Nuevo nombre para la unidad familiar: ");
                     String nuevoNombre = scanner.nextLine();
                     controlador.cambiarNombreUnidadFamiliar(unidadActual, nuevoNombre);
                     System.out.println("Nombre cambiado correctamente.");
                 }
-                case 2 -> {
+                case 2 : {
                     // Abandona la unidad familiar
                     System.out.print("¿Estás seguro de que deseas abandonar esta unidad familiar? (S/N): ");
                     String respuesta = scanner.nextLine().toUpperCase();
@@ -733,8 +893,8 @@ public class VistaConsola {
                         opcion = 0; // Para salir del menú
                     }
                 }
-                case 0 -> System.out.println("Volviendo...");
-                default -> System.out.println("Opción inválida.");
+                case 0 : System.out.println("Volviendo...");
+                default : System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
     }
