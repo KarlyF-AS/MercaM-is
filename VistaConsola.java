@@ -9,7 +9,7 @@ public class VistaConsola {
     private Controlador controlador; // Conexión con el controlador (lógica de negocio)
     private Scanner scanner; // Objeto para leer entrada del usuario
     private Usuario usuarioActual; // Almacena el usuario que ha iniciado sesión
-    private UnidadFamiliar unidadActual; // Almacena la unidad familiar actual
+    private Lista_UnidadFamiliar unidadActual; // Almacena la unidad familiar actual
 
     // Constructor que recibe el controlador como parámetro
     public VistaConsola(Controlador controlador) {
@@ -50,7 +50,7 @@ public class VistaConsola {
         while (true) {
             System.out.print("Correo electrónico: ");
             correo = scanner.nextLine();
-            // Verifica que el correo tenga @ y .
+            // Verifica que el correo tenga @ y
             if (correo.matches(".*@.*\\..*")) {
                 break; // Sale del bucle si el formato es correcto
             }
