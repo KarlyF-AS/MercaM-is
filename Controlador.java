@@ -2,6 +2,7 @@
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Controlador {
     // Iniciar sesión
@@ -152,4 +153,21 @@ public class Controlador {
     public int modificarCantidadProducto(Lista_UnidadFamiliar unidad, Producto producto, int cantidad) {
         return Model.modificarCantidadProducto(unidad, producto, cantidad);
     }
+
+    // PRUEBAS
+    public List<Producto> buscarProductosPorFragmento(String fragmento) {
+        // Busca productos cuyo nombre contenga el fragmento (ignorando mayúsculas/minúsculas)
+        return Model.recogerTodosProductos().stream()
+                .filter(p -> p.getNombre().toLowerCase().contains(fragmento.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
+    public Producto obtenerProductoPorNombreYMarca(String nombre, String marca) {
+        // Busca el producto que coincida exactamente con el nombre y la marca
+        return Model.recogerTodosProductos().stream()
+                .filter(p -> p.getNombre().equalsIgnoreCase(nombre) && p.getMarca().equalsIgnoreCase(marca))
+                .findFirst()
+                .orElse(null);
+    }
+
 }

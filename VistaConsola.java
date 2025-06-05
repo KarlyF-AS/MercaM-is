@@ -1,7 +1,5 @@
 
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 // Definición de la clase principal de la vista en consola
 public class VistaConsola {
@@ -59,10 +57,10 @@ public class VistaConsola {
 
         // Solicita la contraseña
         System.out.print("Contraseña: ");
-        String contraseña = scanner.nextLine();
+        String contrasena = scanner.nextLine();
 
         // Intenta iniciar sesión a través del controlador
-        usuarioActual = controlador.iniciarSesion(correo, contraseña);
+        usuarioActual = controlador.iniciarSesion(correo, contrasena);
 
         // Verifica si el inicio de sesión fue exitoso
         if (usuarioActual == null) {
@@ -82,45 +80,56 @@ public class VistaConsola {
         String nombreUsuario;
         while (true) {
             System.out.print("Nombre de usuario: ");
-            nombreUsuario = scanner.nextLine();
+            nombreUsuario = scanner.nextLine().trim();
+            if (nombreUsuario.isEmpty()) {
+                System.out.println("El nombre de usuario no puede estar vacío.");
+                continue;
+            }
+            if (!controlador.existeUsuario(nombreUsuario)) {
+                break; // Sale si el nombre está disponible
+            }
+            System.out.println("Ese nombre de usuario ya existe. Elija otro.");
         }
 
-        // Validación del formato de correo electrónico
+        // Validación del formato de correo electrónico y si ya existe
         String correo;
         while (true) {
             System.out.print("Correo electrónico: ");
-            correo = scanner.nextLine();
-            if (correo.matches(".*@.*\\..*")) {
-                break;
+            correo = scanner.nextLine().trim();
+
+            if (!correo.matches(".*@.*\\..*")) {
+                System.out.println("El correo debe tener formato válido (ejemplo@dominio.com)");
+                continue;
             }
-            System.out.println("El correo debe tener formato válido (ejemplo@dominio.com)");
-            // Verifica con el controlador si el usuario ya existe
-            if (!controlador.existeEmail(nombreEmail)) {
-                break; // Sale del bucle si el nombre está disponible
+
+            if (!controlador.existeEmail(correo)) {
+                break; // Sale si el correo está disponible
             }
+
             System.out.println("Este email ya existe. Elija otro.");
         }
 
         // Validación de que ambas contraseñas coincidan
-        String contraseña, confirmacion;
+        String contrasena, confirmacion;
         while (true) {
             System.out.print("Contraseña: ");
-            contraseña = scanner.nextLine();
+            contrasena = scanner.nextLine();
             System.out.print("Confirmar contraseña: ");
             confirmacion = scanner.nextLine();
-            if (contraseña.equals(confirmacion)) {
+            if (contrasena.equals(confirmacion)) {
                 break;
             }
             System.out.println("Las contraseñas no coinciden. Intente de nuevo.");
         }
 
         // Registra el usuario a través del controlador
-        usuarioActual = controlador.registrarUsuario(nombreUsuario, correo, contraseña);
+        usuarioActual = controlador.registrarUsuario(nombreUsuario, correo, contrasena);
         System.out.println("¡Registro exitoso!");
 
         // Después de registrar, gestiona la unidad familiar
         unirseOCrearUnidadFamiliar();
     }
+
 
     // Metodo para gestionar la unidad familiar del usuario
     private void gestionarUnidadFamiliar() {
@@ -337,7 +346,7 @@ public class VistaConsola {
              * Compara por ID para asegurar que es el mismo producto
              */
             for (Producto productoLista : productosListaCompra) {
-                if (productoLista.getCodigoBarras().equals(p.getCodigoBarras())) {
+                if (productoLista.getCodigoBarras()==(p.getCodigoBarras())) {
                     enLista = "Sí";  // Marca como presente en lista
                     cantidadLista = productoLista.getCantidad();  // Captura la cantidad deseada
                     break;  // Termina el bucle al encontrar coincidencia
@@ -377,7 +386,7 @@ public class VistaConsola {
         System.out.print("Cantidad inicial: ");
         int cantidad = Integer.parseInt(scanner.nextLine());
         controlador.añadirProductoStock(unidadActual, producto, cantidad);
-        System.out.println("Producto añadido al stock.");
+        System.out.println("Actaulmente el stock total es de : " + controlador.obtenerCantidadStock(unidadActual, producto) + " unidades.");
     }
 
     private void actualizarCantidadStock(){
@@ -416,7 +425,7 @@ public class VistaConsola {
         int opcion;
         do {
             System.out.println("\n=== FILTRAR ===");
-            System.out.println("1. Filtrar por categoría/marca");
+            System.out.println("1. Filtrar");
             System.out.println("2. Ordenar");
             System.out.println("0. Volver atrás");
             System.out.print("Seleccione una opción: ");
@@ -424,8 +433,8 @@ public class VistaConsola {
             opcion = Integer.parseInt(scanner.nextLine());
 
             switch (opcion) {
-                case 1 : filtrarPorCategoriaMarca(); // Filtra por categoría/marca
-                case 2 : filtrarPorOrden(); // Ordena los productos
+                case 1 : filtrado(); // Filtra por categoría/marca
+                case 2 : ordenar(); // Ordena los productos
                 case 0 : System.out.println("Volviendo...");
                 default : System.out.println("Opción inválida.");
             }
@@ -433,7 +442,7 @@ public class VistaConsola {
     }
 
     // Metodo para filtrar por categoría o marca
-    private void filtrarPorCategoriaMarca() {
+    private void filtrado() {
         int opcion;
         do {
             System.out.println("\n=== FILTRAR POR CATEGORÍA/MARCA ===");
@@ -532,7 +541,7 @@ public class VistaConsola {
     }
 
     // Metodo para ordenar los productos por diferentes criterios
-    private void filtrarPorOrden() {
+    private void ordenar() {
         int opcion;
         do {
             System.out.println("\n=== ORDENAR POR ===");
@@ -923,7 +932,7 @@ public class VistaConsola {
             }
 
             // Agrupa productos por nombre y marcas usando LinkedHashMap para mantener orden
-            Map<String, List<String>> productosPorNombre = new LinkedHashMap<>();
+            Map<String, List<String>> productosPorNombre = new LinkedverHashMap<>();
             for (Producto p : sugerencias) {
                 // Agrega la marca al listado correspondiente al nombre del producto
                 productosPorNombre
