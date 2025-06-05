@@ -148,4 +148,8 @@ public class Controlador {
     public boolean abandonarUnidadFamiliar(Usuario usuario, Lista_UnidadFamiliar unidad) {
         return Model.abandonarUnidadFamiliar(usuario, unidad);
     }
+
+    public int modificarCantidadProducto(Lista_UnidadFamiliar unidad, Producto producto, int cantidad) {
+        return Model.modificarCantidadProducto(unidad, producto, cantidad);
+    }
 }
