@@ -310,7 +310,7 @@ public class VistaConsola {
          * - Clave: Producto
          * - Valor: Cantidad en stock
          */
-        Map<Producto, Integer> stock = controlador.obtenerStock(unidadActual);
+        Map<Integer, Producto> stock = controlador.obtenerProductosUnidadFamiliar(unidadActual);
 
         // Verifica si el stock está vacío
         if (stock.isEmpty()) {
@@ -323,7 +323,7 @@ public class VistaConsola {
          * de la unidad familiar para verificar qué productos están
          * tanto en stock como en la lista de compra
          */
-        List<Producto> productosListaCompra = controlador.obtenerProductosUnidadFamiliar(unidadActual);
+        Map<Integer, Producto> productosListaCompra = controlador.obtenerProductosUnidadFamiliar(unidadActual);
 
         System.out.println("Nombre\t| Marca\t| Stock\t| En Lista\t| Punt.\t| Precio\t| Supermercados");
         System.out.println("--------------------------------------------------------------------------");
@@ -333,7 +333,7 @@ public class VistaConsola {
          * - entry.getKey(): Producto
          * - entry.getValue(): Cantidad en stock
          */
-        for (Map.Entry<Producto, Integer> entry : stock.entrySet()) {
+        for (Map.Entry<Integer, Producto> entry : stock.entrySet()) {
             Producto p = entry.getKey();  // Obtiene el producto actual
             int cantidadStock = entry.getValue();  // Obtiene la cantidad en stock
 
