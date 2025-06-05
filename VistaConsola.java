@@ -923,7 +923,7 @@ public class VistaConsola {
             }
 
             // Agrupa productos por nombre y marcas usando LinkedHashMap para mantener orden
-            Map<String, List<String>> productosPorNombre = new LinkedHashMap<>();
+            Map<String, List<String>> productosPorNombre = new LinkedverHashMap<>();
             for (Producto p : sugerencias) {
                 // Agrega la marca al listado correspondiente al nombre del producto
                 productosPorNombre
