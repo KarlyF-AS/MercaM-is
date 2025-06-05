@@ -310,7 +310,7 @@ public class VistaConsola {
          * - Clave: Producto
          * - Valor: Cantidad en stock
          */
-        Map<Producto, Integer> stock = controlador.obtenerStock(unidadActual);
+        Map<Producto, Integer> stock = controlador.obtenerProductosUnidadFamiliar(unidadActual);
 
         // Verifica si el stock está vacío
         if (stock.isEmpty()) {
