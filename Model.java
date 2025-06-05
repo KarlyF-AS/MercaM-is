@@ -8,7 +8,16 @@ import java.util.List;
 import java.util.Map;
 
 public class Model {
-    public static Usuario crearUsuario(String nombre,
+    /**
+     * Registra un nuevo usuario en la base de datos.
+     * El usuario se crea con un nombre, email y contraseña.
+     * Si el email ya existe, se captura la excepción y se devuelve null.
+     * @param nombre
+     * @param email
+     * @param password
+     * @return
+     */
+    public static Usuario registrarUsuario(String nombre,
                                        String email,
                                        String password) {
         Usuario usuario = new Usuario(nombre, email, password);
