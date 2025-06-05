@@ -360,7 +360,7 @@ public class VistaConsola {
                             cantidadStock + "\t| " +  // Columna 3: Stock actual
                             enLista + (enLista.equals("Sí") ? " (" + cantidadLista + ")" : "") + "\t| " +  // Columna 4: En lista con cantidad
                             String.format("%.1f", p.getPuntuacionMedia()) + "\t| " +  // Columna 5: Puntuación
-                            String.format("%.2f€", p.getUltimoPrecio()) + "\t| " +  // Columna 6: Precio
+                            String.format("%.2f€", p.getPrecio()) + "\t| " +  // Columna 6: Precio
                             String.join(", ", p.getSupermercados())  // Columna 7: Supermercados
             );
         }
@@ -582,7 +582,7 @@ public class VistaConsola {
             System.out.println("\n=== DETALLE DE PRODUCTO ===");
             System.out.println("Nombre: " + producto.getNombre());
             System.out.println("Marca: " + producto.getMarca());
-            System.out.println("Precio: " + producto.getUltimoPrecio() + "€ (pulsa 1 para ver/modificar historial)");
+            System.out.println("Precio: " + producto.getPrecio() + "€ (pulsa 1 para ver/modificar historial)");
             System.out.println("Puntuación media: " + producto.getPuntuacionMedia() + " (pulsa 2 para ver/modificar puntuaciones)");
             System.out.println("ID/Código de barras: " + producto.getId());
             System.out.println("Categoría: " + producto.getCategoria());
@@ -793,7 +793,7 @@ public class VistaConsola {
                     p.getMarca(),
                     p.getSubcategoria(),
                     p.getPuntuacionMedia(),
-                    p.getUltimoPrecio(),
+                    p.getPrecio(),
                     String.join(", ", p.getSupermercados()));
         }
     }
