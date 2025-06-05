@@ -48,12 +48,55 @@ public class Controller2 {
     /**
      * Verifica si un correo electrónico tiene formato válido.
      * @param email email a verificar.
-     * @return "true" si el formato es correcto.
+     * @return true si el formato es correcto, false si no.
      */
         //Filtro de email
          public static boolean validarEmail(String email) {
         if (email == null) return false;
 
         return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+    }
+    /**
+     * Verfica el nombre del usuario. El programa permite espacios, tildes y otros caracteres.
+     * @param nombre nombre a verificar.
+     * @return "null" si es válido; mensaje de error si hay algún carácter inválido.
+     */
+    //Filtro de nombre
+    public static String validarNombreUsuario(String nombre) {
+        if (nombre == null || nombre.trim().isEmpty()) {
+            return "El nombre no puede estar vacío.";
+        }
+        nombre = nombre.trim();
+        for (char c : nombre.toCharArray()) {
+            if (!(Character.isLetterOrDigit(c)
+                    || c != ' ' || c != '_' || c != '.' || c != '\'' || c != '-')) {
+                return "Carácter inválido: " + c;
+            }
+        }
+        return null;
+    }
+    /**
+     * Verifica si la puntuación está entre 0 y 5.
+     * @param puntuacion puntuación a verificar.
+     * @return la puntuación si es válida; -1 si no lo es.
+     */
+    public static int validarPuntuacion(int puntuacion){
+        if (puntuacion < 0 || puntuacion > 5) {
+            System.out.println("Puntuación inválida. Debe estar entre 0 y 5.");
+            return -1; // Indica puntuación inválida
+        }
+        return puntuacion; // Puntuación válida
+    }
+    /**
+     * Genera un id unico de 4 digitos para cada usuario.
+     * @return id de usuarios.
+     */
+    public static String generarIdUsuario() {
+        StringBuilder id = new StringBuilder();
+        for (int i = 0; i < 4; i++) {
+            int randomDigit = (int) (Math.random() * 10);
+            id.append(randomDigit);
+        }
+        return id.toString();
     }
 }
