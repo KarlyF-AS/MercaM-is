@@ -314,39 +314,42 @@ public class Model {
      * @return
      * @author Daniel Figueroa
      */
-public static List<Producto> obtenerTodosProductos(Lista_UnidadFamiliar unidadFamiliar) {
-    final String SQL = """
-        SELECT p.codigo_barras, p.nombre, p.marca, p.precio, p.categoria, p.supermercado, p.descripcion
-        FROM producto p
-        JOIN contiene c ON c.codigo_barras = p.codigo_barras
-        WHERE c.id_lista = ?
-    """;
+    public static List<Producto> obtenerTodosProductos() {
+        final String SQL = """
+        SELECT codigo_barras,
+               nombre,
+               marca,
+               precio,
+               categoria,
+               supermercado,
+               descripcion
+        FROM producto
+        """;
 
-    try (Connection conn = Conexion.abrir();
-         PreparedStatement stmt = conn.prepareStatement(SQL)) {
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL);
+             ResultSet rs = stmt.executeQuery()) {
 
-        stmt.setInt(1, unidadFamiliar.getId());
-        ResultSet rs = stmt.executeQuery();
+            List<Producto> productos = new ArrayList<>();
+            while (rs.next()) {
+                productos.add(new Producto(
+                        rs.getLong("codigo_barras"),
+                        rs.getString("nombre"),
+                        rs.getString("marca"),
+                        rs.getDouble("precio"),
+                        rs.getString("categoria"),
+                        rs.getString("supermercado"),
+                        rs.getString("descripcion")
+                ));
+            }
+            return productos;
 
-        List<Producto> productos = new ArrayList<>();
-        while (rs.next()) {
-            productos.add(new Producto(
-                    rs.getLong("codigo_barras"),
-                    rs.getString("nombre"),
-                    rs.getString("marca"),
-                    rs.getDouble("precio"),
-                    rs.getString("categoria"),
-                    rs.getString("supermercado"),
-                    rs.getString("descripcion")
-            ));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
         }
-        return productos;
-
-    } catch (SQLException e) {
-        e.printStackTrace();
-        return null; // Error en la conexión o consulta
     }
-}
+
 
     /**
      * Obtiene todas las categorías de productos disponibles en la base de datos.
