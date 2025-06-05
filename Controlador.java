@@ -1,119 +1,151 @@
+// Controlador.java
+
+import java.util.List;
+import java.util.Map;
+
 public class Controlador {
-
-    public static Usuario iniciarSesion(String correo, String contraseña) {
-        return Model.validarLogin(correo, contraseña);
+    // Iniciar sesión
+    public Usuario iniciarSesion(String email, String password) {
+        return Model.validarLogin(email, password);
     }
 
-    public static boolean existeEmail(String nombreEmail) {
-        return Model.existeEmail(nombreEmail);
+    // Registrar usuario
+    public Usuario registrarUsuario(String nombre, String email, String password) {
+        return Model.registrarUsuario(nombre, email, password);
     }
 
-    public static Usuario registrarUsuario(String nombre, String correo, String contraseña) {
-        if (!Controller2.filtroContrasena(contraseña) && !Controller2.validarEmail(correo)) {
-            return null;
-        }
-        return Model.crearUsuario(nombre, correo, contraseña);
+    // Comprobar si existe email
+    public boolean existeEmail(String email) {
+        return Model.existeEmail(email);
     }
 
-    public static Lista_UnidadFamiliar obtenerUnidadFamiliar(Usuario usuarioActual) {
-        return Model.obtenerUnidadFamiliar(usuarioActual);
+    // Obtener unidad familiar
+    public Lista_UnidadFamiliar obtenerUnidadFamiliar(Usuario usuario) {
+        return Model.obtenerUnidadFamiliar(usuario);
     }
 
-    public static Lista_UnidadFamiliar unirseAUnidadFamiliar(Usuario usuario, String codigo) {
+    // Unirse a unidad familiar
+    public Lista_UnidadFamiliar unirseAUnidadFamiliar(Usuario usuario, String codigo) {
         return Model.unirseAUnidadFamiliar(usuario, codigo);
     }
 
-    public static Lista_UnidadFamiliar crearUnidadFamiliar(Usuario usuario, String nombreUnidadFamiliar) {
-        return Model.crearUnidadFamiliar(usuario, nombreUnidadFamiliar);
+    // Crear unidad familiar
+    public Lista_UnidadFamiliar crearUnidadFamiliar(Usuario usuario, String nombre) {
+        return Model.crearUnidadFamiliar(usuario, nombre);
     }
 
-    public static java.util.List<Producto> obtenerTodosProductos(Lista_UnidadFamiliar unidadActual) {
-        return Model.obtenerTodosProductos(unidadActual);
+    // Obtener todos los productos de la unidad familiar
+    public List<Producto> obtenerTodosProductos(Lista_UnidadFamiliar unidad) {
+        return Model.obtenerTodosProductos(unidad);
     }
 
-    public static java.util.Map<String, java.util.List<String>> obtenerCategorias() {
+    // Obtener productos de la unidad familiar
+    public List<Producto> obtenerProductosUnidadFamiliar(Lista_UnidadFamiliar unidad) {
+        return Model.obtenerProductosUnidadFamiliar(unidad);
+    }
+
+    // Obtener stock
+    public Map<Producto, Integer> obtenerStock(Lista_UnidadFamiliar unidad) {
+        return Model.obtenerStock(unidad);
+    }
+
+    // Añadir producto al stock
+    public void añadirProductoStock(Lista_UnidadFamiliar unidad, Producto producto, int cantidad) {
+        Model.añadirProductoStock(unidad, producto, cantidad);
+    }
+
+    // Actualizar cantidad en stock
+    public void actualizarCantidadStock(Lista_UnidadFamiliar unidad, Producto producto, int cantidad) {
+        Model.actualizarCantidadStock(unidad, producto, cantidad);
+    }
+
+    // Eliminar producto del stock
+    public void eliminarProductoStock(Lista_UnidadFamiliar unidad, Producto producto) {
+        Model.eliminarProductoStock(unidad, producto);
+    }
+
+    // Obtener categorías (devolver Map de categoría a subcategorías)
+    public Map<String, List<String>> obtenerCategorias() {
         return Model.obtenerCategorias();
     }
 
-    public static java.util.List<Producto> obtenerProductosPorSubcategoria(String subcategoria) {
-        return Model.obtenerProductosPorSubcategoria(subcategoria);
-    }
-
-    public static java.util.List<String> obtenerMarcas() {
+    // Obtener marcas
+    public List<String> obtenerMarcas() {
         return Model.obtenerMarcas();
     }
 
-    public static java.util.List<Producto> obtenerProductosPorMarca(String marca) {
-        return Model.obtenerProductosPorMarca(marca);
+    // Obtener todos los supermercados
+    public List<String> obtenerTodosSupermercados() {
+        return Model.obtenerTodosSupermercados();
     }
 
-    public static java.util.List<Producto> ordenarProductos(int opcion) {
-        Controller2.ordenarProductos(opcion);
-        return Model.ordenarProductos(opcion);
-    }
-
-    public static Producto obtenerProductoPorNombre(String nombre) {
-        return Model.obtenerProductoPorNombre(nombre);
-    }
-
-    public static void actualizarPrecioProducto(Producto producto, double nuevoPrecio) {
-        Model.actualizarPrecioProducto(producto, nuevoPrecio);
-    }
-
-    public static void anadirPuntuacionProducto(Producto producto, Usuario usuario, int puntuacion) {
-        Model.anadirPuntuacionProducto(producto, usuario, puntuacion);
-    }
-
-    public static void anadirSupermercadoProducto(Producto producto, String supermercado) {
-        Model.anadirSupermercadoProducto(producto, supermercado);
-    }
-
-    public static void eliminarSupermercadoProducto(Producto producto, String supermercado) {
-        Model.eliminarSupermercadoProducto(producto, supermercado);
-    }
-
-    public static Producto crearProducto(String nombre, String marca, double precio, String categoria, String subcategoria, String supermercado, long codigoBarras, String descripcion) {
-        String categoriaCompleta = categoria +"."+ subcategoria;
-        return Model.crearProducto(nombre, marca, precio, categoriaCompleta, supermercado, codigoBarras, descripcion);
-    }
-
-    public static java.util.List<Producto> obtenerProductosUnidadFamiliar(Lista_UnidadFamiliar unidadActual) {
-        return Model.obtenerProductosUnidadFamiliar(unidadActual);
-    }
-
-    public static boolean cambiarNombreUsuario(Usuario usuario, String nuevoNombre) {
-        return Model.cambiarNombreUsuario(usuario, nuevoNombre);
-    }
-
-    public static boolean cambiarContrasena(Usuario usuario, String actual, String nueva) {
-        return Model.cambiarContrasena(usuario, actual, nueva);
-    }
-
-    public static void cambiarNombreUnidadFamiliar(Lista_UnidadFamiliar unidad, String nuevoNombre) {
-        Model.cambiarNombreUnidadFamiliar(unidad, nuevoNombre);
-    }
-
-    public static void abandonarUnidadFamiliar(Usuario usuario, Lista_UnidadFamiliar unidad) {
-        Model.abandonarUnidadFamiliar(usuario, unidad);
-    }
-
-    public static void actualizarPrecioSupermercado(Producto producto, String supermercado, double precio) {
-        Model.actualizarPrecioSupermercado(producto, supermercado, precio);
-    }
-
-    public static void eliminarPrecioSupermercado(Producto producto, String supermercado) {
-        Model.eliminarPrecioSupermercado(producto, supermercado);
-    }
-
-    public static void modificarCantidadProducto(Producto producto, int nuevaCantidad) {
-        Model.modificarCantidadProducto(producto, nuevaCantidad);
-    }
-
-    public static java.util.List<Producto> filtrarPorSupermercado(String supermercado) {
+    // Filtrar productos por supermercado
+    public List<Producto> filtrarPorSupermercado(String supermercado) {
         return Model.filtrarPorSupermercado(supermercado);
     }
 
-    public static java.util.List<String> obtenerTodosSupermercados() {
-        return Model.obtenerTodosSupermercados();
+    // Obtener productos por subcategoría
+    public List<Producto> obtenerProductosPorSubcategoria(String subcategoria) {
+        return Model.obtenerProductosPorSubcategoria(subcategoria);
+    }
+
+    // Obtener productos por marca
+    public List<Producto> obtenerProductosPorMarca(String marca) {
+        return Model.obtenerProductosPorMarca(marca);
+    }
+
+    // Ordenar productos según opción
+    public List<Producto> ordenarProductos(int opcion) {
+        return Model.ordenarProductos(opcion);
+    }
+
+    // Obtener producto por nombre
+    public Producto obtenerProductoPorNombre(String nombre) {
+        return Model.obtenerProductoPorNombre(nombre);
+    }
+
+    // Crear producto
+    public Producto crearProducto(String nombre, String marca, double precio, String categoria, String subcategoria, String id, Lista_UnidadFamiliar unidad) {
+        return Model.crearProducto(nombre, marca, precio, categoria, subcategoria, id, unidad);
+    }
+
+    // Añadir supermercado a producto
+    public void anadirSupermercadoProducto(Producto producto, String supermercado) {
+        Model.anadirSupermercadoProducto(producto, supermercado);
+    }
+
+    // Eliminar supermercado de producto
+    public void eliminarSupermercadoProducto(Producto producto, String supermercado) {
+        Model.eliminarSupermercadoProducto(producto, supermercado);
+    }
+
+    // Actualizar precio de producto
+    public void actualizarPrecioProducto(Producto producto, double nuevoPrecio) {
+        Model.actualizarPrecioProducto(producto, nuevoPrecio);
+    }
+
+    // Añadir puntuación a producto
+    public void anadirPuntuacionProducto(Producto producto, Usuario usuario, int puntuacion) {
+        Model.anadirPuntuacionProducto(producto, usuario, puntuacion);
+    }
+
+    // Cambiar nombre de usuario
+    public boolean cambiarNombreUsuario(Usuario usuario, String nuevoNombre) {
+        return Model.cambiarNombreUsuario(usuario, nuevoNombre);
+    }
+
+    // Cambiar contraseña
+    public boolean cambiarContrasena(Usuario usuario, String actual, String nueva) {
+        return Model.cambiarContrasena(usuario, actual, nueva);
+    }
+
+    // Cambiar nombre de unidad familiar
+    public boolean cambiarNombreUnidadFamiliar(Lista_UnidadFamiliar unidad, String nuevoNombre) {
+        return Model.cambiarNombreUnidadFamiliar(unidad, nuevoNombre);
+    }
+
+    // Abandonar unidad familiar
+    public boolean abandonarUnidadFamiliar(Usuario usuario, Lista_UnidadFamiliar unidad) {
+        return Model.abandonarUnidadFamiliar(usuario, unidad);
     }
 }
