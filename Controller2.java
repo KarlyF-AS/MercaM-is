@@ -69,7 +69,7 @@ public class Controller2 {
         nombre = nombre.trim();
         for (char c : nombre.toCharArray()) {
             if (!(Character.isLetterOrDigit(c)
-                    || c != ' ' || c != '_' || c != '.' || c != '\'' || c != '-')) {
+                    || c == ' ' || c == '_' || c == '.' || c == '\'' || c == '-')) {
                 return "Carácter inválido: " + c;
             }
         }
