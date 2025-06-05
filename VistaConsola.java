@@ -337,7 +337,7 @@ public class VistaConsola {
              * Compara por ID para asegurar que es el mismo producto
              */
             for (Producto productoLista : productosListaCompra) {
-                if (productoLista.getId().equals(p.getId())) {
+                if (productoLista.getCodigoBarras().equals(p.getCodigoBarras())) {
                     enLista = "Sí";  // Marca como presente en lista
                     cantidadLista = productoLista.getCantidad();  // Captura la cantidad deseada
                     break;  // Termina el bucle al encontrar coincidencia
@@ -584,7 +584,7 @@ public class VistaConsola {
             System.out.println("Marca: " + producto.getMarca());
             System.out.println("Precio: " + producto.getPrecio() + "€ (pulsa 1 para ver/modificar historial)");
             System.out.println("Puntuación media: " + producto.getPuntuacionMedia() + " (pulsa 2 para ver/modificar puntuaciones)");
-            System.out.println("ID/Código de barras: " + producto.getId());
+            System.out.println("ID/Código de barras: " + producto.getCodigoBarras());
             System.out.println("Categoría: " + producto.getCategoria());
             System.out.println("Subcategoría: " + producto.getSubcategoria());
             System.out.println("Supermercados: " + String.join(", "+ producto.getSupermercados()));
