@@ -3,10 +3,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Model {
-    public static Usuario crearUsuario(String nombre,
+    /**
+     * Registra un nuevo usuario en la base de datos.
+     * El usuario se crea con un nombre, email y contraseña.
+     * Si el email ya existe, se captura la excepción y se devuelve null.
+     * @param nombre
+     * @param email
+     * @param password
+     * @return
+     */
+    public static Usuario registrarUsuario(String nombre,
                                        String email,
                                        String password) {
         Usuario usuario = new Usuario(nombre, email, password);
@@ -303,39 +314,42 @@ public class Model {
      * @return
      * @author Daniel Figueroa
      */
-public static List<Producto> obtenerTodosProductos(Lista_UnidadFamiliar unidadFamiliar) {
-    final String SQL = """
-        SELECT p.codigo_barras, p.nombre, p.marca, p.precio, p.categoria, p.supermercado, p.descripcion
-        FROM producto p
-        JOIN contiene c ON c.codigo_barras = p.codigo_barras
-        WHERE c.id_lista = ?
-    """;
+    public static List<Producto> obtenerTodosProductos() {
+        final String SQL = """
+        SELECT codigo_barras,
+               nombre,
+               marca,
+               precio,
+               categoria,
+               supermercado,
+               descripcion
+        FROM producto
+        """;
 
-    try (Connection conn = Conexion.abrir();
-         PreparedStatement stmt = conn.prepareStatement(SQL)) {
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL);
+             ResultSet rs = stmt.executeQuery()) {
 
-        stmt.setInt(1, unidadFamiliar.getId());
-        ResultSet rs = stmt.executeQuery();
+            List<Producto> productos = new ArrayList<>();
+            while (rs.next()) {
+                productos.add(new Producto(
+                        rs.getLong("codigo_barras"),
+                        rs.getString("nombre"),
+                        rs.getString("marca"),
+                        rs.getDouble("precio"),
+                        rs.getString("categoria"),
+                        rs.getString("supermercado"),
+                        rs.getString("descripcion")
+                ));
+            }
+            return productos;
 
-        List<Producto> productos = new ArrayList<>();
-        while (rs.next()) {
-            productos.add(new Producto(
-                    rs.getLong("codigo_barras"),
-                    rs.getString("nombre"),
-                    rs.getString("marca"),
-                    rs.getDouble("precio"),
-                    rs.getString("categoria"),
-                    rs.getString("supermercado"),
-                    rs.getString("descripcion")
-            ));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
         }
-        return productos;
-
-    } catch (SQLException e) {
-        e.printStackTrace();
-        return null; // Error en la conexión o consulta
     }
-}
+
 
     /**
      * Obtiene todas las categorías de productos disponibles en la base de datos.
@@ -906,36 +920,43 @@ public static List<Producto> obtenerTodosProductos(Lista_UnidadFamiliar unidadFa
      * @return
      * @author Daniel Figueroa
      */
-    public static Producto modificarCantidadProducto(Producto producto, int cantidad) {
-        final String SQL = "UPDATE contiene SET cantidad = ? WHERE id_lista = ? AND codigo_barras = ? RETURNING codigo_barras, nombre, marca, precio, categoria, supermercado, descripcion";
+    public static int modificarCantidadProducto(
+            Lista_UnidadFamiliar unidad,
+            Producto producto,
+            int incrementar) {
+
+        final String SQL = """
+        UPDATE contiene c
+        SET    cantidad = c.cantidad + ?
+        WHERE  c.id_lista      = ?
+          AND  c.codigo_barras = ?
+        RETURNING c.cantidad;
+        """;
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
-            stmt.setInt(1, cantidad);
-            stmt.setInt(2, producto.getIdUnidadFamiliar());
-            stmt.setLong(3, producto.getCodigoBarras());
+            // 1) Sumamos 'incrementar' a la cantidad existente
+            stmt.setInt (1, incrementar);                   // cuánto sumar
+            stmt.setInt (2, unidad.getIdLista());           // id_lista
+            stmt.setLong(3, producto.getCodigoBarras());    // código de barras
 
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return new Producto(
-                        rs.getLong("codigo_barras"),
-                        rs.getString("nombre"),
-                        rs.getString("marca"),
-                        rs.getDouble("precio"),
-                        rs.getString("categoria"),
-                        rs.getString("supermercado"),
-                        rs.getString("descripcion")
-                );
-            } else {
-                return null; // No se encontró el producto o no se actualizó
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // 2) Devolvemos el valor de 'cantidad' tras la suma
+                    return rs.getInt("cantidad");
+                }
+                // No existía esa fila en 'contiene'
+                return -1;
             }
 
         } catch (SQLException e) {
-            e.printStackTrace(); // Manejo de errores
-            return null; // Error en la conexión o consulta
+            e.printStackTrace();
+            return -1;  // indica error de SQL
         }
     }
+
+
     public static List<Producto> filtrarPorSupermercado(String supermercado) {
         final String SQL = "SELECT * FROM producto WHERE supermercado = ?";
 
@@ -964,5 +985,77 @@ public static List<Producto> obtenerTodosProductos(Lista_UnidadFamiliar unidadFa
             return null; // Error en la conexión o consulta
         }
     }
+
+    /**
+     * Con los productos que se guardan de la lista de la unidad familiar se vuelve a generar la lista de productos,
+     * en su map de productos se guardan los productos que tienen stock.
+     * @param lista
+     * @return
+     */
+    public static Lista_UnidadFamiliar obtenerListaDeProductosConStock(Lista_UnidadFamiliar lista) {
+        final String SQL = """
+        SELECT p.codigo_barras,
+               p.nombre,
+               p.marca,
+               p.precio,
+               p.categoria,
+               p.supermercado,
+               p.descripcion,
+               c.cantidad
+        FROM producto p
+        JOIN contiene c
+          ON c.codigo_barras = p.codigo_barras
+        WHERE c.id_lista = ?
+          AND c.cantidad > 0
+        """;
+
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+
+            stmt.setInt(1, lista.getId());
+            ResultSet rs = stmt.executeQuery();
+
+            // Creamos un HashMap para rellenar el campo 'productos' de la unidad familiar
+            Map<Integer, Producto> productoMap = new HashMap<>();
+
+            while (rs.next()) {
+                long codigoBarras = rs.getLong("codigo_barras");
+                String nombre    = rs.getString("nombre");
+                String marca     = rs.getString("marca");
+                double precio    = rs.getDouble("precio");
+                String categoria = rs.getString("categoria");
+                String supermercado = rs.getString("supermercado");
+                String descripcion  = rs.getString("descripcion");
+                int cantidad        = rs.getInt("cantidad");   // si en el futuro quieres usarla
+
+                // Construimos el objeto Producto (tu constructor no incluye 'cantidad',
+                // pero lo podrías añadir si quisieras almacenarlo dentro de Producto)
+                Producto prod = new Producto(
+                        codigoBarras,
+                        nombre,
+                        marca,
+                        precio,
+                        categoria,
+                        supermercado,
+                        descripcion
+                );
+
+                // Llenamos el mapa: clave = (int)codigoBarras, valor = el propio Producto
+                productoMap.put((int) codigoBarras, prod);
+                // Si más adelante quisieras almacenar la cantidad real, podrías hacer:
+                // Map<Producto,Integer> productoMapConCantidad = new HashMap<>();
+                // productoMapConCantidad.put(prod, cantidad);
+            }
+
+            // Asignamos el mapa construido a la lista familiar
+            lista.setProductos(productoMap);
+            return lista;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null; // Error en la conexión o consulta
+        }
+    }
+
 
 }
