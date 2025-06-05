@@ -565,7 +565,7 @@ public class VistaConsola {
         String nombre = scanner.nextLine();
 
         // Obtiene el producto por nombre
-        Producto producto = controlador.obtenerProductoPorNombre(nombre);
+        Producto producto =  buscarProductoConSugerencias();
         if (producto == null) {
             System.out.println("Producto no encontrado.");
             return;
@@ -897,5 +897,86 @@ public class VistaConsola {
                 default : System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
+    }
+    // =================================================================
+    // METODO AUXILIAR PARA BÚSQUEDA CON SUGERENCIAS
+    // =================================================================
+
+        /**
+         * Muestra sugerencias de productos basadas en un fragmento de nombre
+         * y permite al usuario seleccionar uno.
+         *
+         * @return Producto seleccionado o null si se cancela
+         */
+        private Producto buscarProductoConSugerencias() {
+            // Solicita al usuario parte del nombre del producto
+            System.out.print("\nIntroduce parte del nombre del producto: ");
+            String fragmento = scanner.nextLine().toLowerCase();  // Normaliza a minúsculas
+
+            // Obtiene productos que coinciden con el fragmento usando el controlador
+            List<Producto> sugerencias = controlador.buscarProductosPorFragmento(fragmento);
+
+            // Maneja caso donde no hay coincidencias
+            if (sugerencias.isEmpty()) {
+                System.out.println("No se encontraron productos coincidentes.");
+                return null;  // Retorna nulo para indicar fallo en búsqueda
+            }
+
+            // Agrupa productos por nombre y marcas usando LinkedHashMap para mantener orden
+            Map<String, List<String>> productosPorNombre = new LinkedHashMap<>();
+            for (Producto p : sugerencias) {
+                // Agrega la marca al listado correspondiente al nombre del producto
+                productosPorNombre
+                        .computeIfAbsent(p.getNombre(), k -> new ArrayList<>())
+                        .add(p.getMarca());
+            }
+
+            // Muestra lista de nombres únicos numerados
+            System.out.println("\nProductos encontrados:");
+            int index = 1;
+            String[] nombres = new String[productosPorNombre.size()];  // Almacena nombres para acceso rápido
+            for (String nombre : productosPorNombre.keySet()) {
+                System.out.println(index + ". " + nombre);  // Muestra nombre con índice
+                nombres[index-1] = nombre;  // Guarda nombre en array
+                index++;
+            }
+
+            // Permite al usuario seleccionar un nombre de producto
+            System.out.print("\nSelecciona un producto (0 para cancelar): ");
+            int opcionNombre = Integer.parseInt(scanner.nextLine());
+
+            // Valida selección del usuario
+            if (opcionNombre < 1 || opcionNombre > nombres.length) {
+                return null;  // Selección inválida = cancelar
+            }
+
+            // Obtiene nombre seleccionado y sus marcas asociadas
+            String nombreSeleccionado = nombres[opcionNombre-1];
+            List<String> marcas = productosPorNombre.get(nombreSeleccionado);
+
+            // Atajo para productos con única marca
+            if (marcas.size() == 1) {
+                // Retorna directamente el producto sin pedir selección de marca
+                return controlador.obtenerProductoPorNombreYMarca(nombreSeleccionado, marcas.get(0));
+            }
+
+            // Muestra marcas disponibles para el producto seleccionado
+            System.out.println("\nMarcas disponibles para " + nombreSeleccionado + ":");
+            for (int i = 0; i < marcas.size(); i++) {
+                System.out.println((i+1) + ". " + marcas.get(i));  // Enumera marcas
+            }
+
+            // Permite al usuario seleccionar una marca específica
+            System.out.print("\nSelecciona una marca (0 para cancelar): ");
+            int opcionMarca = Integer.parseInt(scanner.nextLine());
+
+            // Valida selección de marca
+            if (opcionMarca < 1 || opcionMarca > marcas.size()) {
+                return null;  // Selección inválida = cancelar
+            }
+
+            // Retorna el producto específico seleccionado
+            return controlador.obtenerProductoPorNombreYMarca(nombreSeleccionado, marcas.get(opcionMarca-1));
+        }
     }
 }
