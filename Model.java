@@ -257,7 +257,7 @@ public class Model {
 
         final String SQL = """
             SELECT l.id_lista, l.nombre, l.descripcion
-            FROM lista l
+            FROM listas l
             JOIN decision d ON d.id_lista = l.id_lista
             WHERE d.email = ?
             LIMIT 1
