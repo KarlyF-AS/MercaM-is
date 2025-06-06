@@ -296,7 +296,7 @@ public class Model {
      * @author Daniel Figueroa
      */
     public static Lista_UnidadFamiliar unirseAUnidadFamiliar(Usuario usuario, String codigoUnidadFamiliar) {
-        final String SQL_BUSCAR_LISTA = "SELECT id_lista FROM lista WHERE codigo = ?";
+        final String SQL_BUSCAR_LISTA = "SELECT id_lista FROM listas WHERE id_lista = ?";
         final String SQL_INSERT_DECISION = "INSERT INTO decision (email, id_lista) VALUES (?, ?) RETURNING email;";
 
         try (Connection conn = Conexion.abrir();
@@ -864,7 +864,7 @@ public class Model {
      * @author Daniel Figueroa
      */
     public static boolean cambiarNombreUnidadFamiliar(Lista_UnidadFamiliar unidadFamiliar, String nuevoNombre) {
-        final String SQL = "UPDATE lista SET nombre = ? WHERE id_lista = ?";
+        final String SQL = "UPDATE listas SET nombre = ? WHERE id_lista = ?";
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
