@@ -758,13 +758,13 @@ public class Model {
      * @param unidadFamiliar
      * @return
      */
-    public static List<Producto> obtenerProductosUnidadFamiliar(Lista_UnidadFamiliar unidadFamiliar) {
+    public static Map<Integer, Producto> obtenerProductosUnidadFamiliar(Lista_UnidadFamiliar unidadFamiliar) {
         final String SQL = """
-        SELECT p.codigo_barras, p.nombre, p.marca, p.precio, p.categoria, p.supermercado, p.descripcion
+        SELECT p.codigo_barras, p.nombre, p.marca, p.precio, p.categoria, p.supermercado, p.descripcion, c.cantidad
         FROM producto p
         JOIN contiene c ON c.codigo_barras = p.codigo_barras
         WHERE c.id_lista = ?
-    """;
+        """;
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
@@ -772,9 +772,9 @@ public class Model {
             stmt.setInt(1, unidadFamiliar.getId());
             ResultSet rs = stmt.executeQuery();
 
-            List<Producto> productos = new ArrayList<>();
+            Map<Integer, Producto> productos = new HashMap<>();
             while (rs.next()) {
-                productos.add(new Producto(
+                Producto producto = new Producto(
                         rs.getLong("codigo_barras"),
                         rs.getString("nombre"),
                         rs.getString("marca"),
@@ -782,7 +782,9 @@ public class Model {
                         rs.getString("categoria"),
                         rs.getString("supermercado"),
                         rs.getString("descripcion")
-                ));
+                );
+                int cantidad = rs.getInt("cantidad");
+                productos.put(cantidad, producto);
             }
             return productos;
 
@@ -1276,6 +1278,41 @@ public class Model {
             return 0.0; // Error en la conexión o consulta
         }
     }
+
+    /**
+     * Obtiene los supermercados donde se vende un producto específico.
+     * A partir de un nombre y marca, obtener todos los supermercados donde se vende ese producto.
+     * Se consulta la tabla producto y se filtra por el nombre y marca del producto.
+     * retorna una lista de supermercados donde se vende el producto.
+     * @return
+     */
+    public static List<String> getSupermercados(Producto producto){
+        final String SQL = """
+        SELECT DISTINCT supermercado
+        FROM producto
+        WHERE nombre = ? AND marca = ?;
+        """;
+
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+
+            stmt.setString(1, producto.getNombre());
+            stmt.setString(2, producto.getMarca());
+            ResultSet rs = stmt.executeQuery();
+
+            List<String> supermercados = new ArrayList<>();
+            while (rs.next()) {
+                supermercados.add(rs.getString("supermercado"));
+            }
+            return supermercados;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null; // Error en la conexión o consulta
+        }
+    }
+
+
 
 
 

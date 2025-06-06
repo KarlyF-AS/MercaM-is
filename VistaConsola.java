@@ -196,7 +196,7 @@ public class VistaConsola {
         String nombre = scanner.nextLine();
 
         // Crea la unidad a través del controlador
-        unidadActual = controlador.crearUnidadFamiliar(usuarioActual, nombre);
+        unidadActual = controlador.crearUnidadFamiliar(usuarioActual, nombre, Controller2.generarIdUsuario());
         System.out.println("¡Unidad Familiar creada con éxito! Código: " + unidadActual.getCodigo());
         menuPrincipal(); // Va al menú principal
     }
@@ -368,9 +368,9 @@ public class VistaConsola {
                             p.getMarca() + "\t| " +   // Columna 2: Marca
                             cantidadStock + "\t| " +  // Columna 3: Stock actual
                             enLista + (enLista.equals("Sí") ? " (" + cantidadLista + ")" : "") + "\t| " +  // Columna 4: En lista con cantidad
-                            String.format("%.1f", p.getPuntuacionMedia()) + "\t| " +  // Columna 5: Puntuación
+                            String.format("%.1f", Controlador.getPuntuacionMedia(p)) + "\t| " +  // Columna 5: Puntuación
                             String.format("%.2f€", p.getPrecio()) + "\t| " +  // Columna 6: Precio
-                            String.join(", ", p.getSupermercados())  // Columna 7: Supermercados
+                            String.join(", ", Controlador.getSupermercado(p))  // Columna 7: Supermercados
             );
         }
     }
@@ -596,7 +596,7 @@ public class VistaConsola {
             System.out.println("ID/Código de barras: " + producto.getCodigoBarras());
             System.out.println("Categoría: " + producto.getCategoria());
             System.out.println("Subcategoría: " + producto.getSubcategoria());
-            System.out.println("Supermercados: " + String.join(", "+ producto.getSupermercados()));
+            System.out.println("Supermercados: " + Controlador.getSupermercados(producto);
 
             System.out.println("\n1. Ver/modificar historial de precios");
             System.out.println("2. Ver/modificar puntuaciones");
@@ -678,7 +678,7 @@ public class VistaConsola {
     private void modificarSupermercados(Producto producto) {
         System.out.println("\n=== SUPERMERCADOS ===");
         // Obtiene los supermercados del producto
-        List<String> supermercados = producto.getSupermercados();
+        List<String> supermercados = Controlador.getSupermercados(producto);
 
         System.out.println("Supermercados actuales:");
         // Muestra los supermercados numerados
@@ -803,7 +803,7 @@ public class VistaConsola {
                     p.getSubcategoria(),
                     p.getPuntuacionMedia(),
                     p.getPrecio(),
-                    String.join(", ", p.getSupermercados()));
+                    String.join(", ", Controlador.getSupermercados(p)));
         }
     }
 

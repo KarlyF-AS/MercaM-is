@@ -51,7 +51,7 @@ public class Controlador {
 
     // Obtener stock
     public Map<Producto, Integer> obtenerStock(Lista_UnidadFamiliar unidad) {
-        return Model.obtenerStock(unidad);
+        return Model.obtenerProductosUnidadFamiliar(unidad);
     }
 
     // Añadir producto al stock
@@ -182,6 +182,9 @@ public class Controlador {
                 .filter(p -> p.getNombre().equalsIgnoreCase(nombre) && p.getMarca().equalsIgnoreCase(marca))
                 .findFirst()
                 .orElse(null);
+    }
+    public static List<String> getSupermercados(Producto producto){
+        return Model.getSupermercados(producto);
     }
 
 }
