@@ -1239,6 +1239,41 @@ public class Model {
             return null; // Error en la conexión o consulta
         }
     }
+    /**
+     * Obtener la puntuacion media del producto teniendo en cuenta que el mismo nombre y marca puede estar en varios supermercados.
+     * hay que tratar a los productos como si fueran iguales si tienen el mismo nombre y marca.
+     * Se consulta la tabla puntua y se calcula la media de las puntuaciones del producto.
+     * Esta consulta devuelve la puntuación media del producto especificado.
+     * @param producto
+     * @return
+     * @author Daniel Figueroa
+     */
+    public static double obtenerPuntuacionMediaProducto(Producto producto) {
+        final String SQL = """
+        
+                SELECT AVG(puntuacion) AS puntuacion_media
+        FROM puntua
+        WHERE nombre_producto = ? AND marca_producto = ?;
+        """;
+
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+
+            stmt.setString(1, producto.getNombre());
+            stmt.setString(2, producto.getMarca());
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getDouble("puntuacion_media");
+            }
+            return 0.0; // Si no hay puntuaciones, retornamos 0.0
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0.0; // Error en la conexión o consulta
+        }
+    }
+
 
 
 }
