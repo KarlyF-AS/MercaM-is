@@ -706,11 +706,11 @@ public class Model {
      * @param producto
      * @author Daniel Figueroa
      */
-    public static Producto eliminarSupermercadoProducto(Producto producto) {
+    public static Producto eliminarSupermercadoProducto(Producto producto, String supermercado) {
 
         final String SQL = """
         DELETE FROM producto
-        WHERE codigo_barras = ?
+        WHERE nombre = ? AND marca = ? AND supermercado = ?
         RETURNING  codigo_barras,
                   nombre,
                   marca,
@@ -723,7 +723,9 @@ public class Model {
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
-            stmt.setLong(1, producto.getCodigoBarras());
+            stmt.setString(1, producto.getNombre());
+            stmt.setString(2, producto.getMarca());
+            stmt.setString(3, supermercado);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (!rs.next()) {

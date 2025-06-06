@@ -107,27 +107,31 @@ public class Controlador {
 
     // Ordenar productos según opción
     public List<Producto> ordenarProductos(int opcion) {
-        return Model.ordenarProductos(opcion);
+        return Controller2.ordenarProductos(opcion);
     }
 
     // Obtener producto por nombre
-    public Producto obtenerProductoPorNombre(String nombre) {
+    public List<Producto> obtenerProductoPorNombre(String nombre) {
         return Model.obtenerProductoPorNombre(nombre);
     }
 
     // Crear producto
     public Producto crearProducto(String nombre, String marca, double precio, String categoria, String subcategoria, long id) {
-        return Model.crearProducto(nombre, marca, precio, categoria, subcategoria, id);
+        // pasar subcategoria a categoria a formateo "categoria.subcategoria"
+        if (subcategoria != null && !subcategoria.isEmpty()) {
+            categoria = categoria + "." + subcategoria;
+        }
+        return Model.crearProducto(nombre, marca, precio, categoria, "sinSupermercado", id, null);
     }
 
     // Añadir supermercado a producto
-    public void anadirSupermercadoProducto(Producto producto, String supermercado) {
-        Model.anadirSupermercadoProducto(producto, supermercado);
+    public Producto anadirSupermercadoProducto(Producto producto, String supermercado) {
+        return Model.anadirSupermercadoProducto(producto, supermercado);
     }
 
     // Eliminar supermercado de producto
-    public void eliminarSupermercadoProducto(Producto producto, String supermercado) {
-        Model.eliminarSupermercadoProducto(producto, supermercado);
+    public Producto eliminarSupermercadoProducto(Producto producto, String supermercado) {
+        return Model.eliminarSupermercadoProducto(producto, supermercado);
     }
 
     // Actualizar precio de producto
