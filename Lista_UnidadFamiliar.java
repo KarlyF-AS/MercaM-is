@@ -12,7 +12,6 @@ public class Lista_UnidadFamiliar {
     private Map<Integer, Producto> productos; // La cantidad del producto y el producto
 
     public Lista_UnidadFamiliar(int id, String nombre, String codigo, List<Usuario> miembros, Map<Integer, Producto> productos) {
-        this.id = id;
         this.nombre = nombre;
         this.codigo = codigo;
         this.miembros = new ArrayList<>();

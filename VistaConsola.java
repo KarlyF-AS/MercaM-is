@@ -91,10 +91,7 @@ public class VistaConsola {
                 System.out.println("El nombre de usuario no puede estar vacío.");
                 continue;
             }
-            if (!controlador.existeUsuario(nombreUsuario)) {
-                break; // Sale si el nombre está disponible
-            }
-            System.out.println("Ese nombre de usuario ya existe. Elija otro.");
+            break;
         }
 
         // Validación del formato de correo electrónico y si ya existe
@@ -335,7 +332,7 @@ public class VistaConsola {
          * - Clave: Producto
          * - Valor: Cantidad en stock
          */
-        Map<Integer, Producto> stock = controlador.obtenerProductosUnidadFamiliar(unidadActual);
+        Map<Producto, Integer> stock = controlador.obtenerProductosUnidadFamiliar(unidadActual);
 
         // Verifica si el stock está vacío
         if (stock.isEmpty()) {
@@ -348,7 +345,7 @@ public class VistaConsola {
          * de la unidad familiar para verificar qué productos están
          * tanto en stock como en la lista de compra
          */
-        Map<Integer, Producto> productosListaCompra = controlador.obtenerProductosUnidadFamiliar(unidadActual);
+        Map<Producto,Integer> productosListaCompra = controlador.obtenerProductosUnidadFamiliar(unidadActual);
 
         System.out.println("Nombre\t| Marca\t| Stock\t| En Lista\t| Punt.\t| Precio\t| Supermercados");
         System.out.println("--------------------------------------------------------------------------");
@@ -358,7 +355,7 @@ public class VistaConsola {
          * - entry.getKey(): Producto
          * - entry.getValue(): Cantidad en stock
          */
-        for (Map.Entry<Integer, Producto> entry : stock.entrySet()) {
+        for (Map.Entry<Producto, Integer> entry : stock.entrySet()) {
             Producto p = entry.getKey();  // Obtiene el producto actual
             int cantidadStock = entry.getValue();  // Obtiene la cantidad en stock
 
@@ -370,10 +367,11 @@ public class VistaConsola {
              * Verifica si este producto está en la lista de compra
              * Compara por ID para asegurar que es el mismo producto
              */
-            for (Producto productoLista : productosListaCompra) {
+            for (Map.Entry<Producto, Integer> entryLista : productosListaCompra.entrySet()) {
+                Producto productoLista = entryLista.getKey();
                 if (productoLista.getCodigoBarras() == (p.getCodigoBarras())) {
                     enLista = "Sí";  // Marca como presente en lista
-                    cantidadLista = productoLista.getCantidad();  // Captura la cantidad deseada
+                    cantidadLista = entryLista.getValue();  // Captura la cantidad deseada
                     break;  // Termina el bucle al encontrar coincidencia
                 }
             }
@@ -410,7 +408,7 @@ public class VistaConsola {
         }
         System.out.print("Cantidad inicial: ");
         int cantidad = Integer.parseInt(scanner.nextLine());
-        controlador.añadirProductoStock(unidadActual, producto, cantidad);
+        controlador.anadirProductoStock(unidadActual, producto, cantidad);
         System.out.println("Actaulmente el stock total es de : " + controlador.obtenerCantidadStock(unidadActual, producto) + " unidades.");
     }
 

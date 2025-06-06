@@ -222,10 +222,10 @@ public class Model {
             ResultSet rsLista = stmtLista.executeQuery();
 
             if (rsLista.next()) {
-                unidadFamiliar.setId(rsLista.getInt("id")); // Cambiado a int
+                unidadFamiliar.setCodigo(rsLista.getString("id")); // Cambiado a String
 
                 // Insertar en la tabla contiene usando el email como identificador
-                stmtContiene.setInt(1, unidadFamiliar.getId()); // Cambiado a int
+                stmtContiene.setString(1, unidadFamiliar.getCodigo()); // Cambiado a String
                 stmtContiene.setString(2, usuario.getEmail());
                 stmtContiene.executeUpdate();
 
@@ -769,7 +769,7 @@ public class Model {
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
-            stmt.setInt(1, unidadFamiliar.getId());
+            stmt.setString(1, unidadFamiliar.getCodigo());
             ResultSet rs = stmt.executeQuery();
 
             Map<Producto, Integer> productos = new HashMap<>();
@@ -870,7 +870,7 @@ public class Model {
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
             stmt.setString(1, nuevoNombre);
-            stmt.setInt(2, unidadFamiliar.getId());
+            stmt.setString(2, unidadFamiliar.getCodigo());
             int filasActualizadas = stmt.executeUpdate();
 
             return filasActualizadas > 0; // Retorna true si se actualizó al menos una fila
@@ -898,7 +898,7 @@ public class Model {
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
             stmt.setString(1, usuario.getEmail());
-            stmt.setInt(2, unidadFamiliar.getId());
+            stmt.setString(2, unidadFamiliar.getCodigo());
             int filasEliminadas = stmt.executeUpdate();
 
             return filasEliminadas > 0; // Retorna true si se eliminó al menos una fila
@@ -1045,7 +1045,7 @@ public class Model {
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
-            stmt.setInt(1, lista.getId());
+            stmt.setString(1, lista.getCodigo());
             ResultSet rs = stmt.executeQuery();
 
             // Creamos un HashMap para rellenar el campo 'productos' de la unidad familiar
@@ -1118,7 +1118,7 @@ public class Model {
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
-            stmt.setInt(1, unidad.getId());                     // id_lista
+            stmt.setString(1, unidad.getCodigo());                     // id_lista
             stmt.setString(2, producto.getNombre());            // nombre
             stmt.setString(3, producto.getMarca());             // marca
             stmt.setString(4, producto.getSupermercado());      // supermercado
@@ -1154,7 +1154,7 @@ public class Model {
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
-            stmt.setInt(1, unidad.getId());                     // id_lista
+            stmt.setString(1, unidad.getCodigo());                     // id_lista
             stmt.setString(2, producto.getNombre());            // nombre
             stmt.setString(3, producto.getMarca());             // marca
             stmt.setString(4, producto.getSupermercado());      // supermercado
@@ -1201,7 +1201,7 @@ public class Model {
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
             stmt.setInt(1, cantidad);                          // Nueva cantidad
-            stmt.setInt(2, unidad.getId());                    // id_lista
+            stmt.setString(2, unidad.getCodigo());                    // id_lista
             stmt.setString(3, producto.getNombre());           // nombre
             stmt.setString(4, producto.getMarca());            // marca
             stmt.setString(5, producto.getSupermercado());     // supermercado
