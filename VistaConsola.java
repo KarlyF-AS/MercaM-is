@@ -257,9 +257,10 @@ public class VistaConsola {
             switch (opcion) {
                 case 1:
                     verTodosProductos(); // Muestra todos los productos
-                    break;
+                    continue;
                 case 2:
                     anadirProducto(); // Permite añadir un producto
+                    continue;
                 case 0:
                     System.out.println("Volviendo..."); // Vuelve al menú anterior
                     menuPrincipal();
@@ -286,12 +287,16 @@ public class VistaConsola {
             switch (opcion) {
                 case 1:
                     verStockActual();
+                    continue;
                 case 2:
                     añadirProductoStock();
+                    continue;
                 case 3:
                     actualizarCantidadStock();
+                    continue;
                 case 4:
                     eliminarProductoStock();
+                    continue;
                 case 0:
                     System.out.println("Volviendo...");
                     menuPrincipal();
@@ -321,8 +326,10 @@ public class VistaConsola {
             switch (opcion) {
                 case 1:
                     menuFiltros(); // Muestra menú de filtros
+                    continue;
                 case 2:
                     seleccionarProducto(); // Permite seleccionar un producto
+                    continue;
                 case 0:
                     System.out.println("Volviendo...");
                     menuPrincipal();
@@ -467,8 +474,10 @@ public class VistaConsola {
             switch (opcion) {
                 case 1:
                     filtrado(); // Filtra por categoría/marca
+                    continue;
                 case 2:
                     ordenar(); // Ordena los productos
+                    continue;
                 case 0:
                     System.out.println("Volviendo...");
                 default:
@@ -493,12 +502,16 @@ public class VistaConsola {
             switch (opcion) {
                 case 1:
                     verCategorias(); // Muestra categorías
+                    continue;
                 case 2:
                     verMarcas(); // Muestra marcas
+                    continue;
                 case 3:
                     filtrarPorSupermercado(); // Muestra supermercados
+                    continue;
                 case 0:
                     System.out.println("Volviendo...");
+                    menuPrincipal();
                 default:
                     System.out.println("Opción inválida.");
             }
