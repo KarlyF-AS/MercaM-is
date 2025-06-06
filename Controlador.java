@@ -60,13 +60,13 @@ public class Controlador {
     }
 
     // Actualizar cantidad en stock
-    public void actualizarCantidadStock(Lista_UnidadFamiliar unidad, Producto producto, int cantidad) {
-        Model.actualizarCantidadStock(unidad, producto, cantidad);
+    public int actualizarCantidadStock(Lista_UnidadFamiliar unidad, Producto producto, int cantidad) {
+        return Model.actualizarCantidadStock(unidad, producto, cantidad);
     }
 
     // Eliminar producto del stock
-    public void eliminarProductoStock(Lista_UnidadFamiliar unidad, Producto producto) {
-        Model.eliminarProductoStock(unidad, producto);
+    public int eliminarProductoStock(Lista_UnidadFamiliar unidad, Producto producto) {
+        return Model.eliminarProductoStock(unidad, producto);
     }
 
     // Obtener categorías (devolver Map de categoría a subcategorías)
