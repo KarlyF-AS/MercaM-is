@@ -1,5 +1,7 @@
 // Controlador.java
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,9 +33,10 @@ public class Controlador {
     }
 
     // Crear unidad familiar
-    public Lista_UnidadFamiliar crearUnidadFamiliar(Usuario usuario, String nombre) {
-        return Model.crearUnidadFamiliar(usuario, nombre);
+    public Lista_UnidadFamiliar crearUnidadFamiliar(Usuario usuario, String nombre, long codigo) {
+        return Model.crearUnidadFamiliar(usuario, nombre, codigo);
     }
+
 
     // Obtener todos los productos de la unidad familiar
     public List<Producto> obtenerTodosProductos(Lista_UnidadFamiliar unidad) {
@@ -41,7 +44,8 @@ public class Controlador {
     }
 
     // Obtener productos de la unidad familiar
-    public List<Producto> obtenerProductosUnidadFamiliar(Lista_UnidadFamiliar unidad) {
+    public Map<Integer, Producto> obtenerProductosUnidadFamiliar(Lista_UnidadFamiliar unidad) {
+        // Si Model ya devuelve el Map, por qué lo cambiamos ayer?
         return Model.obtenerProductosUnidadFamiliar(unidad);
     }
 
@@ -67,7 +71,13 @@ public class Controlador {
 
     // Obtener categorías (devolver Map de categoría a subcategorías)
     public Map<String, List<String>> obtenerCategorias() {
-        return Model.obtenerCategorias();
+        List<String> categorias = Model.obtenerCategorias();
+        // Quedamos en hacerlo así al final?
+        Map<String, List<String>> mapa = new HashMap<>();
+        for (String cat : categorias) {
+            mapa.put(cat, new ArrayList<>());
+        }
+        return mapa;
     }
 
     // Obtener marcas
