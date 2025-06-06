@@ -104,6 +104,10 @@ public class Producto {
     }
 
     public String getCategoria() {
+        //la categoria tiene el formato categoria.subcategoria, devolver solo lo que hay antes del punto
+        if (categoria != null && categoria.contains(".")) {
+            return categoria.substring(0, categoria.indexOf('.'));
+        }
         return categoria;
     }
 
