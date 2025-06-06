@@ -333,11 +333,11 @@ public class Model {
                 return null;
             }
 
-            int idLista = rsBuscar.getInt("id_lista");
+            String idLista = rsBuscar.getString("id_lista");
 
             try (PreparedStatement stmtInsert = conn.prepareStatement(SQL_INSERT_DECISION)) {
                 stmtInsert.setString(1, usuario.getEmail());
-                stmtInsert.setInt(2, idLista);
+                stmtInsert.setString(2, "idLista");
                 ResultSet rsInsert = stmtInsert.executeQuery();
 
                 return rsInsert.next() ? obtenerUnidadFamiliar(usuario) : null;
@@ -466,13 +466,14 @@ public class Model {
      * @return
      * @author Daniel Figueroa
      */
-    public static List<Producto> obtenerProductosPorSubcategoria(String subcategoria) { // subcategoria es el formato "Categoria.Subcategoria" PENDIENTE
-        final String SQL = "SELECT * FROM producto WHERE categoria LIKE ?";
+    public static List<Producto> obtenerProductosPorSubcategoria(String subcategoria) {
+        // Corrección: Usar igualdad exacta
+        final String SQL = "SELECT * FROM producto WHERE categoria = ?";
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
-            stmt.setString(1, "%" + subcategoria);
+            stmt.setString(1, subcategoria); // Sin agregar "%"
             ResultSet rs = stmt.executeQuery();
 
             List<Producto> productos = new ArrayList<>();
@@ -491,7 +492,7 @@ public class Model {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return null; // Error en la conexión o consulta
+            return null;
         }
     }
     /**
@@ -781,30 +782,48 @@ public class Model {
      * @param unidadFamiliar
      * @return
      */
-    public static Map<Producto, Integer> obtenerProductosUnidadFamiliar(Lista_UnidadFamiliar unidadFamiliar) {
+    public static Map<Producto, Integer> obtenerProductosUnidadFamiliar(
+            Lista_UnidadFamiliar unidadFamiliar) {
+
         final String SQL = """
-        SELECT p.codigo_barras, p.nombre, p.marca, p.precio, p.categoria, p.supermercado, p.descripcion, c.cantidad
+        SELECT
+          p.codigo_barras,
+          p.nombre,
+          p.marca,
+          p.precio,
+          p.categoria,
+          p.supermercado,
+          p.descripcion,
+          c.cantidad
         FROM producto p
-        JOIN contiene c ON c.nombre and c.marca = p.marca and c.supermercado = p.supermercado
+        JOIN contiene c
+          ON c.nombre = p.nombre
+         AND c.marca = p.marca
+         AND c.supermercado = p.supermercado
         WHERE c.id_lista = ?
         """;
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
+            // 1) Ponemos el id_lista (string) como parámetro
             stmt.setString(1, unidadFamiliar.getCodigo());
+
+            // 2) Ejecutamos la consulta
             ResultSet rs = stmt.executeQuery();
 
+            // 3) Construimos el Map<Producto,Integer>
             Map<Producto, Integer> productos = new HashMap<>();
             while (rs.next()) {
+                // Leemos datos del producto
                 Producto producto = new Producto(
-                        rs.getLong("codigo_barras"),
-                        rs.getString("nombre"),
-                        rs.getString("marca"),
-                        rs.getDouble("precio"),
-                        rs.getString("categoria"),
-                        rs.getString("supermercado"),
-                        rs.getString("descripcion")
+                        rs.getLong   ("codigo_barras"),
+                        rs.getString ("nombre"),
+                        rs.getString ("marca"),
+                        rs.getDouble ("precio"),
+                        rs.getString ("categoria"),
+                        rs.getString ("supermercado"),
+                        rs.getString ("descripcion")
                 );
                 int cantidad = rs.getInt("cantidad");
                 productos.put(producto, cantidad);
@@ -813,9 +832,10 @@ public class Model {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return null; // Error en la conexión o consulta
+            return null; // En caso de error devolvemos null
         }
     }
+
 
     /**
      * Cambia el nombre de usuario de un usuario.
@@ -973,34 +993,36 @@ public class Model {
             Producto producto,
             int incrementar) {
 
+        // Corrección: Usar nombre, marca y supermercado
         final String SQL = """
-        UPDATE contiene c
-        SET    cantidad = c.cantidad + ?
-        WHERE  c.id_lista      = ?
-          AND  c.codigo_barras = ?
-        RETURNING c.cantidad;
-        """;
+    UPDATE contiene c
+    SET    cantidad = c.cantidad + ?
+    WHERE  c.id_lista      = ?
+      AND  c.nombre        = ?
+      AND  c.marca         = ?
+      AND  c.supermercado  = ?
+    RETURNING c.cantidad;
+    """;
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
-            // 1) Sumamos 'incrementar' a la cantidad existente
-            stmt.setInt (1, incrementar);                   // cuánto sumar
-            stmt.setString (2, unidad.getCodigo());           // id_lista
-            stmt.setLong(3, producto.getCodigoBarras());    // código de barras
+            stmt.setInt(1, incrementar);
+            stmt.setString(2, unidad.getCodigo());
+            stmt.setString(3, producto.getNombre());
+            stmt.setString(4, producto.getMarca());
+            stmt.setString(5, producto.getSupermercado());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    // 2) Devolvemos el valor de 'cantidad' tras la suma
                     return rs.getInt("cantidad");
                 }
-                // No existía esa fila en 'contiene'
                 return -1;
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return -1;  // indica error de SQL
+            return -1;
         }
     }
 
@@ -1049,21 +1071,24 @@ public class Model {
      * @return
      */
     public static Lista_UnidadFamiliar obtenerListaDeProductosConStock(Lista_UnidadFamiliar lista) {
+        // Corrección: Usar nombre, marca y supermercado en el JOIN
         final String SQL = """
-        SELECT p.codigo_barras,
-               p.nombre,
-               p.marca,
-               p.precio,
-               p.categoria,
-               p.supermercado,
-               p.descripcion,
-               c.cantidad
-        FROM producto p
-        JOIN contiene c
-          ON c.codigo_barras = p.codigo_barras
-        WHERE c.id_lista = ?
-          AND c.cantidad > 0
-        """;
+    SELECT p.codigo_barras,
+           p.nombre,
+           p.marca,
+           p.precio,
+           p.categoria,
+           p.supermercado,
+           p.descripcion,
+           c.cantidad
+    FROM producto p
+    JOIN contiene c
+      ON c.nombre = p.nombre
+     AND c.marca = p.marca
+     AND c.supermercado = p.supermercado
+    WHERE c.id_lista = ?
+      AND c.cantidad > 0
+    """;
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
@@ -1071,45 +1096,26 @@ public class Model {
             stmt.setString(1, lista.getCodigo());
             ResultSet rs = stmt.executeQuery();
 
-            // Creamos un HashMap para rellenar el campo 'productos' de la unidad familiar
             Map<Integer, Producto> productoMap = new HashMap<>();
-
             while (rs.next()) {
-                long codigoBarras = rs.getLong("codigo_barras");
-                String nombre    = rs.getString("nombre");
-                String marca     = rs.getString("marca");
-                double precio    = rs.getDouble("precio");
-                String categoria = rs.getString("categoria");
-                String supermercado = rs.getString("supermercado");
-                String descripcion  = rs.getString("descripcion");
-                int cantidad        = rs.getInt("cantidad");   // si en el futuro quieres usarla
-
-                // Construimos el objeto Producto (tu constructor no incluye 'cantidad',
-                // pero lo podrías añadir si quisieras almacenarlo dentro de Producto)
                 Producto prod = new Producto(
-                        codigoBarras,
-                        nombre,
-                        marca,
-                        precio,
-                        categoria,
-                        supermercado,
-                        descripcion
+                        rs.getLong("codigo_barras"),
+                        rs.getString("nombre"),
+                        rs.getString("marca"),
+                        rs.getDouble("precio"),
+                        rs.getString("categoria"),
+                        rs.getString("supermercado"),
+                        rs.getString("descripcion")
                 );
-
-                // Llenamos el mapa: clave = (int)codigoBarras, valor = el propio Producto
-                productoMap.put((int) codigoBarras, prod);
-                // Si más adelante quisieras almacenar la cantidad real, podrías hacer:
-                // Map<Producto,Integer> productoMapConCantidad = new HashMap<>();
-                // productoMapConCantidad.put(prod, cantidad);
+                productoMap.put((int) rs.getLong("codigo_barras"), prod);
             }
 
-            // Asignamos el mapa construido a la lista familiar
             lista.setProductos(productoMap);
             return lista;
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return null; // Error en la conexión o consulta
+            return null;
         }
     }
     /**
@@ -1126,28 +1132,29 @@ public class Model {
                                            int cantidad) {
 
         final String SQL = """
-            INSERT INTO contiene (
-                id_lista,
-                nombre,
-                marca,
-                supermercado,
-                cantidad
-            ) VALUES (?, ?, ?, ?, ?)
-            ON CONFLICT (id_lista, nombre, marca, supermercado)
-            DO UPDATE
-              SET cantidad = contiene.cantidad + EXCLUDED.cantidad;
-            """;
+        INSERT INTO contiene (
+            id_lista,
+            nombre,
+            marca,
+            supermercado,
+            cantidad
+        ) VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT (id_lista, nombre, marca, supermercado)
+        DO UPDATE
+          SET cantidad = contiene.cantidad + EXCLUDED.cantidad;
+        """;
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
-            stmt.setString(1, unidad.getCodigo());                     // id_lista
-            stmt.setString(2, producto.getNombre());            // nombre
-            stmt.setString(3, producto.getMarca());             // marca
-            stmt.setString(4, producto.getSupermercado());      // supermercado
-            stmt.setInt(5, cantidad);                           // cantidad a añadir
+            // 1) id_lista debe existir en 'listas'
+            stmt.setString(1, unidad.getCodigo());           // id_lista (TEXT)
+            stmt.setString(2, producto.getNombre());         // nombre (TEXT)
+            stmt.setString(3, producto.getMarca());          // marca (TEXT)
+            stmt.setString(4, producto.getSupermercado());   // supermercado (TEXT)
+            stmt.setInt(   5, cantidad);                     // cantidad (INT)
 
-            stmt.executeUpdate();
+            stmt.executeUpdate();   // Si falla, verás la excepción de FK o de columnas inexistentes
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1276,12 +1283,15 @@ public class Model {
      * @return
      * @author Daniel Figueroa
      */
-    public static double obtenerPuntuacionMediaProducto(String nombreProducto, String marcaProducto) {
+    public static double obtenerPuntuacionMediaProducto(String nombreProducto,
+                                                        String marcaProducto) {
+        // Observa que NO hay ';' al final de la línea WHERE
         final String SQL = """
-            SELECT AVG(puntuacion) AS puntuacion_media
-            FROM puntua
-            WHERE nombre_producto = ? AND marca_producto = ?;
-            """;
+        SELECT AVG(puntuacion) AS puntuacion_media
+        FROM puntua
+        WHERE nombre = ?
+          AND marca  = ?
+        """;
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
@@ -1292,14 +1302,16 @@ public class Model {
 
             if (rs.next()) {
                 return rs.getDouble("puntuacion_media");
+            } else {
+                return 0.0;   // Si no hay filas (sin puntuaciones)
             }
-            return 0.0; // Si no hay puntuaciones, retornamos 0.0
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return 0.0; // Error en la conexión o consulta
+            return 0.0;       // En caso de error, devolvemos 0.0
         }
     }
+
 
     /**
      * Obtiene los supermercados donde se vende un producto específico.
@@ -1368,10 +1380,10 @@ public class Model {
     }
     public static List<Double> getHistorialPrecios(String nombre, String marca) {
         final String SQL = """
-            SELECT precio
-            FROM producto
-            WHERE nombre = ? AND marca = ?
-            ORDER BY fecha_modificacion DESC;  -- Asumiendo que hay una columna fecha_modificacion
+        SELECT precio
+        FROM historial_precios
+        WHERE nombre = ? AND marca = ?
+        ORDER BY fecha DESC;
         """;
 
         try (Connection conn = Conexion.abrir();
@@ -1392,30 +1404,37 @@ public class Model {
             return null; // Error en la conexión o consulta
         }
     }
+
     public static int obtenerCantidadStock(Lista_UnidadFamiliar unidad, Producto producto) {
         final String SQL = """
         SELECT cantidad
         FROM contiene
-        WHERE id_lista = ? AND codigo_barras = ?;
+        WHERE id_lista     = ?
+          AND nombre       = ?
+          AND marca        = ?
+          AND supermercado = ?
         """;
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
-            stmt.setString(1, unidad.getCodigo());
-            stmt.setLong(2, producto.getCodigoBarras());
-            ResultSet rs = stmt.executeQuery();
+            stmt.setString(1, unidad.getCodigo());            // id_lista
+            stmt.setString(2, producto.getNombre());          // nombre
+            stmt.setString(3, producto.getMarca());           // marca
+            stmt.setString(4, producto.getSupermercado());    // supermercado
 
+            ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return rs.getInt("cantidad");
             }
-            return 0; // Si no hay stock, devolvemos 0
+            return 0;   // Si no hay fila, devolvemos stock = 0
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return -1; // Error en la conexión o consulta
+            return -1;  // Error de conexión o SQL
         }
     }
+
 
 
 
