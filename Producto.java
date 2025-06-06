@@ -48,7 +48,13 @@ public class Producto {
                 ", descripcion='" + descripcion + '\'' +
                 '}';
     }
-
+    public String getSubcategoria() {
+        //la categoria tiene el formato categoria.subcategoria, solo devolver lo que hay después del punto
+        if (categoria != null && categoria.contains(".")) {
+            return categoria.substring(categoria.indexOf('.') + 1);
+        }
+        return null; // o lanzar una excepción si no se encuentra la subcategoría
+    }
     public String getDescripcion() {
         return descripcion;
     }
