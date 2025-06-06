@@ -31,10 +31,16 @@ public class VistaConsola {
 
             // Switch para manejar las diferentes opciones
             switch (opcion) {
-                case 1 : iniciarSesion(); // Llama al metodo de inicio de sesión
-                case 2 : registrarUsuario(); // Llama al metodo de registro
-                case 3 : { System.out.println("Saliendo..."); return; } // Sale del programa
-                default : System.out.println("Opción inválida."); // Opción no válida
+                case 1:
+                    iniciarSesion(); // Llama al metodo de inicio de sesión
+                case 2:
+                    registrarUsuario(); // Llama al metodo de registro
+                case 3: {
+                    System.out.println("Saliendo...");
+                    return;
+                } // Sale del programa
+                default:
+                    System.out.println("Opción inválida."); // Opción no válida
             }
         }
     }
@@ -216,16 +222,21 @@ public class VistaConsola {
             opcion = Integer.parseInt(scanner.nextLine());
 
             switch (opcion) {
-                case 1 : verLista(); // Muestra la lista de productos
-                case 2 : menuProductos(); // Muestra el menú de productos
-                case 3 : menuStock(); // Muestra el menú de gestión de stock
-                case 4 : menuConfiguracion(); // Muestra el menú de configuración
-                case 0 : {
+                case 1:
+                    verLista(); // Muestra la lista de productos
+                case 2:
+                    menuProductos(); // Muestra el menú de productos
+                case 3:
+                    menuStock(); // Muestra el menú de gestión de stock
+                case 4:
+                    menuConfiguracion(); // Muestra el menú de configuración
+                case 0: {
                     usuarioActual = null; // Cierra sesión
                     unidadActual = null;
                     System.out.println("Sesión cerrada.");
                 }
-                default : System.out.println("Opción inválida.");
+                default:
+                    System.out.println("Opción inválida.");
             }
         } while (opcion != 0); // Repite hasta que elija salir
     }
@@ -243,15 +254,19 @@ public class VistaConsola {
             opcion = Integer.parseInt(scanner.nextLine());
 
             switch (opcion) {
-                case 1 : verTodosProductos(); // Muestra todos los productos
-                case 2 : anadirProducto(); // Permite añadir un producto
-                case 0 : System.out.println("Volviendo..."); // Vuelve al menú anterior
-                default : System.out.println("Opción inválida.");
+                case 1:
+                    verTodosProductos(); // Muestra todos los productos
+                case 2:
+                    anadirProducto(); // Permite añadir un producto
+                case 0:
+                    System.out.println("Volviendo..."); // Vuelve al menú anterior
+                default:
+                    System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
     }
 
-    private void menuStock(){
+    private void menuStock() {
         int opcion;
         do {
             System.out.println("\n=== GESTIÓN DE STOCK ===");
@@ -265,12 +280,18 @@ public class VistaConsola {
             opcion = Integer.parseInt(scanner.nextLine());
 
             switch (opcion) {
-                case 1 : verStockActual();
-                case 2 : añadirProductoStock();
-                case 3 : actualizarCantidadStock();
-                case 4 : eliminarProductoStock();
-                case 0 : System.out.println("Volviendo...");
-                default : System.out.println("Opción inválida.");
+                case 1:
+                    verStockActual();
+                case 2:
+                    añadirProductoStock();
+                case 3:
+                    actualizarCantidadStock();
+                case 4:
+                    eliminarProductoStock();
+                case 0:
+                    System.out.println("Volviendo...");
+                default:
+                    System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
     }
@@ -293,10 +314,14 @@ public class VistaConsola {
             opcion = Integer.parseInt(scanner.nextLine());
 
             switch (opcion) {
-                case 1 : menuFiltros(); // Muestra menú de filtros
-                case 2 : seleccionarProducto(); // Permite seleccionar un producto
-                case 0 : System.out.println("Volviendo...");
-                default : System.out.println("Opción inválida.");
+                case 1:
+                    menuFiltros(); // Muestra menú de filtros
+                case 2:
+                    seleccionarProducto(); // Permite seleccionar un producto
+                case 0:
+                    System.out.println("Volviendo...");
+                default:
+                    System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
     }
@@ -346,7 +371,7 @@ public class VistaConsola {
              * Compara por ID para asegurar que es el mismo producto
              */
             for (Producto productoLista : productosListaCompra) {
-                if (productoLista.getCodigoBarras()==(p.getCodigoBarras())) {
+                if (productoLista.getCodigoBarras() == (p.getCodigoBarras())) {
                     enLista = "Sí";  // Marca como presente en lista
                     cantidadLista = productoLista.getCantidad();  // Captura la cantidad deseada
                     break;  // Termina el bucle al encontrar coincidencia
@@ -368,14 +393,14 @@ public class VistaConsola {
                             p.getMarca() + "\t| " +   // Columna 2: Marca
                             cantidadStock + "\t| " +  // Columna 3: Stock actual
                             enLista + (enLista.equals("Sí") ? " (" + cantidadLista + ")" : "") + "\t| " +  // Columna 4: En lista con cantidad
-                            String.format("%.1f", Controlador.getPuntuacionMedia(p.getNombre(),p.getMarca())) + "\t| " +  // Columna 5: Puntuación
+                            String.format("%.1f", Controlador.getPuntuacionMedia(p.getNombre(), p.getMarca())) + "\t| " +  // Columna 5: Puntuación
                             String.format("%.2f€", p.getPrecio()) + "\t| " +  // Columna 6: Precio
                             String.join(", ", Controlador.getSupermercados(p))  // Columna 7: Supermercados
             );
         }
     }
 
-    private void añadirProductoStock(){
+    private void añadirProductoStock() {
         System.out.print("\nNombre del producto: ");
         String nombre = scanner.nextLine();
         Producto producto = buscarProductoConSugerencias();
@@ -389,7 +414,7 @@ public class VistaConsola {
         System.out.println("Actaulmente el stock total es de : " + controlador.obtenerCantidadStock(unidadActual, producto) + " unidades.");
     }
 
-    private void actualizarCantidadStock(){
+    private void actualizarCantidadStock() {
         System.out.print("\nNombre del producto: ");
         String nombre = scanner.nextLine();
         Producto producto = buscarProductoConSugerencias();
@@ -403,7 +428,7 @@ public class VistaConsola {
         System.out.println("Cantidad actualizada.");
     }
 
-    private void eliminarProductoStock(){
+    private void eliminarProductoStock() {
         System.out.print("\nNombre del producto: ");
         String nombre = scanner.nextLine();
         Producto producto = buscarProductoConSugerencias();
@@ -411,7 +436,7 @@ public class VistaConsola {
             System.out.println("Producto no encontrado.");
             return;
         }
-        System.out.print("¿Está seguro de eliminar "+producto.getNombre()+"? (S/N): ");
+        System.out.print("¿Está seguro de eliminar " + producto.getNombre() + "? (S/N): ");
         if (!scanner.nextLine().equalsIgnoreCase("S")) {
             System.out.println("Operación cancelada");
             return;
@@ -433,10 +458,14 @@ public class VistaConsola {
             opcion = Integer.parseInt(scanner.nextLine());
 
             switch (opcion) {
-                case 1 : filtrado(); // Filtra por categoría/marca
-                case 2 : ordenar(); // Ordena los productos
-                case 0 : System.out.println("Volviendo...");
-                default : System.out.println("Opción inválida.");
+                case 1:
+                    filtrado(); // Filtra por categoría/marca
+                case 2:
+                    ordenar(); // Ordena los productos
+                case 0:
+                    System.out.println("Volviendo...");
+                default:
+                    System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
     }
@@ -455,11 +484,16 @@ public class VistaConsola {
             opcion = Integer.parseInt(scanner.nextLine());
 
             switch (opcion) {
-                case 1 : verCategorias(); // Muestra categorías
-                case 2 : verMarcas(); // Muestra marcas
-                case 3 : filtrarPorSupermercado(); // Muestra supermercados
-                case 0 : System.out.println("Volviendo...");
-                default : System.out.println("Opción inválida.");
+                case 1:
+                    verCategorias(); // Muestra categorías
+                case 2:
+                    verMarcas(); // Muestra marcas
+                case 3:
+                    filtrarPorSupermercado(); // Muestra supermercados
+                case 0:
+                    System.out.println("Volviendo...");
+                default:
+                    System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
     }
@@ -481,7 +515,7 @@ public class VistaConsola {
 
         // Si seleccionó una categoría válida, muestra sus subcategorías
         if (opcion > 0 && opcion <= categorias.size()) {
-            String categoriaSeleccionada = (String) categorias.keySet().toArray()[opcion-1];
+            String categoriaSeleccionada = (String) categorias.keySet().toArray()[opcion - 1];
             verSubcategorias(categoriaSeleccionada, categorias.get(categoriaSeleccionada));
         }
     }
@@ -491,7 +525,7 @@ public class VistaConsola {
         System.out.println("\n=== SUBCATEGORÍAS DE " + categoria.toUpperCase() + " ===");
         // Muestra todas las subcategorías numeradas
         for (int i = 0; i < subcategorias.size(); i++) {
-            System.out.println((i+1) + ". " + subcategorias.get(i));
+            System.out.println((i + 1) + ". " + subcategorias.get(i));
         }
 
         System.out.print("\nSeleccione una subcategoría (0 para volver): ");
@@ -499,7 +533,7 @@ public class VistaConsola {
 
         // Si seleccionó una subcategoría válida, muestra sus productos
         if (opcion > 0 && opcion <= subcategorias.size()) {
-            String subcategoria = subcategorias.get(opcion-1);
+            String subcategoria = subcategorias.get(opcion - 1);
             List<Producto> productos = controlador.obtenerProductosPorSubcategoria(subcategoria);
             mostrarProductosTabla(productos); // Muestra en formato de tabla
         }
@@ -513,7 +547,7 @@ public class VistaConsola {
         System.out.println("\n=== MARCAS ===");
         // Muestra todas las marcas numeradas
         for (int i = 0; i < marcas.size(); i++) {
-            System.out.println((i+1) + ". " + marcas.get(i));
+            System.out.println((i + 1) + ". " + marcas.get(i));
         }
 
         System.out.print("\nSeleccione una marca (0 para volver): ");
@@ -521,21 +555,22 @@ public class VistaConsola {
 
         // Si seleccionó una marca válida, muestra sus productos
         if (opcion > 0 && opcion <= marcas.size()) {
-            String marca = marcas.get(opcion-1);
+            String marca = marcas.get(opcion - 1);
             List<Producto> productos = controlador.obtenerProductosPorMarca(marca);
             mostrarProductosTabla(productos); // Muestra en formato de tabla
         }
     }
+
     private void filtrarPorSupermercado() {
         List<String> supermercados = controlador.obtenerTodosSupermercados();
         System.out.println("\nSupermercados disponibles:");
         for (int i = 0; i < supermercados.size(); i++) {
-            System.out.println((i+1) + ". " + supermercados.get(i));
+            System.out.println((i + 1) + ". " + supermercados.get(i));
         }
         System.out.print("Seleccione supermercado (0 para cancelar): ");
         int opcion = Integer.parseInt(scanner.nextLine());
         if (opcion > 0 && opcion <= supermercados.size()) {
-            List<Producto> productos = controlador.filtrarPorSupermercado(supermercados.get(opcion-1));
+            List<Producto> productos = controlador.filtrarPorSupermercado(supermercados.get(opcion - 1));
             mostrarProductosTabla(productos);
         }
     }
@@ -574,7 +609,7 @@ public class VistaConsola {
         String nombre = scanner.nextLine();
 
         // Obtiene el producto por nombre
-        Producto producto =  buscarProductoConSugerencias();
+        Producto producto = buscarProductoConSugerencias();
         if (producto == null) {
             System.out.println("Producto no encontrado.");
             return;
@@ -596,7 +631,7 @@ public class VistaConsola {
             System.out.println("ID/Código de barras: " + producto.getCodigoBarras());
             System.out.println("Categoría: " + producto.getCategoria());
             System.out.println("Subcategoría: " + producto.getSubcategoria());
-            System.out.println("Supermercados: " + Controlador.getSupermercados(producto);
+            System.out.println("Supermercados: " + Controlador.getSupermercados(producto));
 
             System.out.println("\n1. Ver/modificar historial de precios");
             System.out.println("2. Ver/modificar puntuaciones");
@@ -607,11 +642,16 @@ public class VistaConsola {
             opcion = Integer.parseInt(scanner.nextLine());
 
             switch (opcion) {
-                case 1 : gestionarHistorialPrecios(producto); // Gestiona precios
-                case 2 : gestionarPuntuaciones(producto); // Gestiona puntuaciones
-                case 3 : modificarSupermercados(producto); // Modifica supermercados
-                case 0 : System.out.println("Volviendo...");
-                default : System.out.println("Opción inválida.");
+                case 1:
+                    gestionarHistorialPrecios(producto); // Gestiona precios
+                case 2:
+                    gestionarPuntuaciones(producto); // Gestiona puntuaciones
+                case 3:
+                    modificarSupermercados(producto); // Modifica supermercados
+                case 0:
+                    System.out.println("Volviendo...");
+                default:
+                    System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
     }
@@ -628,7 +668,7 @@ public class VistaConsola {
             System.out.println("Historial de precios:");
             // Muestra todos los precios numerados
             for (int i = 0; i < historial.size(); i++) {
-                System.out.println((i+1) + ". " + historial.get(i) + "€");
+                System.out.println((i + 1) + ". " + historial.get(i) + "€");
             }
         }
 
@@ -683,7 +723,7 @@ public class VistaConsola {
         System.out.println("Supermercados actuales:");
         // Muestra los supermercados numerados
         for (int i = 0; i < supermercados.size(); i++) {
-            System.out.println((i+1) + ". " + supermercados.get(i));
+            System.out.println((i + 1) + ". " + supermercados.get(i));
         }
 
         System.out.println("\n1. Añadir supermercado");
@@ -694,26 +734,28 @@ public class VistaConsola {
         int opcion = Integer.parseInt(scanner.nextLine());
 
         switch (opcion) {
-            case 1 : {
+            case 1: {
                 // Añade un nuevo supermercado
                 System.out.print("Introduce el nombre del nuevo supermercado: ");
                 String nuevoSuper = scanner.nextLine();
                 controlador.anadirSupermercadoProducto(producto, nuevoSuper);
                 System.out.println("Supermercado añadido correctamente.");
             }
-            case 2 : {
+            case 2: {
                 // Elimina un supermercado existente
                 System.out.print("Introduce el número del supermercado a eliminar: ");
                 int numEliminar = Integer.parseInt(scanner.nextLine());
                 if (numEliminar > 0 && numEliminar <= supermercados.size()) {
-                    controlador.eliminarSupermercadoProducto(producto, supermercados.get(numEliminar-1));
+                    controlador.eliminarSupermercadoProducto(producto, supermercados.get(numEliminar - 1));
                     System.out.println("Supermercado eliminado correctamente.");
                 } else {
                     System.out.println("Número inválido.");
                 }
             }
-            case 0 : System.out.println("Volviendo...");
-            default : System.out.println("Opción inválida.");
+            case 0:
+                System.out.println("Volviendo...");
+            default:
+                System.out.println("Opción inválida.");
         }
     }
 
@@ -741,19 +783,19 @@ public class VistaConsola {
 
         System.out.print("Seleccione una categoría: ");
         int opcionCategoria = Integer.parseInt(scanner.nextLine());
-        String categoriaSeleccionada = (String) categorias.keySet().toArray()[opcionCategoria-1];
+        String categoriaSeleccionada = (String) categorias.keySet().toArray()[opcionCategoria - 1];
 
         // Obtiene las subcategorías de la categoría seleccionada
         List<String> subcategorias = categorias.get(categoriaSeleccionada);
         System.out.println("\nSubcategorías disponibles:");
         // Muestra las subcategorías numeradas
         for (i = 0; i < subcategorias.size(); i++) {
-            System.out.println((i+1) + ". " + subcategorias.get(i));
+            System.out.println((i + 1) + ". " + subcategorias.get(i));
         }
 
         System.out.print("Seleccione una subcategoría: ");
         int opcionSubcategoria = Integer.parseInt(scanner.nextLine());
-        String subcategoriaSeleccionada = subcategorias.get(opcionSubcategoria-1);
+        String subcategoriaSeleccionada = subcategorias.get(opcionSubcategoria - 1);
 
         long id = Long.parseLong(scanner.nextLine());
 
@@ -801,7 +843,7 @@ public class VistaConsola {
                     p.getNombre(),
                     p.getMarca(),
                     p.getSubcategoria(),
-                    Controlador.getPuntuacionMedia(p.getNombre(),p.getMarca()),
+                    Controlador.getPuntuacionMedia(p.getNombre(), p.getMarca()),
                     p.getPrecio(),
                     String.join(", ", Controlador.getSupermercados(p)));
         }
@@ -822,11 +864,16 @@ public class VistaConsola {
             opcion = Integer.parseInt(scanner.nextLine());
 
             switch (opcion) {
-                case 1 : cambiarNombreUsuario(); // Cambia nombre de usuario
-                case 2 : cambiarContrasena(); // Cambia contraseña
-                case 3 : gestionarUnidadFamiliarConfig(); // Gestiona unidad familiar
-                case 0 : System.out.println("Volviendo...");
-                default : System.out.println("Opción inválida.");
+                case 1:
+                    cambiarNombreUsuario(); // Cambia nombre de usuario
+                case 2:
+                    cambiarContrasena(); // Cambia contraseña
+                case 3:
+                    gestionarUnidadFamiliarConfig(); // Gestiona unidad familiar
+                case 0:
+                    System.out.println("Volviendo...");
+                default:
+                    System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
     }
@@ -843,7 +890,6 @@ public class VistaConsola {
             System.out.println("El nombre de usuario ya existe. Elija otro.");
         }
     }
-
 
 
     // Metodo para cambiar la contraseña
@@ -884,14 +930,14 @@ public class VistaConsola {
             opcion = Integer.parseInt(scanner.nextLine());
 
             switch (opcion) {
-                case 1 : {
+                case 1: {
                     // Cambia el nombre de la unidad familiar
                     System.out.print("Nuevo nombre para la unidad familiar: ");
                     String nuevoNombre = scanner.nextLine();
                     controlador.cambiarNombreUnidadFamiliar(unidadActual, nuevoNombre);
                     System.out.println("Nombre cambiado correctamente.");
                 }
-                case 2 : {
+                case 2: {
                     // Abandona la unidad familiar
                     System.out.print("¿Estás seguro de que deseas abandonar esta unidad familiar? (S/N): ");
                     String respuesta = scanner.nextLine().toUpperCase();
@@ -902,8 +948,10 @@ public class VistaConsola {
                         opcion = 0; // Para salir del menú
                     }
                 }
-                case 0 : System.out.println("Volviendo...");
-                default : System.out.println("Opción inválida.");
+                case 0:
+                    System.out.println("Volviendo...");
+                default:
+                    System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
     }
@@ -911,81 +959,82 @@ public class VistaConsola {
     // METODO AUXILIAR PARA BÚSQUEDA CON SUGERENCIAS
     // =================================================================
 
-        /**
-         * Muestra sugerencias de productos basadas en un fragmento de nombre
-         * y permite al usuario seleccionar uno.
-         *
-         * @return Producto seleccionado o null si se cancela
-         */
-        private Producto buscarProductoConSugerencias() {
-            // Solicita al usuario parte del nombre del producto
-            System.out.print("\nIntroduce parte del nombre del producto: ");
-            String fragmento = scanner.nextLine().toLowerCase();  // Normaliza a minúsculas
+    /**
+     * Muestra sugerencias de productos basadas en un fragmento de nombre
+     * y permite al usuario seleccionar uno.
+     *
+     * @return Producto seleccionado o null si se cancela
+     */
+    private Producto buscarProductoConSugerencias() {
+        // Solicita al usuario parte del nombre del producto
+        System.out.print("\nIntroduce parte del nombre del producto: ");
+        String fragmento = scanner.nextLine().toLowerCase();  // Normaliza a minúsculas
 
-            // Obtiene productos que coinciden con el fragmento usando el controlador
-            List<Producto> sugerencias = controlador.buscarProductosPorFragmento(fragmento);
+        // Obtiene productos que coinciden con el fragmento usando el controlador
+        List<Producto> sugerencias = controlador.buscarProductosPorFragmento(fragmento);
 
-            // Maneja caso donde no hay coincidencias
-            if (sugerencias.isEmpty()) {
-                System.out.println("No se encontraron productos coincidentes.");
-                return null;  // Retorna nulo para indicar fallo en búsqueda
-            }
-
-            // Agrupa productos por nombre y marcas usando LinkedHashMap para mantener orden
-            Map<String, List<String>> productosPorNombre = new LinkedverHashMap<>();
-            for (Producto p : sugerencias) {
-                // Agrega la marca al listado correspondiente al nombre del producto
-                productosPorNombre
-                        .computeIfAbsent(p.getNombre(), k -> new ArrayList<>())
-                        .add(p.getMarca());
-            }
-
-            // Muestra lista de nombres únicos numerados
-            System.out.println("\nProductos encontrados:");
-            int index = 1;
-            String[] nombres = new String[productosPorNombre.size()];  // Almacena nombres para acceso rápido
-            for (String nombre : productosPorNombre.keySet()) {
-                System.out.println(index + ". " + nombre);  // Muestra nombre con índice
-                nombres[index-1] = nombre;  // Guarda nombre en array
-                index++;
-            }
-
-            // Permite al usuario seleccionar un nombre de producto
-            System.out.print("\nSelecciona un producto (0 para cancelar): ");
-            int opcionNombre = Integer.parseInt(scanner.nextLine());
-
-            // Valida selección del usuario
-            if (opcionNombre < 1 || opcionNombre > nombres.length) {
-                return null;  // Selección inválida = cancelar
-            }
-
-            // Obtiene nombre seleccionado y sus marcas asociadas
-            String nombreSeleccionado = nombres[opcionNombre-1];
-            List<String> marcas = productosPorNombre.get(nombreSeleccionado);
-
-            // Atajo para productos con única marca
-            if (marcas.size() == 1) {
-                // Retorna directamente el producto sin pedir selección de marca
-                return controlador.obtenerProductoPorNombreYMarca(nombreSeleccionado, marcas.get(0));
-            }
-
-            // Muestra marcas disponibles para el producto seleccionado
-            System.out.println("\nMarcas disponibles para " + nombreSeleccionado + ":");
-            for (int i = 0; i < marcas.size(); i++) {
-                System.out.println((i+1) + ". " + marcas.get(i));  // Enumera marcas
-            }
-
-            // Permite al usuario seleccionar una marca específica
-            System.out.print("\nSelecciona una marca (0 para cancelar): ");
-            int opcionMarca = Integer.parseInt(scanner.nextLine());
-
-            // Valida selección de marca
-            if (opcionMarca < 1 || opcionMarca > marcas.size()) {
-                return null;  // Selección inválida = cancelar
-            }
-
-            // Retorna el producto específico seleccionado
-            return controlador.obtenerProductoPorNombreYMarca(nombreSeleccionado, marcas.get(opcionMarca-1));
+        // Maneja caso donde no hay coincidencias
+        if (sugerencias.isEmpty()) {
+            System.out.println("No se encontraron productos coincidentes.");
+            return null;  // Retorna nulo para indicar fallo en búsqueda
         }
+
+        // Agrupa productos por nombre y marcas usando LinkedHashMap para mantener orden
+        Map<String, List<String>> productosPorNombre = new LinkedverHashMap<>();
+        for (Producto p : sugerencias) {
+            // Agrega la marca al listado correspondiente al nombre del producto
+            productosPorNombre
+                    .computeIfAbsent(p.getNombre(), k -> new ArrayList<>())
+                    .add(p.getMarca());
+        }
+
+        // Muestra lista de nombres únicos numerados
+        System.out.println("\nProductos encontrados:");
+        int index = 1;
+        String[] nombres = new String[productosPorNombre.size()];  // Almacena nombres para acceso rápido
+        for (String nombre : productosPorNombre.keySet()) {
+            System.out.println(index + ". " + nombre);  // Muestra nombre con índice
+            nombres[index - 1] = nombre;  // Guarda nombre en array
+            index++;
+        }
+
+        // Permite al usuario seleccionar un nombre de producto
+        System.out.print("\nSelecciona un producto (0 para cancelar): ");
+        int opcionNombre = Integer.parseInt(scanner.nextLine());
+
+        // Valida selección del usuario
+        if (opcionNombre < 1 || opcionNombre > nombres.length) {
+            return null;  // Selección inválida = cancelar
+        }
+
+        // Obtiene nombre seleccionado y sus marcas asociadas
+        String nombreSeleccionado = nombres[opcionNombre - 1];
+        List<String> marcas = productosPorNombre.get(nombreSeleccionado);
+
+        // Atajo para productos con única marca
+        if (marcas.size() == 1) {
+            // Retorna directamente el producto sin pedir selección de marca
+            return controlador.obtenerProductoPorNombreYMarca(nombreSeleccionado, marcas.get(0));
+        }
+
+        // Muestra marcas disponibles para el producto seleccionado
+        System.out.println("\nMarcas disponibles para " + nombreSeleccionado + ":");
+        for (int i = 0; i < marcas.size(); i++) {
+            System.out.println((i + 1) + ". " + marcas.get(i));  // Enumera marcas
+        }
+
+        // Permite al usuario seleccionar una marca específica
+        System.out.print("\nSelecciona una marca (0 para cancelar): ");
+        int opcionMarca = Integer.parseInt(scanner.nextLine());
+
+        // Valida selección de marca
+        if (opcionMarca < 1 || opcionMarca > marcas.size()) {
+            return null;  // Selección inválida = cancelar
+        }
+
+        // Retorna el producto específico seleccionado
+        return controlador.obtenerProductoPorNombreYMarca(nombreSeleccionado, marcas.get(opcionMarca - 1));
     }
 }
+
+

@@ -190,7 +190,7 @@ public class Controlador {
         return Model.obtenerPuntuacionMediaProducto(nombre, marca);
     }
     public static Map<Usuario, Integer> getPuntuaciones(Producto p){
-        return Model.getPuntuaciones(Producto p);
+        return Model.getPuntuaciones(p);
     }
     public static List<Double> getHistorialPrecio(String nombre, String marca) {
         return Model.getHistorialPrecios(nombre, marca);
