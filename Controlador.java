@@ -33,14 +33,14 @@ public class Controlador {
     }
 
     // Crear unidad familiar
-    public Lista_UnidadFamiliar crearUnidadFamiliar(Usuario usuario, String nombre, long codigo) {
+    public Lista_UnidadFamiliar crearUnidadFamiliar(Usuario usuario, String nombre, String codigo) {
         return Model.crearUnidadFamiliar(usuario, nombre, codigo);
     }
 
 
     // Obtener todos los productos de la unidad familiar
-    public List<Producto> obtenerTodosProductos(Lista_UnidadFamiliar unidad) {
-        return Model.obtenerTodosProductos(unidad);
+    public List<Producto> obtenerTodosProductos() {
+        return Model.obtenerTodosProductos();
     }
 
     // Obtener productos de la unidad familiar
@@ -116,7 +116,7 @@ public class Controlador {
     }
 
     // Crear producto
-    public Producto crearProducto(String nombre, String marca, double precio, String categoria, String subcategoria, String id) {
+    public Producto crearProducto(String nombre, String marca, double precio, String categoria, String subcategoria, long id) {
         return Model.crearProducto(nombre, marca, precio, categoria, subcategoria, id);
     }
 

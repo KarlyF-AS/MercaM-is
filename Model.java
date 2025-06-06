@@ -206,8 +206,8 @@ public class Model {
      * @return Una nueva unidad familiar.
      * @author Daniel Figueroa
      */
-    public static Usuario crearUnidadFamiliar(Usuario usuario, String nombreUnidadFamiliar, int codigo) {
-        Lista_UnidadFamiliar unidadFamiliar = new Lista_UnidadFamiliar(nombreUnidadFamiliar, String.valueOf(codigo), usuario);
+    public static Lista_UnidadFamiliar crearUnidadFamiliar(Usuario usuario, String nombreUnidadFamiliar, String codigo) {
+        Lista_UnidadFamiliar unidadFamiliar = new Lista_UnidadFamiliar(nombreUnidadFamiliar, codigo, usuario);
 
         final String SQL_LISTA = "INSERT INTO lista (nombre, codigo) VALUES (?, ?) RETURNING id";
         final String SQL_CONTIENE = "INSERT INTO contiene (id_lista, email_usuario) VALUES (?, ?)";
@@ -218,7 +218,7 @@ public class Model {
 
             // Insertar en la tabla lista
             stmtLista.setString(1, unidadFamiliar.getNombre());
-            stmtLista.setInt(2, codigo);
+            stmtLista.setString(2, codigo);
             ResultSet rsLista = stmtLista.executeQuery();
 
             if (rsLista.next()) {
@@ -229,7 +229,7 @@ public class Model {
                 stmtContiene.setString(2, usuario.getEmail());
                 stmtContiene.executeUpdate();
 
-                return usuario; // Retorna el usuario que se añadió a la unidad familiar
+                return unidadFamiliar; // Retorna la unidad familiar creada
             } else {
                 return null; // Error al insertar en la tabla lista
             }
@@ -242,6 +242,7 @@ public class Model {
             return null; // Error en la conexión o consulta
         }
     }
+
     /**
      * Obtiene la unidad familiar que el usuario pertenece.
      * Si el usuario no pertenece a ninguna unidad familiar, devuelve null.
@@ -294,14 +295,14 @@ public class Model {
      * @return Una unidad familiar si el usuario se unió correctamente, null en caso contrario.
      * @author Daniel Figueroa
      */
-    public static Lista_UnidadFamiliar unirseAUnidadFamiliar(Usuario usuario, int codigoUnidadFamiliar) {
+    public static Lista_UnidadFamiliar unirseAUnidadFamiliar(Usuario usuario, String codigoUnidadFamiliar) {
         final String SQL_BUSCAR_LISTA = "SELECT id_lista FROM lista WHERE codigo = ?";
         final String SQL_INSERT_DECISION = "INSERT INTO decision (email, id_lista) VALUES (?, ?) RETURNING email;";
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmtBuscar = conn.prepareStatement(SQL_BUSCAR_LISTA)) {
 
-            stmtBuscar.setInt(1, codigoUnidadFamiliar);
+            stmtBuscar.setString(1, codigoUnidadFamiliar);
             ResultSet rsBuscar = stmtBuscar.executeQuery();
 
             if (!rsBuscar.next()) {

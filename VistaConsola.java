@@ -280,7 +280,7 @@ public class VistaConsola {
         int opcion;
         do {
             // Obtiene todos los productos de la unidad familiar
-            List<Producto> productos = controlador.obtenerTodosProductos(unidadActual);
+            List<Producto> productos = controlador.obtenerTodosProductos();
 
             System.out.println("\n=== TODOS LOS PRODUCTOS ===");
             mostrarProductosTabla(productos); // Muestra en formato de tabla
@@ -755,8 +755,7 @@ public class VistaConsola {
         int opcionSubcategoria = Integer.parseInt(scanner.nextLine());
         String subcategoriaSeleccionada = subcategorias.get(opcionSubcategoria-1);
 
-        System.out.print("ID/Código de barras: ");
-        String id = scanner.nextLine();
+        long id = Long.parseLong(scanner.nextLine());
 
         // Crea el nuevo producto a través del controlador
         Producto nuevoProducto = controlador.crearProducto(
