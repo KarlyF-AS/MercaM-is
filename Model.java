@@ -337,7 +337,7 @@ public class Model {
 
             try (PreparedStatement stmtInsert = conn.prepareStatement(SQL_INSERT_DECISION)) {
                 stmtInsert.setString(1, usuario.getEmail());
-                stmtInsert.setString(2, "idLista");
+                stmtInsert.setString(2, idLista);
                 ResultSet rsInsert = stmtInsert.executeQuery();
 
                 return rsInsert.next() ? obtenerUnidadFamiliar(usuario) : null;
@@ -1070,25 +1070,27 @@ public class Model {
      * @param lista
      * @return
      */
-    public static Lista_UnidadFamiliar obtenerListaDeProductosConStock(Lista_UnidadFamiliar lista) {
-        // Corrección: Usar nombre, marca y supermercado en el JOIN
+    public static Lista_UnidadFamiliar obtenerListaDeProductosConStock(
+            Lista_UnidadFamiliar lista) {
+
         final String SQL = """
-    SELECT p.codigo_barras,
-           p.nombre,
-           p.marca,
-           p.precio,
-           p.categoria,
-           p.supermercado,
-           p.descripcion,
-           c.cantidad
-    FROM producto p
-    JOIN contiene c
-      ON c.nombre = p.nombre
-     AND c.marca = p.marca
-     AND c.supermercado = p.supermercado
-    WHERE c.id_lista = ?
-      AND c.cantidad > 0
-    """;
+        SELECT 
+          p.codigo_barras,
+          p.nombre,
+          p.marca,
+          p.precio,
+          p.categoria,
+          p.supermercado,
+          p.descripcion,
+          c.cantidad
+        FROM producto p
+        JOIN contiene c
+          ON c.nombre       = p.nombre
+         AND c.marca        = p.marca
+         AND c.supermercado = p.supermercado
+        WHERE c.id_lista    = ?
+          AND c.cantidad   > 0
+        """;
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
@@ -1096,20 +1098,25 @@ public class Model {
             stmt.setString(1, lista.getCodigo());
             ResultSet rs = stmt.executeQuery();
 
-            Map<Integer, Producto> productoMap = new HashMap<>();
+            // Cambiamos el Map: clave = Producto, valor = cantidad
+            Map<Integer,Producto> productoMap = new HashMap<>();
+
             while (rs.next()) {
                 Producto prod = new Producto(
-                        rs.getLong("codigo_barras"),
-                        rs.getString("nombre"),
-                        rs.getString("marca"),
-                        rs.getDouble("precio"),
-                        rs.getString("categoria"),
-                        rs.getString("supermercado"),
-                        rs.getString("descripcion")
+                        rs.getLong   ("codigo_barras"),
+                        rs.getString ("nombre"),
+                        rs.getString ("marca"),
+                        rs.getDouble ("precio"),
+                        rs.getString ("categoria"),
+                        rs.getString ("supermercado"),
+                        rs.getString ("descripcion")
                 );
-                productoMap.put((int) rs.getLong("codigo_barras"), prod);
+                int cantidad = rs.getInt("cantidad");
+                productoMap.put(cantidad,prod);
             }
 
+            // Asegúrate de que tu Lista_UnidadFamiliar tenga un setter que acepte
+            // Map<Producto,Integer>, no Map<Long,Producto>
             lista.setProductos(productoMap);
             return lista;
 
@@ -1118,6 +1125,7 @@ public class Model {
             return null;
         }
     }
+
     /**
      * Añade “cantidad” al stock de un producto en la unidad familiar dada.
      * Si el producto ya estaba en la lista, incrementa la cantidad; si no,
@@ -1434,8 +1442,4 @@ public class Model {
             return -1;  // Error de conexión o SQL
         }
     }
-
-
-
-
 }
