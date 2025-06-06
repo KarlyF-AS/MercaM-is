@@ -206,42 +206,65 @@ public class Model {
      * @return Una nueva unidad familiar.
      * @author Daniel Figueroa
      */
-    public static Lista_UnidadFamiliar crearUnidadFamiliar(Usuario usuario, String nombreUnidadFamiliar, String codigo) {
-        Lista_UnidadFamiliar unidadFamiliar = new Lista_UnidadFamiliar(nombreUnidadFamiliar, codigo, usuario);
+    public static Lista_UnidadFamiliar crearUnidadFamiliar(
+            Usuario usuario,
+            String nombreUnidadFamiliar,
+            String codigo) {
 
-        final String SQL_LISTA = "INSERT INTO listas (nombre, codigo) VALUES (?, ?) RETURNING id";
-        final String SQL_CONTIENE = "INSERT INTO contiene (id_lista, email_usuario) VALUES (?, ?)";
+        // 1) Creamos el objeto en memoria.
+        Lista_UnidadFamiliar unidadFamiliar =
+                new Lista_UnidadFamiliar(nombreUnidadFamiliar, codigo, usuario);
+
+        // 2) Insertar en "listas" (id_lista = código, titulo = nombreUnidad)
+        //    RETURNING id_lista para que nos devuelva el mismo código que acabamos de insertar
+        final String SQL_LISTA =
+                "INSERT INTO listas (id_lista, titulo) " +
+                        "VALUES (?, ?) " +
+                        "RETURNING id_lista";
+
+        // 3) Insertar en "decision" (email, id_lista)
+        final String SQL_DECISION =
+                "INSERT INTO decision (email, id_lista) " +
+                        "VALUES (?, ?)";
 
         try (Connection conn = Conexion.abrir();
-             PreparedStatement stmtLista = conn.prepareStatement(SQL_LISTA);
-             PreparedStatement stmtContiene = conn.prepareStatement(SQL_CONTIENE)) {
+             PreparedStatement stmtLista    = conn.prepareStatement(SQL_LISTA);
+             PreparedStatement stmtDecision = conn.prepareStatement(SQL_DECISION)) {
 
-            // Insertar en la tabla lista
-            stmtLista.setString(1, unidadFamiliar.getNombre());
-            stmtLista.setString(2, codigo);
+            // ───── Paso 1: Insert en "listas" ─────
+            stmtLista.setString(1, unidadFamiliar.getCodigo()); // id_lista = código
+            stmtLista.setString(2, unidadFamiliar.getNombre()); // titulo  = nombreUnidadFamiliar
             ResultSet rsLista = stmtLista.executeQuery();
 
             if (rsLista.next()) {
-                unidadFamiliar.setCodigo(rsLista.getString("id")); // Cambiado a String
+                // Obtenemos el id_lista generado (será igual al "código" que pasaste)
+                String idGenerado = rsLista.getString("id_lista");
+                unidadFamiliar.setCodigo(idGenerado);
 
-                // Insertar en la tabla contiene usando el email como identificador
-                stmtContiene.setString(1, unidadFamiliar.getCodigo()); // Cambiado a String
-                stmtContiene.setString(2, usuario.getEmail());
-                stmtContiene.executeUpdate();
+                // ───── Paso 2: Insert en "decision" ─────
+                stmtDecision.setString(1, usuario.getEmail());      // email
+                stmtDecision.setString(2, unidadFamiliar.getCodigo()); // id_lista
+                stmtDecision.executeUpdate();
 
-                return unidadFamiliar; // Retorna la unidad familiar creada
+                // Devolvemos la unidad familiar con su código asignado
+                return unidadFamiliar;
             } else {
-                return null; // Error al insertar en la tabla lista
+                // No devolvió nada → falló el INSERT en "listas"
+                return null;
             }
+
         } catch (SQLException e) {
+            // Si la SQLState es 23505, significa que ya existía ese id_lista (código)
             if ("23505".equals(e.getSQLState())) {
-                System.err.println("Unidad familiar o relación duplicada.");
+                System.err.println("Ya existe una unidad familiar con ese código.");
             } else {
                 e.printStackTrace();
             }
-            return null; // Error en la conexión o consulta
+            return null;
         }
     }
+
+
 
     /**
      * Obtiene la unidad familiar que el usuario pertenece.
