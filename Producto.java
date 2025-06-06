@@ -122,4 +122,12 @@ public class Producto {
     public void setSupermercado(String supermercado) {
         this.supermercado = supermercado;
     }
+    public double getPuntuacionMedia() {
+        // Devuelve la puntuación media del producto
+        return Controlador.getPuntuacionMedia(this.nombre,this.marca);
+    }
+    public List<Double> getHistorialPrecios() {
+        // Devuelve el historial de precios del producto
+        return Controlador.getHistorialPrecio(this.nombre, this.marca);
+    }
 }

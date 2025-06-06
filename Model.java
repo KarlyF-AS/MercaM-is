@@ -1253,19 +1253,18 @@ public class Model {
      * @return
      * @author Daniel Figueroa
      */
-    public static double obtenerPuntuacionMediaProducto(Producto producto) {
+    public static double obtenerPuntuacionMediaProducto(String nombreProducto, String marcaProducto) {
         final String SQL = """
-        
-                SELECT AVG(puntuacion) AS puntuacion_media
-        FROM puntua
-        WHERE nombre_producto = ? AND marca_producto = ?;
-        """;
+            SELECT AVG(puntuacion) AS puntuacion_media
+            FROM puntua
+            WHERE nombre_producto = ? AND marca_producto = ?;
+            """;
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
-            stmt.setString(1, producto.getNombre());
-            stmt.setString(2, producto.getMarca());
+            stmt.setString(1, nombreProducto);
+            stmt.setString(2, marcaProducto);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -1311,8 +1310,65 @@ public class Model {
             return null; // Error en la conexión o consulta
         }
     }
+    public static Map<Usuario, Integer> getPuntuaciones(Producto p) {
+        final String SQL = """
+            SELECT u.email, u.nombre_usuario, u.contrasena, puntua.puntuacion
+            FROM puntua
+            JOIN usuarios u ON puntua.email_usuario = u.email
+            WHERE puntua.nombre_producto = ? AND puntua.marca_producto = ? AND puntua.supermercado_producto = ?
+        """;
 
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
+            stmt.setString(1, p.getNombre());
+            stmt.setString(2, p.getMarca());
+            stmt.setString(3, p.getSupermercado());
+
+            ResultSet rs = stmt.executeQuery();
+            Map<Usuario, Integer> puntuaciones = new HashMap<>();
+            while (rs.next()) {
+                Usuario usuario = new Usuario(
+                    rs.getString("nombre_usuario"),
+                    rs.getString("email"),
+                    rs.getString("contrasena")
+                );
+                int puntuacion = rs.getInt("puntuacion");
+                puntuaciones.put(usuario, puntuacion);
+            }
+            return puntuaciones;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null; // Error en la conexión o consulta
+        }
+    }
+    public static List<Double> getHistorialPrecios(String nombre, String marca) {
+        final String SQL = """
+            SELECT precio
+            FROM producto
+            WHERE nombre = ? AND marca = ?
+            ORDER BY fecha_modificacion DESC;  -- Asumiendo que hay una columna fecha_modificacion
+        """;
+
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+
+            stmt.setString(1, nombre);
+            stmt.setString(2, marca);
+            ResultSet rs = stmt.executeQuery();
+
+            List<Double> precios = new ArrayList<>();
+            while (rs.next()) {
+                precios.add(rs.getDouble("precio"));
+            }
+            return precios;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null; // Error en la conexión o consulta
+        }
+    }
 
 
 

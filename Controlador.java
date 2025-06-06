@@ -186,5 +186,14 @@ public class Controlador {
     public static List<String> getSupermercados(Producto producto){
         return Model.getSupermercados(producto);
     }
+    public static double getPuntuacionMedia(String nombre, String marca) {
+        return Model.obtenerPuntuacionMediaProducto(nombre, marca);
+    }
+    public static Map<Usuario, Integer> getPuntuaciones(Producto p){
+        return Model.getPuntuaciones(Producto p);
+    }
+    public static List<Double> getHistorialPrecio(String nombre, String marca) {
+        return Model.getHistorialPrecios(nombre, marca);
+    }
 
 }
