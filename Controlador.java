@@ -55,7 +55,7 @@ public class Controlador {
     }
 
     // Añadir producto al stock
-    public void añadirProductoStock(Lista_UnidadFamiliar unidad, Producto producto, int cantidad) {
+    public void anadirProductoStock(Lista_UnidadFamiliar unidad, Producto producto, int cantidad) {
         Model.añadirProductoStock(unidad, producto, cantidad);
     }
 
@@ -116,8 +116,8 @@ public class Controlador {
     }
 
     // Crear producto
-    public Producto crearProducto(String nombre, String marca, double precio, String categoria, String subcategoria, String id, Lista_UnidadFamiliar unidad) {
-        return Model.crearProducto(nombre, marca, precio, categoria, subcategoria, id, unidad);
+    public Producto crearProducto(String nombre, String marca, double precio, String categoria, String subcategoria, String id) {
+        return Model.crearProducto(nombre, marca, precio, categoria, subcategoria, id);
     }
 
     // Añadir supermercado a producto

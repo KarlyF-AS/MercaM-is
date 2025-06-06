@@ -761,7 +761,8 @@ public class VistaConsola {
         // Crea el nuevo producto a través del controlador
         Producto nuevoProducto = controlador.crearProducto(
                 nombre, marca, precio, categoriaSeleccionada,
-                subcategoriaSeleccionada, id, unidadActual );
+                subcategoriaSeleccionada, id);
+        controlador.anadirProductoStock(unidadActual, nuevoProducto, 1); // Añade al stock con cantidad 0
 
         // Pregunta si quiere añadir supermercados
         System.out.print("¿Desea añadir supermercados para este producto? (S/N): ");
