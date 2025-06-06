@@ -221,12 +221,16 @@ public class VistaConsola {
             switch (opcion) {
                 case 1:
                     verLista(); // Muestra la lista de productos
+                    continue;
                 case 2:
                     menuProductos(); // Muestra el menú de productos
+                    continue;
                 case 3:
                     menuStock(); // Muestra el menú de gestión de stock
+                    continue;
                 case 4:
                     menuConfiguracion(); // Muestra el menú de configuración
+                    continue;
                 case 0: {
                     usuarioActual = null; // Cierra sesión
                     unidadActual = null;
@@ -253,10 +257,14 @@ public class VistaConsola {
             switch (opcion) {
                 case 1:
                     verTodosProductos(); // Muestra todos los productos
+                    continue;
                 case 2:
                     anadirProducto(); // Permite añadir un producto
+                    continue;
                 case 0:
                     System.out.println("Volviendo..."); // Vuelve al menú anterior
+                    menuPrincipal();
+
                 default:
                     System.out.println("Opción inválida.");
             }
@@ -279,14 +287,19 @@ public class VistaConsola {
             switch (opcion) {
                 case 1:
                     verStockActual();
+                    continue;
                 case 2:
                     añadirProductoStock();
+                    continue;
                 case 3:
                     actualizarCantidadStock();
+                    continue;
                 case 4:
                     eliminarProductoStock();
+                    continue;
                 case 0:
                     System.out.println("Volviendo...");
+                    menuPrincipal();
                 default:
                     System.out.println("Opción inválida.");
             }
@@ -313,10 +326,13 @@ public class VistaConsola {
             switch (opcion) {
                 case 1:
                     menuFiltros(); // Muestra menú de filtros
+                    continue;
                 case 2:
                     seleccionarProducto(); // Permite seleccionar un producto
+                    continue;
                 case 0:
                     System.out.println("Volviendo...");
+                    menuPrincipal();
                 default:
                     System.out.println("Opción inválida.");
             }
@@ -458,8 +474,10 @@ public class VistaConsola {
             switch (opcion) {
                 case 1:
                     filtrado(); // Filtra por categoría/marca
+                    continue;
                 case 2:
                     ordenar(); // Ordena los productos
+                    continue;
                 case 0:
                     System.out.println("Volviendo...");
                 default:
@@ -484,12 +502,16 @@ public class VistaConsola {
             switch (opcion) {
                 case 1:
                     verCategorias(); // Muestra categorías
+                    continue;
                 case 2:
                     verMarcas(); // Muestra marcas
+                    continue;
                 case 3:
                     filtrarPorSupermercado(); // Muestra supermercados
+                    continue;
                 case 0:
                     System.out.println("Volviendo...");
+                    menuPrincipal();
                 default:
                     System.out.println("Opción inválida.");
             }
@@ -865,12 +887,18 @@ public class VistaConsola {
             switch (opcion) {
                 case 1:
                     cambiarNombreUsuario(); // Cambia nombre de usuario
+                    continue;
                 case 2:
                     cambiarContrasena(); // Cambia contraseña
+                    continue;
+
                 case 3:
                     gestionarUnidadFamiliarConfig(); // Gestiona unidad familiar
+                    continue;
+
                 case 0:
                     System.out.println("Volviendo...");
+                    menuPrincipal();
                 default:
                     System.out.println("Opción inválida.");
             }
@@ -935,6 +963,7 @@ public class VistaConsola {
                     String nuevoNombre = scanner.nextLine();
                     controlador.cambiarNombreUnidadFamiliar(unidadActual, nuevoNombre);
                     System.out.println("Nombre cambiado correctamente.");
+                    continue;
                 }
                 case 2: {
                     // Abandona la unidad familiar
