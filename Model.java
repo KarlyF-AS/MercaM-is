@@ -50,6 +50,13 @@ public class Model {
         return stmt.executeQuery();           // se devuelve como recurso autocerrable
     }
 
+    /**
+     * Valida el login de un usuario.
+     * Comprueba si el email y la contraseña coinciden con un usuario en la base de datos.
+     * @param email
+     * @param password
+     * @return Un objeto Usuario si las credenciales son correctas, null en caso contrario.
+     */
     public static Usuario validarLogin(String email, String password) {
         final String SQL = "SELECT * FROM usuarios WHERE email = ? AND contrasena = ?";
         try (Connection conn = Conexion.abrir();
@@ -71,7 +78,21 @@ public class Model {
             return null; // Error en la conexión o consulta
         }
     }
-
+    /**
+     * Crea un nuevo producto en la base de datos.
+     * El producto se crea con un nombre, marca, precio, categoría, supermercado, código de barras y descripción.
+     * Si el código de barras ya existe, se captura la excepción y se devuelve null.
+     * Si el producto ya existe en el mismo supermercado, se captura la excepción y se devuelve null.
+     *
+     * @param nombre
+     * @param marca
+     * @param precio
+     * @param categoria
+     * @param supermercado
+     * @param codigoBarras
+     * @param descripcion
+     * @return Un objeto Producto si la inserción es exitosa, null en caso contrario.
+     */
     public static Producto crearProducto(String nombre,
                                          String marca,
                                          double precio,
@@ -185,8 +206,8 @@ public class Model {
      * @return Una nueva unidad familiar.
      * @author Daniel Figueroa
      */
-    public static Usuario crearUnidadFamiliar(Usuario usuario, String nombreUnidadFamiliar, String codigo) {
-        Lista_UnidadFamiliar unidadFamiliar = new Lista_UnidadFamiliar(nombreUnidadFamiliar, codigo, usuario);
+    public static Usuario crearUnidadFamiliar(Usuario usuario, String nombreUnidadFamiliar, int codigo) {
+        Lista_UnidadFamiliar unidadFamiliar = new Lista_UnidadFamiliar(nombreUnidadFamiliar, String.valueOf(codigo), usuario);
 
         final String SQL_LISTA = "INSERT INTO lista (nombre, codigo) VALUES (?, ?) RETURNING id";
         final String SQL_CONTIENE = "INSERT INTO contiene (id_lista, email_usuario) VALUES (?, ?)";
@@ -197,14 +218,14 @@ public class Model {
 
             // Insertar en la tabla lista
             stmtLista.setString(1, unidadFamiliar.getNombre());
-            stmtLista.setString(2, unidadFamiliar.getCodigo());
+            stmtLista.setInt(2, codigo);
             ResultSet rsLista = stmtLista.executeQuery();
 
             if (rsLista.next()) {
-                unidadFamiliar.setId(rsLista.getInt("id"));
+                unidadFamiliar.setId(rsLista.getInt("id")); // Cambiado a int
 
                 // Insertar en la tabla contiene usando el email como identificador
-                stmtContiene.setInt(1, unidadFamiliar.getId());
+                stmtContiene.setInt(1, unidadFamiliar.getId()); // Cambiado a int
                 stmtContiene.setString(2, usuario.getEmail());
                 stmtContiene.executeUpdate();
 
@@ -221,7 +242,6 @@ public class Model {
             return null; // Error en la conexión o consulta
         }
     }
-
     /**
      * Obtiene la unidad familiar que el usuario pertenece.
      * Si el usuario no pertenece a ninguna unidad familiar, devuelve null.
@@ -229,7 +249,7 @@ public class Model {
      * Decision es la tabla donde se guarda la relación entre usuarios y unidades familiares(listas).
      *
      * @param usuario
-     * @return
+     * @return Una unidad familiar si el usuario pertenece a una, null en caso contrario.
      * @author Daniel Figueroa
      */
     public static Lista_UnidadFamiliar obtenerUnidadFamiliar(Usuario usuario) {
@@ -271,18 +291,17 @@ public class Model {
      *
      * @param usuario
      * @param codigoUnidadFamiliar
-     * @return
+     * @return Una unidad familiar si el usuario se unió correctamente, null en caso contrario.
      * @author Daniel Figueroa
      */
-    public static Lista_UnidadFamiliar unirseAUnidadFamiliar(Usuario usuario, String codigoUnidadFamiliar) {
-        // Primero, buscar la lista por código
+    public static Lista_UnidadFamiliar unirseAUnidadFamiliar(Usuario usuario, int codigoUnidadFamiliar) {
         final String SQL_BUSCAR_LISTA = "SELECT id_lista FROM lista WHERE codigo = ?";
         final String SQL_INSERT_DECISION = "INSERT INTO decision (email, id_lista) VALUES (?, ?) RETURNING email;";
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmtBuscar = conn.prepareStatement(SQL_BUSCAR_LISTA)) {
 
-            stmtBuscar.setString(1, codigoUnidadFamiliar);
+            stmtBuscar.setInt(1, codigoUnidadFamiliar);
             ResultSet rsBuscar = stmtBuscar.executeQuery();
 
             if (!rsBuscar.next()) {
@@ -310,7 +329,6 @@ public class Model {
      * Se busca en la tabla decision el email del usuario y se obtiene el codigo de la unidad familiar.
      * Luego se busca en la tabla producto los productos que pertenecen a esa unidad familiar.
      *
-     * @param unidadFamiliar
      * @return
      * @author Daniel Figueroa
      */
@@ -387,7 +405,7 @@ public class Model {
      * @param categoria
      * @return
      */
-    public static List<Producto> obtenerProductosPorCategoria(String categoria) {
+    public static List<Producto> obtenerProductosPorCategoria(String categoria) { // PENDIENTE
         final String SQL = "SELECT * FROM producto WHERE categoria = ?";
 
         try (Connection conn = Conexion.abrir();
@@ -424,7 +442,7 @@ public class Model {
      * @return
      * @author Daniel Figueroa
      */
-    public static List<Producto> obtenerProductosPorSubcategoria(String subcategoria) {
+    public static List<Producto> obtenerProductosPorSubcategoria(String subcategoria) { // subcategoria es el formato "Categoria.Subcategoria" PENDIENTE
         final String SQL = "SELECT * FROM producto WHERE categoria LIKE ?";
 
         try (Connection conn = Conexion.abrir();
@@ -548,13 +566,15 @@ public class Model {
      * @author Daniel Figueroa
      */
     public static void actualizarPrecioProducto(Producto producto, double nuevoPrecio) {
-        final String SQL = "UPDATE producto SET precio = ? WHERE codigo_barras = ?";
+        final String SQL = "UPDATE producto SET precio = ? WHERE nombre = ? AND marca = ? AND supermercado = ?";
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
             stmt.setDouble(1, nuevoPrecio);
-            stmt.setLong(2, producto.getCodigoBarras());
+            stmt.setString(2, producto.getNombre());
+            stmt.setString(3, producto.getMarca());
+            stmt.setString(4, producto.getSupermercado());
             stmt.executeUpdate();
 
         } catch (SQLException e) {
