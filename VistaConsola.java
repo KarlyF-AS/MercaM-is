@@ -822,8 +822,9 @@ public class VistaConsola {
 
     // Metodo para mostrar la lista de productos de la unidad familiar
     private void verLista() {
-        // Obtiene los productos de la unidad familiar
-        List<Producto> productos = controlador.obtenerProductosUnidadFamiliar(unidadActual);
+        // Obtiene los productos de la unidad familiar como un Map
+        Map<Producto, Integer> productosMap = controlador.obtenerProductosUnidadFamiliar(unidadActual);
+        List<Producto> productos = new ArrayList<>(productosMap.keySet());
 
         System.out.println("\n=== LISTA DE PRODUCTOS ===");
         mostrarProductosTabla(productos); // Muestra en formato de tabla
@@ -978,7 +979,7 @@ public class VistaConsola {
         }
 
         // Agrupa productos por nombre y marcas usando LinkedHashMap para mantener orden
-        Map<String, List<String>> productosPorNombre = new LinkedverHashMap<>();
+        Map<String, List<String>> productosPorNombre = new LinkedHashMap<>();
         for (Producto p : sugerencias) {
             // Agrega la marca al listado correspondiente al nombre del producto
             productosPorNombre

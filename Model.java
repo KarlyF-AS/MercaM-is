@@ -1369,6 +1369,30 @@ public class Model {
             return null; // Error en la conexión o consulta
         }
     }
+    public static int obtenerCantidadStock(Lista_UnidadFamiliar unidad, Producto producto) {
+        final String SQL = """
+        SELECT cantidad
+        FROM contiene
+        WHERE id_lista = ? AND codigo_barras = ?;
+        """;
+
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+
+            stmt.setString(1, unidad.getCodigo());
+            stmt.setLong(2, producto.getCodigoBarras());
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("cantidad");
+            }
+            return 0; // Si no hay stock, devolvemos 0
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1; // Error en la conexión o consulta
+        }
+    }
 
 
 

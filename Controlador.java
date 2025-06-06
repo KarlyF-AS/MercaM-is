@@ -195,5 +195,9 @@ public class Controlador {
     public static List<Double> getHistorialPrecio(String nombre, String marca) {
         return Model.getHistorialPrecios(nombre, marca);
     }
+    public int obtenerCantidadStock(Lista_UnidadFamiliar unidad, Producto producto) {
+        // Devuelve la cantidad de un producto en el stock de la unidad familiar
+        return Model.obtenerCantidadStock(unidad, producto);
+    }
 
 }
