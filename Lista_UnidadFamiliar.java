@@ -5,9 +5,9 @@ import java.util.Map;
 
 public class Lista_UnidadFamiliar {
 
-    private int id;
     private String nombre;
     private String codigo;
+    private String descripcion;
     private List<Usuario> miembros;
     private Map<Integer, Producto> productos; // La cantidad del producto y el producto
 
@@ -31,7 +31,19 @@ public class Lista_UnidadFamiliar {
         this.productos = new HashMap<>();
         addMiembro(miembro); // Añade el miembro al crear la unidad familiar
     }
+    public Lista_UnidadFamiliar(String nombre, String codigo, String descripcion) {
+        this.nombre = nombre;
+        this.codigo = codigo;
+        this.descripcion = descripcion;
+    }
 
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 
     // Getters y Setters
     public int getId() {

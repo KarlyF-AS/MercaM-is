@@ -44,7 +44,7 @@ public class Controlador {
     }
 
     // Obtener productos de la unidad familiar
-    public Map<Integer, Producto> obtenerProductosUnidadFamiliar(Lista_UnidadFamiliar unidad) {
+    public Map<Producto, Integer> obtenerProductosUnidadFamiliar(Lista_UnidadFamiliar unidad) {
         // Si Model ya devuelve el Map, por qué lo cambiamos ayer?
         return Model.obtenerProductosUnidadFamiliar(unidad);
     }

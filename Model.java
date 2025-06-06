@@ -271,7 +271,7 @@ public class Model {
 
             if (rs.next()) {
                 return new Lista_UnidadFamiliar(
-                        rs.getInt("id_lista"),
+                        rs.getString("id_lista"),
                         rs.getString("nombre"),
                         rs.getString("descripcion")
                 );
@@ -758,7 +758,7 @@ public class Model {
      * @param unidadFamiliar
      * @return
      */
-    public static Map<Integer, Producto> obtenerProductosUnidadFamiliar(Lista_UnidadFamiliar unidadFamiliar) {
+    public static Map<Producto, Integer> obtenerProductosUnidadFamiliar(Lista_UnidadFamiliar unidadFamiliar) {
         final String SQL = """
         SELECT p.codigo_barras, p.nombre, p.marca, p.precio, p.categoria, p.supermercado, p.descripcion, c.cantidad
         FROM producto p
@@ -772,7 +772,7 @@ public class Model {
             stmt.setInt(1, unidadFamiliar.getId());
             ResultSet rs = stmt.executeQuery();
 
-            Map<Integer, Producto> productos = new HashMap<>();
+            Map<Producto, Integer> productos = new HashMap<>();
             while (rs.next()) {
                 Producto producto = new Producto(
                         rs.getLong("codigo_barras"),
@@ -784,7 +784,7 @@ public class Model {
                         rs.getString("descripcion")
                 );
                 int cantidad = rs.getInt("cantidad");
-                productos.put(cantidad, producto);
+                productos.put(producto, cantidad);
             }
             return productos;
 
@@ -963,7 +963,7 @@ public class Model {
 
             // 1) Sumamos 'incrementar' a la cantidad existente
             stmt.setInt (1, incrementar);                   // cuánto sumar
-            stmt.setInt (2, unidad.getIdLista());           // id_lista
+            stmt.setString (2, unidad.getCodigo());           // id_lista
             stmt.setLong(3, producto.getCodigoBarras());    // código de barras
 
             try (ResultSet rs = stmt.executeQuery()) {
