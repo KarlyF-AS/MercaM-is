@@ -976,6 +976,14 @@ public class Model {
         }
     }
 
+    /**
+     * Filtra los productos por supermercado.
+     * Se consulta la tabla producto y se filtra por el supermercado especificado.
+     * Esta consulta devuelve todos los productos que pertenecen al supermercado especificado.
+     * @author Daniel Figueroa
+     * @param supermercado
+     * @return
+     */
 
     public static List<Producto> filtrarPorSupermercado(String supermercado) {
         final String SQL = "SELECT * FROM producto WHERE supermercado = ?";
@@ -1116,6 +1124,119 @@ public class Model {
         } catch (SQLException e) {
             e.printStackTrace();
             // Aquí podrías lanzar una excepción propia o propagarla según tu lógica
+        }
+    }
+
+    /**
+     * Elimina un producto del stock de una unidad familiar.
+     * Si el producto no existe en la lista, no se hace nada.
+     * Esta operación devuelve la cantidad que ha quedado en el stock tras la eliminación.
+     * Devuelve -1 si hubo un error de SQL o conexión.
+     * @param unidad
+     * @param producto
+     * @return
+     */
+    public static int eliminarProductoStock(Lista_UnidadFamiliar unidad, Producto producto) {
+        final String SQL = """
+        DELETE FROM contiene
+        WHERE id_lista = ?
+          AND nombre = ?
+          AND marca = ?
+          AND supermercado = ?
+        RETURNING cantidad;
+        """;
+
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+
+            stmt.setInt(1, unidad.getId());                     // id_lista
+            stmt.setString(2, producto.getNombre());            // nombre
+            stmt.setString(3, producto.getMarca());             // marca
+            stmt.setString(4, producto.getSupermercado());      // supermercado
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("cantidad");               // Retorna la cantidad que quedaba tras la eliminación
+                }
+                return 0;                                       // No había stock del producto
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;                                          // Error de SQL o conexión
+        }
+
+    }
+    /**
+     * Actualiza la cantidad de un producto en el stock de una unidad familiar.
+     * Si el producto no existe, no se actualiza nada y se devuelve -1.
+     * Si la actualización es exitosa, se devuelve la nueva cantidad del producto.
+     * Devuelve -1 si hubo un error de SQL o conexión.
+     *
+     * @param unidad   La unidad familiar (provee id_lista).
+     * @param producto El producto a actualizar (usa nombre, marca, supermercado).
+     * @param cantidad Nueva cantidad a establecer.
+     */
+    public static int actualizarCantidadStock(
+            Lista_UnidadFamiliar unidad,
+            Producto producto,
+            int cantidad) {
+
+        final String SQL = """
+        UPDATE contiene
+        SET cantidad = ?
+        WHERE id_lista = ?
+          AND nombre = ?
+          AND marca = ?
+          AND supermercado = ?
+        RETURNING cantidad;
+        """;
+
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL)) {
+
+            stmt.setInt(1, cantidad);                          // Nueva cantidad
+            stmt.setInt(2, unidad.getId());                    // id_lista
+            stmt.setString(3, producto.getNombre());           // nombre
+            stmt.setString(4, producto.getMarca());            // marca
+            stmt.setString(5, producto.getSupermercado());     // supermercado
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("cantidad");               // Retorna la nueva cantidad tras la actualización
+                }
+                return -1;                                      // No se actualizó nada (producto no encontrado)
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;                                          // Error de SQL o conexión
+        }
+    }
+
+    /**
+     * Obtiene todos los supermercados disponibles en la base de datos.
+     * Se consulta la tabla producto y se extraen los supermercados únicos.
+     * Esta consulta devuelve una lista de nombres de supermercados.
+     * @author Daniel Figueroa
+     * @return
+     */
+    public static List<String> obtenerTodosSupermercados() {
+        final String SQL = "SELECT DISTINCT supermercado FROM producto";
+
+        try (Connection conn = Conexion.abrir();
+             PreparedStatement stmt = conn.prepareStatement(SQL);
+             ResultSet rs = stmt.executeQuery()) {
+
+            List<String> supermercados = new ArrayList<>();
+            while (rs.next()) {
+                supermercados.add(rs.getString("supermercado"));
+            }
+            return supermercados;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null; // Error en la conexión o consulta
         }
     }
 
