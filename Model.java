@@ -256,7 +256,7 @@ public class Model {
     public static Lista_UnidadFamiliar obtenerUnidadFamiliar(Usuario usuario) {
 
         final String SQL = """
-            SELECT l.id_lista, l.nombre, l.descripcion
+            SELECT l.id_lista, l.titulo, l.descripcion
             FROM listas l
             JOIN decision d ON d.id_lista = l.id_lista
             WHERE d.email = ?
@@ -272,7 +272,7 @@ public class Model {
             if (rs.next()) {
                 return new Lista_UnidadFamiliar(
                         rs.getString("id_lista"),
-                        rs.getString("nombre"),
+                        rs.getString("titulo"),
                         rs.getString("descripcion")
                 );
             }
