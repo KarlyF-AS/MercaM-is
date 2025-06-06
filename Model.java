@@ -864,7 +864,7 @@ public class Model {
      * @author Daniel Figueroa
      */
     public static boolean cambiarNombreUnidadFamiliar(Lista_UnidadFamiliar unidadFamiliar, String nuevoNombre) {
-        final String SQL = "UPDATE listas SET nombre = ? WHERE id_lista = ?";
+        final String SQL = "UPDATE listas SET titulo = ? WHERE id_lista = ?";
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
