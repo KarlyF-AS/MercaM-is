@@ -209,7 +209,7 @@ public class Model {
     public static Lista_UnidadFamiliar crearUnidadFamiliar(Usuario usuario, String nombreUnidadFamiliar, String codigo) {
         Lista_UnidadFamiliar unidadFamiliar = new Lista_UnidadFamiliar(nombreUnidadFamiliar, codigo, usuario);
 
-        final String SQL_LISTA = "INSERT INTO lista (nombre, codigo) VALUES (?, ?) RETURNING id";
+        final String SQL_LISTA = "INSERT INTO listas (nombre, codigo) VALUES (?, ?) RETURNING id";
         final String SQL_CONTIENE = "INSERT INTO contiene (id_lista, email_usuario) VALUES (?, ?)";
 
         try (Connection conn = Conexion.abrir();
