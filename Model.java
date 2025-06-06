@@ -762,7 +762,7 @@ public class Model {
         final String SQL = """
         SELECT p.codigo_barras, p.nombre, p.marca, p.precio, p.categoria, p.supermercado, p.descripcion, c.cantidad
         FROM producto p
-        JOIN contiene c ON c.codigo_barras = p.codigo_barras
+        JOIN contiene c ON c.nombre and c.marca = p.marca and c.supermercado = p.supermercado
         WHERE c.id_lista = ?
         """;
 
