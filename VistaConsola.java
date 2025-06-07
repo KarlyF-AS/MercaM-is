@@ -1174,7 +1174,32 @@ public class VistaConsola {
         while (true) {
             try {
                 System.out.print(mensaje);
-                return Double.parseDouble(scanner.nextLine());
+                String entrada = scanner.nextLine()
+                        .trim()
+                        .replace(',', '.');
+
+                // Verificar formato válido
+                if (!entrada.matches("^\\d*\\.?\\d+$")) {
+                    System.out.println("Formato inválido. Use números y ',' o '.' para decimales (ejemplo: 12,99 o 12.99)");
+                    continue;
+                }
+
+                double precio = Double.parseDouble(entrada);
+
+                // Validar rango
+                if (precio < 0) {
+                    System.out.println("El precio no puede ser negativo.");
+                    continue;
+                }
+                if (precio > 99999.99) {
+                    System.out.println("El precio es demasiado alto (máximo 99999,99)");
+                    continue;
+                }
+
+                // Redondear a 2 decimales
+                return Math.round(precio * 100.0) / 100.0;
+
+
             } catch (NumberFormatException e) {
                 System.out.println("Error: Debe ingresar un número decimal válido.");
             }
