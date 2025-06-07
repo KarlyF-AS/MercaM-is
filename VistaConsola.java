@@ -27,7 +27,7 @@ public class VistaConsola {
             System.out.print("Seleccione una opción: ");
 
             // Lee la opción del usuario
-            int opcion = Integer.parseInt(scanner.nextLine());
+            int opcion = leerEntero("Seleccione una opción: ");
 
             // Switch para manejar las diferentes opciones
             switch (opcion) {
@@ -149,7 +149,7 @@ public class VistaConsola {
             System.out.println("2. Unirse o crear otra Unidad Familiar");
             System.out.print("Seleccione una opción: ");
 
-            int opcion = Integer.parseInt(scanner.nextLine());
+            int opcion = leerEntero("Seleccione una opción: ");
 
             if (opcion == 1) {
                 menuPrincipal(); // Va al menú principal
@@ -219,11 +219,7 @@ public class VistaConsola {
             System.out.println("0. Cerrar sesión");
             System.out.print("Seleccione una opción: ");
 
-            try {
-                opcion = Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                opcion = -1; // Opción inválida
-            }
+            opcion = leerEntero("Seleccione una opción: ");
 
             switch (opcion) {
                 case 1:
@@ -258,7 +254,7 @@ public class VistaConsola {
             System.out.println("0. Volver atrás");
             System.out.print("Seleccione una opción: ");
 
-            opcion = Integer.parseInt(scanner.nextLine());
+            opcion = leerEntero("Seleccione una opción: ");
 
             switch (opcion) {
                 case 1:
@@ -289,7 +285,7 @@ public class VistaConsola {
             System.out.println("0. Volver");
             System.out.print("Seleccione una opción: ");
 
-            opcion = Integer.parseInt(scanner.nextLine());
+            opcion = leerEntero("Seleccione una opción: ");
 
             switch (opcion) {
                 case 1:
@@ -328,7 +324,7 @@ public class VistaConsola {
             System.out.println("0. Volver atrás");
             System.out.print("Seleccione una opción: ");
 
-            opcion = Integer.parseInt(scanner.nextLine());
+            opcion = leerEntero("Seleccione una opción: ");
 
             switch (opcion) {
                 case 1:
@@ -536,7 +532,7 @@ public class VistaConsola {
             System.out.println("0. Volver atrás");
             System.out.print("Seleccione una opción: ");
 
-            opcion = Integer.parseInt(scanner.nextLine());
+            opcion = leerEntero("Seleccione una opción: ");
 
             switch (opcion) {
                 case 1:
@@ -564,7 +560,7 @@ public class VistaConsola {
             System.out.println("0. Volver atrás");
             System.out.print("Seleccione una opción: ");
 
-            opcion = Integer.parseInt(scanner.nextLine());
+            opcion = leerEntero("Seleccione una opción: ");
 
             switch (opcion) {
                 case 1:
@@ -597,8 +593,7 @@ public class VistaConsola {
         }
 
         // 3) Le pedimos al usuario que elija
-        System.out.print("\nSeleccione una categoría (0 para volver): ");
-        int opcion;
+        int opcion = leerEntero("\nSeleccione una categoría (0 para volver): ");
         try {
             opcion = Integer.parseInt(scanner.nextLine());
         } catch (NumberFormatException e) {
@@ -617,7 +612,7 @@ public class VistaConsola {
         String categoriaSeleccionada = categorias.get(opcion - 1);
         List<String> subcategorias = controlador.obtenerSubcategorias(categoriaSeleccionada);
 
-        // 5) Delegamos en el método que ya tenías para mostrar subcategorías
+        // 5) Delegamos en el metodo que ya tenías para mostrar subcategorías
         verSubcategorias(categoriaSeleccionada, subcategorias);
     }
 
@@ -630,8 +625,7 @@ public class VistaConsola {
             System.out.println((i + 1) + ". " + subcategorias.get(i));
         }
 
-        System.out.print("\nSeleccione una subcategoría (0 para volver): ");
-        int opcion = Integer.parseInt(scanner.nextLine());
+        int opcion = leerEntero("\nSeleccione una categoría (0 para volver): ");
 
         // Si seleccionó una subcategoría válida, muestra sus productos
         if (opcion > 0 && opcion <= subcategorias.size()) {
@@ -652,8 +646,7 @@ public class VistaConsola {
             System.out.println((i + 1) + ". " + marcas.get(i));
         }
 
-        System.out.print("\nSeleccione una marca (0 para volver): ");
-        int opcion = Integer.parseInt(scanner.nextLine());
+        int opcion = leerEntero("\nSeleccione una categoría (0 para volver): ");
 
         // Si seleccionó una marca válida, muestra sus productos
         if (opcion > 0 && opcion <= marcas.size()) {
@@ -669,8 +662,7 @@ public class VistaConsola {
         for (int i = 0; i < supermercados.size(); i++) {
             System.out.println((i + 1) + ". " + supermercados.get(i));
         }
-        System.out.print("Seleccione supermercado (0 para cancelar): ");
-        int opcion = Integer.parseInt(scanner.nextLine());
+        int opcion = leerEntero("\nSeleccione una categoría (0 para volver): ");
         if (opcion > 0 && opcion <= supermercados.size()) {
             List<Producto> productos = controlador.filtrarPorSupermercado(supermercados.get(opcion - 1));
             mostrarProductosTabla(productos);
@@ -693,7 +685,7 @@ public class VistaConsola {
             System.out.println("0. Volver atrás");
             System.out.print("Seleccione una opción: ");
 
-            opcion = Integer.parseInt(scanner.nextLine());
+            opcion = leerEntero("Seleccione una opción: ");
 
             // Si seleccionó un orden válido, muestra los productos ordenados
             if (opcion >= 1 && opcion <= 8) {
@@ -741,7 +733,7 @@ public class VistaConsola {
             System.out.println("0. Volver atrás");
             System.out.print("Seleccione una opción: ");
 
-            opcion = Integer.parseInt(scanner.nextLine());
+            opcion = leerEntero("Seleccione una opción: ");
 
             switch (opcion) {
                 case 1:
@@ -779,13 +771,9 @@ public class VistaConsola {
         }
 
         // Pregunta si quiere añadir nuevo precio
-        System.out.print("\n¿Desea añadir un nuevo precio? (S/N): ");
-        String respuesta = scanner.nextLine().toUpperCase();
-
-        if (respuesta.equals("S")) {
-            System.out.print("Introduce el nuevo precio: ");
-            double nuevoPrecio = Double.parseDouble(scanner.nextLine());
-            // Añade el nuevo precio a través del controlador
+        boolean respuesta = leerConfirmacion("\n¿Desea añadir un nuevo precio?");
+        if (respuesta) {
+            double nuevoPrecio = leerDouble("Introduce el nuevo precio: ");
             controlador.actualizarPrecioProducto(producto, nuevoPrecio);
             System.out.println("Precio actualizado correctamente.");
         }
@@ -808,13 +796,9 @@ public class VistaConsola {
         }
 
         // Pregunta si quiere añadir/modificar su puntuación
-        System.out.print("\n¿Desea añadir/modificar su puntuación? (S/N): ");
-        String respuesta = scanner.nextLine().toUpperCase();
-
-        if (respuesta.equals("S")) {
-            System.out.print("Introduce tu puntuación (1-5 estrellas): ");
-            int puntuacion = Integer.parseInt(scanner.nextLine());
-            // Añade la puntuación a través del controlador
+        boolean respuesta = leerConfirmacion("\n¿Desea añadir/modificar su puntuación?");
+        if (respuesta) {
+            int puntuacion = leerEntero("Introduce tu puntuación (1-5 estrellas): ");
             controlador.anadirPuntuacionProducto(producto, usuarioActual, puntuacion);
             System.out.println("Puntuación guardada correctamente.");
         }
@@ -837,7 +821,7 @@ public class VistaConsola {
         System.out.println("0. Volver");
         System.out.print("Seleccione una opción: ");
 
-        int opcion = Integer.parseInt(scanner.nextLine());
+        int opcion = leerEntero("Seleccione una opción: ");
 
         switch (opcion) {
             case 1: {
@@ -875,8 +859,7 @@ public class VistaConsola {
         String nombre = scanner.nextLine().trim();
         System.out.print("Marca: ");
         String marca = scanner.nextLine().trim();
-        System.out.print("Precio: ");
-        double precio = Double.parseDouble(scanner.nextLine().trim());
+        double precio = leerDouble("Precio: ");
 
         // 2) Elegir categoría principal
         List<String> categorias = controlador.obtenerCategoriasPrincipales();
@@ -904,8 +887,7 @@ public class VistaConsola {
         }
 
         // 4) Código de barras y descripción
-        System.out.print("Código de barras: ");
-        long codigo = Long.parseLong(scanner.nextLine().trim());
+        long codigo = leerLong("Código de barras: ");
         System.out.print("Descripción: ");
         String descripcion = scanner.nextLine().trim();
 
@@ -916,7 +898,7 @@ public class VistaConsola {
                 codigo, descripcion
         );
         if (p == null) {
-            System.out.println("❌ Error al crear el producto.");
+            System.out.println("Error al crear el producto.");
             return;
         }
 
@@ -966,7 +948,7 @@ public class VistaConsola {
             System.out.println("0. Volver");
             System.out.print("Seleccione una opción: ");
 
-            opcion = Integer.parseInt(scanner.nextLine());
+            opcion = leerEntero("Seleccione una opción: ");
 
             switch (opcion) {
                 case 1:
@@ -1038,7 +1020,7 @@ public class VistaConsola {
             System.out.println("0. Volver");
             System.out.print("Seleccione una opción: ");
 
-            opcion = Integer.parseInt(scanner.nextLine());
+            opcion = leerEntero("Seleccione una opción: ");
 
             switch (opcion) {
                 case 1: {
@@ -1084,16 +1066,8 @@ public class VistaConsola {
         System.out.println("1) Mostrar todos los productos");
         System.out.println("2) Buscar por nombre");
         System.out.println("3) Buscar por código de barras");
-        System.out.print("Elige una opción (0 para cancelar): ");
 
-        int modo;
-        try {
-            modo = Integer.parseInt(scanner.nextLine().trim());
-        } catch (NumberFormatException e) {
-            System.out.println("Entrada no válida.");
-            return null;
-        }
-        if (modo == 0) return null;
+        int modo = leerEntero("Elige una opción (0 para cancelar): ");
 
         List<Producto> resultados = Collections.emptyList();
 
@@ -1154,6 +1128,63 @@ public class VistaConsola {
         return resultados.get(sel - 1);
     }
 
+    /**
+     * Lee un número entero del usuario.
+     * @param mensaje Mensaje a mostrar al usuario.
+     * @return El número entero ingresado.
+     */
+    private int leerEntero(String mensaje) {
+        while (true) {
+            try {
+                System.out.print(mensaje);
+                return Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Debe ingresar un número entero válido.");
+            }
+        }
+    }
+
+    /**
+     * Lee un número decimal (double) del usuario.
+     * @param mensaje Mensaje a mostrar al usuario.
+     * @return El número decimal ingresado.
+     */
+    private double leerDouble(String mensaje) {
+        while (true) {
+            try {
+                System.out.print(mensaje);
+                return Double.parseDouble(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Debe ingresar un número decimal válido.");
+            }
+        }
+    }
+
+    private long leerLong(String mensaje) {
+        while (true) {
+            try {
+                System.out.print(mensaje);
+                return Long.parseLong(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Debe ingresar un número entero largo válido.");
+            }
+        }
+    }
+
+    /**
+     * Lee una confirmación del usuario.
+     * @param mensaje
+     * @return true si el usuario confirma (S), false si cancela (N).
+     */
+    private boolean leerConfirmacion(String mensaje) {
+        while (true) {
+            System.out.print(mensaje + " (S/N): ");
+            String respuesta = scanner.nextLine().trim().toUpperCase();
+            if (respuesta.equals("S")) return true;
+            if (respuesta.equals("N")) return false;
+            System.out.println("Error: Debe ingresar S o N.");
+        }
+    }
 
 }
 
