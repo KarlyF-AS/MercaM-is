@@ -1,3 +1,6 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -86,6 +89,29 @@ public class Lista_UnidadFamiliar {
         this.productos.put((int) producto.getCodigoBarras(), producto); // Añade un producto al mapa ( no tengo claro si es necesario el codigo de barras como clave o no)
     }
 
+    public void exportarATxt(String rutaArchivo) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(rutaArchivo))) {
+            writer.write("Unidad Familiar\n");
+            writer.write("Nombre: " + nombre + "\n");
+            writer.write("Código: " + codigo + "\n");
+            if (descripcion != null) writer.write("Descripción: " + descripcion + "\n");
+            writer.write("Miembros:\n");
+            for (Usuario miembro : miembros) {
+                writer.write("  - " + miembro.getNombre() + " (" + miembro.getEmail() + ")\n");
+            }
+            writer.write("Productos:\n");
+            for (Map.Entry<Integer, Producto> entry : productos.entrySet()) {
+                Producto p = entry.getValue();
+                writer.write("  - " + p.getNombre() + " | Marca: " + p.getMarca() +
+                        " | Supermercado: " + p.getSupermercado() +
+                        " | Precio: " + p.getPrecio() +
+                        " | Cantidad: " + entry.getKey() + "\n");
+            }
+            writer.write("Fin de la lista.\n");
+        } catch (IOException e) {
+            System.err.println("Error al exportar la lista: " + e.getMessage());
+        }
+    }
 
 
 
