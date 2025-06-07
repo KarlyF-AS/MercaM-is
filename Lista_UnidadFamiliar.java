@@ -89,6 +89,12 @@ public class Lista_UnidadFamiliar {
         this.productos.put((int) producto.getCodigoBarras(), producto); // Añade un producto al mapa ( no tengo claro si es necesario el codigo de barras como clave o no)
     }
 
+    /**
+     * Exporta la información de una unidad familiar, incluyendo su nombre, código, descripción,
+     * miembros y productos, a un archivo de texto en la ubicación especificada.
+     *
+     * @param rutaArchivo la ruta completa del archivo de texto donde se exportará la información.
+     */
     public void exportarATxt(String rutaArchivo) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(rutaArchivo))) {
             writer.write("Unidad Familiar\n");
