@@ -24,7 +24,6 @@ public class VistaConsola {
             System.out.println("1. Iniciar sesión");
             System.out.println("2. Registrarse");
             System.out.println("3. Salir");
-            System.out.print("Seleccione una opción: ");
 
             // Lee la opción del usuario
             int opcion = leerEntero("Seleccione una opción: ");
@@ -144,10 +143,8 @@ public class VistaConsola {
 
         // Si el usuario ya tiene una unidad familiar
         if (unidadActual != null) {
-            System.out.println("\nEstás conectado a la Unidad Familiar: " + unidadActual.getNombre());
-            System.out.println("1. Entrar en la Unidad Familiar");
+            System.out.println("1. Entrar a tu habitual Unidad Familiar " + unidadActual.getNombre());
             System.out.println("2. Unirse o crear otra Unidad Familiar");
-            System.out.print("Seleccione una opción: ");
 
             int opcion = leerEntero("Seleccione una opción: ");
 
@@ -212,12 +209,11 @@ public class VistaConsola {
         int opcion;
         do {
             System.out.println("\n=== MENÚ PRINCIPAL ===");
-            System.out.println("1. Ver lista");
+            System.out.println("1. Ver lista de la compra");
             System.out.println("2. Ver productos");
             System.out.println("3. Gestión de stock");
             System.out.println("4. Configuración");
             System.out.println("0. Cerrar sesión");
-            System.out.print("Seleccione una opción: ");
 
             opcion = leerEntero("Seleccione una opción: ");
 
@@ -252,7 +248,6 @@ public class VistaConsola {
             System.out.println("1. Ver todos los productos");
             System.out.println("2. Añadir producto");
             System.out.println("0. Volver atrás");
-            System.out.print("Seleccione una opción: ");
 
             opcion = leerEntero("Seleccione una opción: ");
 
@@ -283,7 +278,6 @@ public class VistaConsola {
             System.out.println("3. Actualizar cantidad en stock");
             System.out.println("4. Eliminar producto del stock");
             System.out.println("0. Volver");
-            System.out.print("Seleccione una opción: ");
 
             opcion = leerEntero("Seleccione una opción: ");
 
@@ -322,7 +316,6 @@ public class VistaConsola {
             System.out.println("\n1. Filtrar");
             System.out.println("2. Seleccionar producto");
             System.out.println("0. Volver atrás");
-            System.out.print("Seleccione una opción: ");
 
             opcion = leerEntero("Seleccione una opción: ");
 
@@ -530,7 +523,6 @@ public class VistaConsola {
             System.out.println("1. Filtrar");
             System.out.println("2. Ordenar");
             System.out.println("0. Volver atrás");
-            System.out.print("Seleccione una opción: ");
 
             opcion = leerEntero("Seleccione una opción: ");
 
@@ -558,7 +550,6 @@ public class VistaConsola {
             System.out.println("2. Ver marcas");
             System.out.println("3. Ver supermercado");
             System.out.println("0. Volver atrás");
-            System.out.print("Seleccione una opción: ");
 
             opcion = leerEntero("Seleccione una opción: ");
 
@@ -683,7 +674,6 @@ public class VistaConsola {
             System.out.println("7. Marca (A-Z)");
             System.out.println("8. Marca (Z-A)");
             System.out.println("0. Volver atrás");
-            System.out.print("Seleccione una opción: ");
 
             opcion = leerEntero("Seleccione una opción: ");
 
@@ -731,7 +721,6 @@ public class VistaConsola {
             System.out.println("2. Ver/modificar puntuaciones");
             System.out.println("3. Modificar supermercados");
             System.out.println("0. Volver atrás");
-            System.out.print("Seleccione una opción: ");
 
             opcion = leerEntero("Seleccione una opción: ");
 
@@ -819,7 +808,6 @@ public class VistaConsola {
         System.out.println("\n1. Añadir supermercado");
         System.out.println("2. Eliminar supermercado");
         System.out.println("0. Volver");
-        System.out.print("Seleccione una opción: ");
 
         int opcion = leerEntero("Seleccione una opción: ");
 
@@ -908,14 +896,35 @@ public class VistaConsola {
     }
 
 
-    // Metodo para mostrar la lista de productos de la unidad familiar
+    /**
+     * Muestra la lista de productos de la unidad familiar actual,
+     * seleccionando el mejor producto de cada grupo de productos
+     */
     private void verLista() {
-        // Obtiene los productos de la unidad familiar como un Map
+        // 1. Obtener productos de la unidad familiar
         Map<Producto, Integer> productosMap = controlador.obtenerProductosUnidadFamiliar(unidadActual);
-        List<Producto> productos = new ArrayList<>(productosMap.keySet());
 
+        // Agrupa por nombre genérico (tipo de producto)
+        Map<String, List<Producto>> agrupados = new HashMap<>();
+        for (Producto p : productosMap.keySet()) {
+            agrupados.computeIfAbsent(p.getNombre().toLowerCase(), k -> new ArrayList<>()).add(p);
+        }
+
+        // Selecciona el producto óptimo de cada grupo
+        List<Producto> listaFinal = new ArrayList<>();
+        for (List<Producto> grupo : agrupados.values()) {
+            grupo.sort(
+                    Comparator
+                            .comparing((Producto p) -> productosMap.get(p)) // Menor cantidad en stock
+                            .thenComparing(p -> -Controlador.getPuntuacionMedia(p.getNombre(), p.getMarca())) // Mayor puntuación
+                            .thenComparing(Producto::getPrecio) // Menor precio
+            );
+            listaFinal.add(grupo.get(0)); // El mejor de cada grupo
+        }
+
+        // 4. Mostrar la lista final
         System.out.println("\n=== LISTA DE PRODUCTOS ===");
-        mostrarProductosTabla(productos); // Muestra en formato de tabla
+        mostrarProductosTabla(listaFinal);
     }
 
     // Metodo auxiliar para mostrar productos en formato de tabla
@@ -936,6 +945,20 @@ public class VistaConsola {
         }
     }
 
+    // Supón que tienes acceso a una instancia de tu controlador y a la unidad familiar
+    private void verProductosListaCompra(Lista_UnidadFamiliar unidad) {
+        Map<Integer, Producto> productosConStock = controlador.obtenerProductosConStock(unidad);
+        if (productosConStock == null || productosConStock.isEmpty()) {
+            System.out.println("No hay productos con stock.");
+            return;
+        }
+        System.out.println("Productos con stock:");
+        for (Map.Entry<Integer, Producto> entry : productosConStock.entrySet()) {
+            int cantidad = entry.getKey();
+            Producto producto = entry.getValue();
+            System.out.println("Cantidad: " + cantidad + " - Producto: " + producto.getNombre() + " (" + producto.getMarca() + ")");
+        }
+    }
 
     // Menú de configuración
     private void menuConfiguracion() {
@@ -946,7 +969,6 @@ public class VistaConsola {
             System.out.println("2. Cambiar contraseña");
             System.out.println("3. Gestionar unidad familiar");
             System.out.println("0. Volver");
-            System.out.print("Seleccione una opción: ");
 
             opcion = leerEntero("Seleccione una opción: ");
 
@@ -1018,7 +1040,6 @@ public class VistaConsola {
             System.out.println("1. Cambiar nombre de la unidad");
             System.out.println("2. Abandonar unidad familiar");
             System.out.println("0. Volver");
-            System.out.print("Seleccione una opción: ");
 
             opcion = leerEntero("Seleccione una opción: ");
 
