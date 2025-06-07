@@ -14,20 +14,52 @@ public class Controller2 {
      */
 
     public static List<Producto> ordenarProductos(int opcion) {
-        List<Producto> copia = new ArrayList<>(Model.recogerTodosProductos());
+        List<Producto> productos = Model.recogerTodosProductos();
 
-        //Lista de productos (opciones)
         switch (opcion) {
-            case 1 -> copia.sort(Comparator.comparing(Producto::getPrecio));
-            case 2 -> copia.sort(Comparator.comparing(Producto::getPrecio).reversed());
-            case 3 -> copia.sort(Comparator.comparing(Producto::getNombre, String.CASE_INSENSITIVE_ORDER));
-            case 4 -> copia.sort(Comparator.comparing(Producto::getNombre, String.CASE_INSENSITIVE_ORDER).reversed());
-            case 5 -> copia.sort(Comparator.comparing(Producto::getMarca, String.CASE_INSENSITIVE_ORDER));
-            case 6 -> copia.sort(Comparator.comparing(Producto::getMarca, String.CASE_INSENSITIVE_ORDER).reversed());
-            default -> System.out.println("Opción inválida.");
+            case 1: // Precio total (más barato primero)
+                productos.sort(Comparator.comparing(Producto::getPrecio));
+                break;
+
+            case 2: // Precio total (más caro primero)
+                productos.sort(Comparator.comparing(Producto::getPrecio).reversed());
+                break;
+
+            case 3: // Precio por unidad (más barato primero)
+                productos.sort(Comparator.comparing(Producto::getPrecio));
+                break;
+
+            case 4: // Precio por unidad (más caro primero)
+                productos.sort(Comparator.comparing(Producto::getPrecio).reversed());
+                break;
+
+            case 5: // Nombre (A-Z)
+                productos.sort(Comparator.comparing(Producto::getNombre,
+                        String.CASE_INSENSITIVE_ORDER));
+                break;
+
+            case 6: // Nombre (Z-A)
+                productos.sort(Comparator.comparing(Producto::getNombre,
+                        String.CASE_INSENSITIVE_ORDER).reversed());
+                break;
+
+            case 7: // Marca (A-Z)
+                productos.sort(Comparator.comparing(Producto::getMarca,
+                        String.CASE_INSENSITIVE_ORDER));
+                break;
+
+            case 8: // Marca (Z-A)
+                productos.sort(Comparator.comparing(Producto::getMarca,
+                        String.CASE_INSENSITIVE_ORDER).reversed());
+                break;
+
+            default:
+                System.out.println("Opción de ordenamiento no válida");
         }
-        return copia;
+
+        return productos;
     }
+
     /**
      * Verifica si una contraseña tiene al menos 8 caracteres, 4 letras y 2 dígitos.
      * @param password contraseña a verificar.
