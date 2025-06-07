@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class Producto {
@@ -129,5 +130,17 @@ public class Producto {
     public List<Double> getHistorialPrecios() {
         // Devuelve el historial de precios del producto
         return Controlador.getHistorialPrecio(this.nombre, this.marca);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Producto producto = (Producto) o;
+        return codigoBarras == producto.codigoBarras && Objects.equals(nombre, producto.nombre) && Objects.equals(marca, producto.marca);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(codigoBarras, nombre, marca);
     }
 }

@@ -1,9 +1,6 @@
 // Controlador.java
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Controlador {
@@ -50,8 +47,8 @@ public class Controlador {
     }
 
     // Obtener stock
-    public Map<Producto, Integer> obtenerStock(Lista_UnidadFamiliar unidad) {
-        return Model.obtenerProductosUnidadFamiliar(unidad);
+    public Map<Integer, Producto> obtenerStock(Lista_UnidadFamiliar unidad) {
+        return Model.stock(unidad);
     }
 
     // Añadir producto al stock
@@ -69,17 +66,25 @@ public class Controlador {
         return Model.eliminarProductoStock(unidad, producto);
     }
 
-    // Obtener categorías (devolver Map de categoría a subcategorías)
-    public Map<String, List<String>> obtenerCategorias() {
-        List<String> categorias = Model.obtenerCategorias();
-        // Quedamos en hacerlo así al final?
-        Map<String, List<String>> mapa = new HashMap<>();
-        for (String cat : categorias) {
-            mapa.put(cat, new ArrayList<>());
+    public List<String> obtenerCategoriasPrincipales() {
+        List<String> raw = Model.obtenerCategorias(); // ["A.B", "A.C", "D.E", ...]
+        Set<String> únicas = new LinkedHashSet<>();
+        for (String full : raw) {
+            int dot = full.indexOf('.');
+            String cat = dot >= 0 ? full.substring(0, dot) : full;
+            únicas.add(cat);
         }
-        return mapa;
+        return new ArrayList<>(únicas);
     }
 
+    public List<String> obtenerSubcategorias(String categoria) {
+        List<String> raw = Model.obtenerCategorias(); // ["A.B", "A.C", ...]
+        return raw.stream()
+                .filter(s -> s.startsWith(categoria + "."))
+                .map(s -> s.substring(s.indexOf('.') + 1))
+                .distinct()
+                .collect(Collectors.toList());
+    }
     // Obtener marcas
     public List<String> obtenerMarcas() {
         return Model.obtenerMarcas();
@@ -116,12 +121,8 @@ public class Controlador {
     }
 
     // Crear producto
-    public Producto crearProducto(String nombre, String marca, double precio, String categoria, String subcategoria, long id) {
-        // pasar subcategoria a categoria a formateo "categoria.subcategoria"
-        if (subcategoria != null && !subcategoria.isEmpty()) {
-            categoria = categoria + "." + subcategoria;
-        }
-        return Model.crearProducto(nombre, marca, precio, categoria, "sinSupermercado", id, null);
+    public Producto crearProducto(String nombre, String marca, double precio, String categoria,long id, String descripcion) {
+        return Model.crearProducto(nombre, marca, precio, categoria, "sinSupermercado", id, descripcion);
     }
 
     // Añadir supermercado a producto
@@ -132,6 +133,10 @@ public class Controlador {
     // Eliminar supermercado de producto
     public Producto eliminarSupermercadoProducto(Producto producto, String supermercado) {
         return Model.eliminarSupermercadoProducto(producto, supermercado);
+    }
+    public List<Producto> buscarProductoPorCodigoBarras(long codigoBarras) {
+        // Busca un producto por su código de barras
+        return Model.buscarProductoPorCodigoBarras(codigoBarras);
     }
 
     // Actualizar precio de producto
@@ -198,6 +203,30 @@ public class Controlador {
     public int obtenerCantidadStock(Lista_UnidadFamiliar unidad, Producto producto) {
         // Devuelve la cantidad de un producto en el stock de la unidad familiar
         return Model.obtenerCantidadStock(unidad, producto);
+    }
+    /** Devuelve el map de Producto→cantidad para la unidad dada */
+    /**
+     * Devuelve un Map<stock, producto> para la unidad dada.
+     * La clave es la cantidad en stock (Integer),
+     * el valor es el Producto correspondiente.
+     */
+    public Map<Integer,Producto> obtenerProductosConStock(Lista_UnidadFamiliar unidad) {
+        // 1) Recogemos el Map<Producto,cantidad> filtrado
+        Map<Integer,Producto> orig = Model.obtenerListaDeProductosConStock(unidad).getProductos();
+        // 2) Creamos un LinkedHashMap para preservar orden
+        Map<Integer,Producto> indexMap = new LinkedHashMap<>();
+        return indexMap;
+    }
+
+    /**
+     * Devuelve sólo la lista de Productos que tienen stock (cantidad > 0)
+     * a partir del Map<stock, producto> (cantidad→producto).
+     */
+    public List<Producto> obtenerListaProductosConStock(Lista_UnidadFamiliar unidad) {
+        // Obtenemos el Map<cantidad, producto>
+        Map<Integer,Producto> stockMap = obtenerProductosConStock(unidad);
+        // Devolvemos todos los productos (los values del map)
+        return new ArrayList<>(stockMap.values());
     }
 
 }
