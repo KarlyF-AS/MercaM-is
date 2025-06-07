@@ -219,32 +219,35 @@ public class VistaConsola {
             System.out.println("0. Cerrar sesión");
             System.out.print("Seleccione una opción: ");
 
-            opcion = Integer.parseInt(scanner.nextLine());
+            try {
+                opcion = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                opcion = -1; // Opción inválida
+            }
 
             switch (opcion) {
                 case 1:
-                    verLista(); // Muestra la lista de productos
-                    continue;
+                    verLista();
+                    break;
                 case 2:
-                    menuProductos(); // Muestra el menú de productos
-                    continue;
+                    menuProductos();
+                    break;
                 case 3:
-                    menuStock(); // Muestra el menú de gestión de stock
-                    continue;
+                    menuStock();
+                    break;
                 case 4:
-                    menuConfiguracion(); // Muestra el menú de configuración
-                    continue;
-                case 0: {
-                    usuarioActual = null; // Cierra sesión
+                    menuConfiguracion();
+                    break;
+                case 0:
+                    usuarioActual = null;
                     unidadActual = null;
                     System.out.println("Sesión cerrada.");
-                }
+                    break;
                 default:
                     System.out.println("Opción inválida.");
             }
-        } while (opcion != 0); // Repite hasta que elija salir
+        } while (opcion != 0);
     }
-
     // Menú de gestión de productos
     private void menuProductos() {
         int opcion;
