@@ -33,8 +33,10 @@ public class VistaConsola {
             switch (opcion) {
                 case 1:
                     iniciarSesion(); // Llama al metodo de inicio de sesión
+                    continue;
                 case 2:
                     registrarUsuario(); // Llama al metodo de registro
+                    continue;
                 case 3: {
                     System.out.println("Saliendo...");
                     return;
@@ -740,12 +742,16 @@ public class VistaConsola {
             switch (opcion) {
                 case 1:
                     gestionarHistorialPrecios(producto); // Gestiona precios
+                    continue;
                 case 2:
                     gestionarPuntuaciones(producto); // Gestiona puntuaciones
+                    continue;
                 case 3:
                     modificarSupermercados(producto); // Modifica supermercados
+                    continue;
                 case 0:
                     System.out.println("Volviendo...");
+                    menuPrincipal();
                 default:
                     System.out.println("Opción inválida.");
             }
@@ -836,6 +842,7 @@ public class VistaConsola {
                 String nuevoSuper = scanner.nextLine();
                 controlador.anadirSupermercadoProducto(producto, nuevoSuper);
                 System.out.println("Supermercado añadido correctamente.");
+                break;
             }
             case 2: {
                 // Elimina un supermercado existente
@@ -855,7 +862,7 @@ public class VistaConsola {
         }
     }
 
-    // Método para añadir un nuevo producto, con categoría y subcategoría opcional
+    // Metodo para añadir un nuevo producto, con categoría y subcategoría opcional
     private void anadirProducto() {
         System.out.println("\n=== AÑADIR PRODUCTO ===");
 
@@ -1092,6 +1099,7 @@ public class VistaConsola {
                 System.out.print("Nombre del producto: ");
                 String nombre = scanner.nextLine().trim();
                 resultados = controlador.obtenerProductoPorNombre(nombre);
+
             }
             case 3 -> {
                 System.out.print("Código de barras: ");
