@@ -862,7 +862,7 @@ public class VistaConsola {
         }
     }
 
-    // Método para añadir un nuevo producto, con categoría y subcategoría opcional
+    // Metodo para añadir un nuevo producto, con categoría y subcategoría opcional
     private void anadirProducto() {
         System.out.println("\n=== AÑADIR PRODUCTO ===");
 
@@ -1099,6 +1099,7 @@ public class VistaConsola {
                 System.out.print("Nombre del producto: ");
                 String nombre = scanner.nextLine().trim();
                 resultados = controlador.obtenerProductoPorNombre(nombre);
+
             }
             case 3 -> {
                 System.out.print("Código de barras: ");
