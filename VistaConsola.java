@@ -535,6 +535,7 @@ public class VistaConsola {
                     continue;
                 case 0:
                     System.out.println("Volviendo...");
+                    menuPrincipal();
                 default:
                     System.out.println("Opción inválida.");
             }
