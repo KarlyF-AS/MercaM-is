@@ -242,7 +242,7 @@ public class VistaConsola {
                     usuarioActual = null;
                     unidadActual = null;
                     System.out.println("Sesión cerrada.");
-                    break;
+
                 default:
                     System.out.println("Opción inválida.");
             }
@@ -269,7 +269,8 @@ public class VistaConsola {
                     continue;
                 case 0:
                     System.out.println("Volviendo..."); // Vuelve al menú anterior
-                    menuPrincipal();
+                    menuPrincipal()
+                    ;
 
                 default:
                     System.out.println("Opción inválida.");
