@@ -621,14 +621,24 @@ public class Model {
      * @param puntuacion
      * @author Daniel Figueroa
      */
-    public static Producto anadirPuntuacionProducto(Producto producto, Usuario usuario, int puntuacion) {
+    public static Producto anadirPuntuacionProducto(
+            Producto producto,
+            Usuario usuario,
+            int puntuacion) {
+
         final String SQL = """
-                INSERT INTO puntua (email_usuario, nombre_producto, marca_producto, supermercado_producto, puntuacion)
-                VALUES (?, ?, ?, ?, ?)
-                ON CONFLICT (email_usuario, nombre_producto, marca_producto, supermercado_producto)
-                DO UPDATE SET puntuacion = EXCLUDED.puntuacion
-                RETURNING nombre_producto;
-                """;
+        INSERT INTO puntua (
+            email,
+            nombre,
+            marca,
+            supermercado,
+            puntuacion
+        ) VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT (email, nombre, marca, supermercado)
+        DO UPDATE
+          SET puntuacion = EXCLUDED.puntuacion
+        RETURNING nombre
+        """;
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
@@ -637,17 +647,20 @@ public class Model {
             stmt.setString(2, producto.getNombre());
             stmt.setString(3, producto.getMarca());
             stmt.setString(4, producto.getSupermercado());
-            stmt.setInt(5, puntuacion);
+            stmt.setInt   (5, puntuacion);
 
-            ResultSet rs = stmt.executeQuery();
-            return rs.next() ? producto : null;
+            try (ResultSet rs = stmt.executeQuery()) {
+                // si se insertó o actualizó, devolvemos el mismo objeto producto
+                return rs.next() ? producto : null;
+            }
 
         } catch (SQLException e) {
-            e.printStackTrace(); // Manejo de errores
-            return null; // Error en la conexión o consulta
+            System.err.println("Error al añadir puntuación: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
-
     }
+
     /**
      * Añade un supermercado a un producto.
      * Se inserta en la tabla pertenece el nombre del supermercado y el codigo de barras del producto.
