@@ -33,8 +33,10 @@ public class VistaConsola {
             switch (opcion) {
                 case 1:
                     iniciarSesion(); // Llama al metodo de inicio de sesión
+                    continue;
                 case 2:
                     registrarUsuario(); // Llama al metodo de registro
+                    continue;
                 case 3: {
                     System.out.println("Saliendo...");
                     return;
