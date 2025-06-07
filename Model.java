@@ -1436,39 +1436,49 @@ public class Model {
             return null; // Error en la conexión o consulta
         }
     }
-    public static Map<Usuario, Integer> getPuntuaciones(Producto p) {
+    public static Map<Usuario,Integer> getPuntuaciones(Producto p) {
         final String SQL = """
-            SELECT u.email, u.nombre_usuario, u.contrasena, puntua.puntuacion
-            FROM puntua
-            JOIN usuarios u ON puntua.email_usuario = u.email
-            WHERE puntua.nombre_producto = ? AND puntua.marca_producto = ? AND puntua.supermercado_producto = ?
+        SELECT 
+          u.email,
+          u.nombre_usuario,
+          u.contrasena,
+          pt.puntuacion
+        FROM puntua pt
+        JOIN usuarios u
+          ON pt.email = u.email
+        WHERE pt.nombre        = ?
+          AND pt.marca         = ?
+          AND pt.supermercado  = ?
         """;
 
+        Map<Usuario,Integer> puntuaciones = new HashMap<>();
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
+            // 1) Ponemos los parámetros (nombre, marca y supermercado vienen del objeto Producto)
             stmt.setString(1, p.getNombre());
             stmt.setString(2, p.getMarca());
             stmt.setString(3, p.getSupermercado());
 
-            ResultSet rs = stmt.executeQuery();
-            Map<Usuario, Integer> puntuaciones = new HashMap<>();
-            while (rs.next()) {
-                Usuario usuario = new Usuario(
-                    rs.getString("nombre_usuario"),
-                    rs.getString("email"),
-                    rs.getString("contrasena")
-                );
-                int puntuacion = rs.getInt("puntuacion");
-                puntuaciones.put(usuario, puntuacion);
+            // 2) Ejecutamos y leemos resultados
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Usuario usuario = new Usuario(
+                            rs.getString("nombre_usuario"),
+                            rs.getString("email"),
+                            rs.getString("contrasena")
+                    );
+                    int punt = rs.getInt("puntuacion");
+                    puntuaciones.put(usuario, punt);
+                }
             }
-            return puntuaciones;
-
         } catch (SQLException e) {
-            e.printStackTrace();
-            return null; // Error en la conexión o consulta
+            System.err.println("Error al obtener puntuaciones: " + e.getMessage());
+            // devolvemos un Map vacío para no romper la vista
         }
+        return puntuaciones;
     }
+
     public static List<Double> getHistorialPrecios(String nombre, String marca) {
         final String SQL = """
         SELECT precio
