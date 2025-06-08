@@ -12,8 +12,8 @@ public class Model {
      * @return
      */
     public static Usuario registrarUsuario(String nombre,
-                                       String email,
-                                       String password) {
+                                           String email,
+                                           String password) {
         Usuario usuario = new Usuario(nombre, email, password);
 
         final String SQL =

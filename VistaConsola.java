@@ -1,4 +1,7 @@
 
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 // Definición de la clase principal de la vista en consola
@@ -32,10 +35,10 @@ public class VistaConsola {
             switch (opcion) {
                 case 1:
                     iniciarSesion(); // Llama al metodo de inicio de sesión
-                    continue;
+                    break;
                 case 2:
                     registrarUsuario(); // Llama al metodo de registro
-                    continue;
+                    break;
                 case 3: {
                     System.out.println("Saliendo...");
                     return;
@@ -193,7 +196,10 @@ public class VistaConsola {
         }
     }
 
-    // Metodo para crear una nueva unidad familiar
+    /**
+     * Metodo para crear una nueva unidad familiar.
+     * Solicita al usuario un nombre y lo crea a través del controlador.
+     */
     private void crearUnidadFamiliar() {
         System.out.print("Introduce el nombre para tu nueva Unidad Familiar: ");
         String nombre = scanner.nextLine();
@@ -204,13 +210,16 @@ public class VistaConsola {
         menuPrincipal(); // Va al menú principal
     }
 
-    // Menú principal de la aplicación
+    /**
+     * Metodo para leer un número entero desde la entrada estándar.
+     * Si la entrada no es un número válido, solicita al usuario que vuelva a intentarlo.
+     */
     private void menuPrincipal() {
         int opcion;
         do {
             inicializarStock();
             System.out.println("\n=== MENÚ PRINCIPAL ===");
-            System.out.println("1. Ver lista de la compra");
+            System.out.println("1. Navegar en la lista de compra");
             System.out.println("2. Ver productos");
             System.out.println("3. Gestión de stock");
             System.out.println("4. Configuración");
@@ -220,7 +229,7 @@ public class VistaConsola {
 
             switch (opcion) {
                 case 1:
-                    verLista();
+                    mostrarMenu();
                     break;
                 case 2:
                     menuProductos();
@@ -242,7 +251,11 @@ public class VistaConsola {
             }
         } while (opcion != 0);
     }
-    // Menú de gestión de productos
+
+    /**
+     * Metodo para leer un número entero desde la entrada estándar.
+     * Si la entrada no es un número válido, solicita al usuario que vuelva a intentarlo.
+     */
     private void menuProductos() {
         int opcion;
         do {
@@ -924,34 +937,190 @@ public class VistaConsola {
         System.out.println("Producto añadido correctamente con categoría: " + catFull);
     }
 
+    private void mostrarMenu() {
+        int opcion;
+        do {
+            System.out.println("\n=== MENÚ DE LISTA ===");
+            System.out.println("1. Ver lista de la compra");
+            System.out.println("2. Exportar lista de la compra en TXT");
+            System.out.println("0. Volver");
+            System.out.print("Seleccione una opción: ");
+            opcion = scanner.nextInt();
+            scanner.nextLine(); // Limpiar el buffer
+
+            switch (opcion) {
+                case 1 :
+                    verLista(); // Llama al metodo de optimización
+                    break;
+                case 2 :
+                    exportarListaTXT();
+                    break;
+                case 0 :
+                    System.out.println("Volviendo...");
+                    break;
+                default :
+                    System.out.println("Opción inválida. Intente de nuevo.");
+                    break;
+            }
+        } while (opcion != 0);
+    }
 
     /**
-     * Muestra la lista de productos de la unidad familiar actual,
-     * seleccionando el mejor producto de cada grupo de productos
+     * Exporta la lista de productos optimizada a un archivo TXT.
+     * Agrupa los productos por nombre, seleccionando el mejor producto
+     * de cada grupo según la cantidad en stock, puntuación y precio.
      */
-    private void verLista() {
-        // 1. Obtener productos de la unidad familiar
+    private void exportarListaTXT() {
         Map<Producto, Integer> productosMap = controlador.obtenerProductosUnidadFamiliar(unidadActual);
+        if (productosMap == null || productosMap.isEmpty()) {
+            System.out.println("No hay productos para exportar.");
+            return;
+        }
+        String supermercado = null;
+        int orden = 0;
+        int opcion;
+        do {
+            System.out.println("\n=== OPCIONES DE FILTRO Y ORDENACIÓN PARA EXPORTAR ===");
+            System.out.println("1. Filtrar por supermercado");
+            System.out.println("2. Ordenar por precio (más barato primero)");
+            System.out.println("3. Ordenar por nombre (A-Z)");
+            System.out.println("0. Exportar lista");
+            opcion = leerEntero("Seleccione una opción: ");
+            switch (opcion) {
+                case 1 : {
+                    List<String> supermercados = controlador.obtenerTodosSupermercados();
+                    for (int i = 0; i < supermercados.size(); i++) {
+                        System.out.printf("%d. %s%n", i + 1, supermercados.get(i));
+                    }
+                    int sel = leerEntero("Seleccione un supermercado (0 para cancelar): ");
+                    if (sel > 0 && sel <= supermercados.size()) {
+                        supermercado = supermercados.get(sel - 1);
+                    }
+                } break;
+                case 2 :
+                    orden = 1;
+                    break;
+                case 3 :
+                    orden = 2;
+                    break;
+                case 0 :
+                    break;
+                default :
+                    System.out.println("Opción inválida.");
+                    break;
+            }
+        } while (opcion != 0);
 
-        // Agrupa por nombre genérico (tipo de producto)
-        Map<String, List<Producto>> agrupados = new HashMap<>();
-        for (Producto p : productosMap.keySet()) {
-            agrupados.computeIfAbsent(p.getNombre().toLowerCase(), k -> new ArrayList<>()).add(p);
+        // Tudo este bloque debe estar dentro del metodo
+        List<Producto> listaFinal = obtenerListaOptimizada(productosMap, supermercado, orden);
+
+        if (listaFinal.isEmpty()) {
+            System.out.println("No hay productos para exportar con los filtros seleccionados.");
+            return;
         }
 
-        // Selecciona el producto óptimo de cada grupo
+        try (FileWriter writer = new FileWriter("lista_optimizada.txt")) {
+            writer.write("Nombre | Marca | Categoría | Punt. | Precio | Supermercados\n");
+            writer.write("-------------------------------------------------------------\n");
+            for (Producto p : listaFinal) {
+                writer.write(String.format("%s | %s | %s | %.1f | %.2f | %s%n",
+                        p.getNombre(),
+                        p.getMarca(),
+                        p.getSubcategoria(),
+                        Controlador.getPuntuacionMedia(p.getNombre(), p.getMarca()),
+                        p.getPrecio(),
+                        String.join(", ", Controlador.getSupermercados(p))));
+            }
+            System.out.println("Lista exportada correctamente a lista_optimizada.txt");
+        } catch (IOException e) {
+            System.out.println("Error al exportar la lista: " + e.getMessage());
+        }
+    }
+    private List<Producto> obtenerListaOptimizada(Map<Producto, Integer> productosMap, String supermercado, int orden) {
+        // Filtra productos con cantidad <= 3
+        Map<Producto, Integer> filtrados = new HashMap<>();
+        for (Map.Entry<Producto, Integer> entry : productosMap.entrySet()) {
+            if (entry.getValue() <= 3) {
+                filtrados.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        Map<String, List<Producto>> agrupados = new HashMap<>();
+        for (Producto p : filtrados.keySet()) {
+            agrupados.computeIfAbsent(p.getNombre().toLowerCase(), k -> new ArrayList<>()).add(p);
+        }
         List<Producto> listaFinal = new ArrayList<>();
         for (List<Producto> grupo : agrupados.values()) {
             grupo.sort(
                     Comparator
-                            .comparing((Producto p) -> productosMap.get(p)) // Menor cantidad en stock
-                            .thenComparing(p -> -Controlador.getPuntuacionMedia(p.getNombre(), p.getMarca())) // Mayor puntuación
-                            .thenComparing(Producto::getPrecio) // Menor precio
+                            .comparing((Producto p) -> filtrados.get(p))
+                            .thenComparing(p -> -Controlador.getPuntuacionMedia(p.getNombre(), p.getMarca()))
+                            .thenComparing(Producto::getPrecio)
             );
-            listaFinal.add(grupo.get(0)); // El mejor de cada grupo
+            listaFinal.add(grupo.get(0));
         }
+        if (supermercado != null) {
+            listaFinal.removeIf(p -> !Controlador.getSupermercados(p).contains(supermercado));
+        }
+        switch (orden) {
+            case 1:
+                listaFinal.sort(Comparator.comparing(Producto::getPrecio));
+                break;
+            case 2:
+                listaFinal.sort(Comparator.comparing(Producto::getNombre, String.CASE_INSENSITIVE_ORDER));
+                break;
+            default:
+                break;
+        }
+        return listaFinal;
+    }
 
-        // 4. Mostrar la lista final
+    // Añade este metodo para mostrar la lista con opciones de filtro y ordenación
+    // Cambia el bucle para que tras elegir filtro/ordenación se muestre la lista y se salga
+    private void verLista() {
+        Map<Producto, Integer> productosMap = controlador.obtenerProductosUnidadFamiliar(unidadActual);
+        if (productosMap == null || productosMap.isEmpty()) {
+            System.out.println("No hay productos en la lista.");
+            return;
+        }
+        String supermercado = null;
+        int orden = 0;
+        int opcion;
+        do {
+            System.out.println("\n=== OPCIONES DE FILTRO Y ORDENACIÓN ===");
+            System.out.println("1. Filtrar por supermercado");
+            System.out.println("2. Ordenar por precio (más barato primero)");
+            System.out.println("3. Ordenar por nombre (A-Z)");
+            System.out.println("0. Mostrar lista");
+            opcion = leerEntero("Seleccione una opción: ");
+            switch (opcion) {
+                case 1: {
+                    List<String> supermercados = controlador.obtenerTodosSupermercados();
+                    for (int i = 0; i < supermercados.size(); i++) {
+                        System.out.printf("%d. %s%n", i + 1, supermercados.get(i));
+                    }
+                    int sel = leerEntero("Seleccione un supermercado (0 para cancelar): ");
+                    if (sel > 0 && sel <= supermercados.size()) {
+                        supermercado = supermercados.get(sel - 1);
+                    }
+                    break;
+                }
+                case 2:
+                    orden = 1;
+                    break;
+                case 3:
+                    orden = 2;
+                    break;
+                case 0:
+                    break;
+                default:
+                    System.out.println("Opción inválida.");
+            }
+            // Si la opción es distinta de 0, salir del bucle y mostrar la lista
+            if (opcion != 0) break;
+        } while (opcion != 0);
+
+        List<Producto> listaFinal = obtenerListaOptimizada(productosMap, supermercado, orden);
         System.out.println("\n=== LISTA DE PRODUCTOS ===");
         mostrarProductosTabla(listaFinal);
     }
@@ -1003,21 +1172,21 @@ public class VistaConsola {
 
             switch (opcion) {
                 case 1:
-                    cambiarNombreUsuario(); // Cambia nombre de usuario
-                    continue;
+                    cambiarNombreUsuario();
+                    break;
                 case 2:
-                    cambiarContrasena(); // Cambia contraseña
-                    continue;
-
+                    cambiarContrasena();
+                    break;
                 case 3:
-                    gestionarUnidadFamiliarConfig(); // Gestiona unidad familiar
-                    continue;
-
+                    gestionarUnidadFamiliarConfig();
+                    break;
                 case 0:
                     System.out.println("Volviendo...");
                     menuPrincipal();
+                    break;
                 default:
                     System.out.println("Opción inválida.");
+                    break;
             }
         } while (opcion != 0);
     }
@@ -1079,7 +1248,7 @@ public class VistaConsola {
                     String nuevoNombre = scanner.nextLine();
                     controlador.cambiarNombreUnidadFamiliar(unidadActual, nuevoNombre);
                     System.out.println("Nombre cambiado correctamente.");
-                    continue;
+                    break;
                 }
                 case 2: {
                     // Abandona la unidad familiar
@@ -1095,10 +1264,13 @@ public class VistaConsola {
 
                     }
                 }
+                break;
                 case 0:
                     System.out.println("Volviendo...");
+                    break;
                 default:
                     System.out.println("Opción inválida.");
+                    break;
             }
         } while (opcion != 0);
     }
@@ -1125,27 +1297,37 @@ public class VistaConsola {
         List<Producto> resultados = Collections.emptyList();
 
         switch (modo) {
-            case 1 -> resultados = controlador.obtenerTodosProductos();
-            case 2 -> {
+            case 0:
+                return null; // Cancelar
+            case 1:
+                resultados = controlador.obtenerTodosProductos();
+                break;
+            case 2:
                 System.out.print("Nombre del producto: ");
                 String nombre = scanner.nextLine().trim();
+                if (nombre.isEmpty()) {
+                    System.out.println("El nombre no puede estar vacío.");
+                    return null;
+                }
                 resultados = controlador.obtenerProductoPorNombre(nombre);
-
-            }
-            case 3 -> {
+                break;
+            case 3:
                 System.out.print("Código de barras: ");
                 try {
                     long cb = Long.parseLong(scanner.nextLine().trim());
+                    if (cb <= 0) {
+                        System.out.println("Código no válido.");
+                        return null;
+                    }
                     resultados = controlador.buscarProductoPorCodigoBarras(cb);
                 } catch (NumberFormatException e) {
                     System.out.println("Código no válido.");
                     return null;
                 }
-            }
-            default -> {
+                break;
+            default:
                 System.out.println("Opción fuera de rango.");
                 return null;
-            }
         }
 
         // 4) Manejo de resultados
