@@ -489,19 +489,43 @@ public class VistaConsola {
 
     private void eliminarProductoStock() {
         System.out.print("\nNombre del producto: ");
-        String nombre = scanner.nextLine();
-        Producto producto = buscarProductoEnStock();
-        if (producto == null) {
-            System.out.println("Producto no encontrado.");
+        String nombreBusqueda = scanner.nextLine().trim();
+
+        // Obtener el stock actual
+        Map<Integer, Producto> stockActual = controlador.obtenerStock(unidadActual);
+
+        if (stockActual.isEmpty()) {
+            System.out.println("No hay ningún producto en stock.");
             return;
         }
-        System.out.print("¿Está seguro de eliminar " + producto.getNombre() + "? (S/N): ");
+
+        // Buscar el producto por nombre
+        Producto productoAEliminar = null;
+        for (Map.Entry<Integer, Producto> entry : stockActual.entrySet()) {
+            if (entry.getValue().getNombre().equalsIgnoreCase(nombreBusqueda)) {
+                productoAEliminar = entry.getValue();
+                break;
+            }
+        }
+
+        if (productoAEliminar == null) {
+            System.out.println("No se encontró el producto '" + nombreBusqueda + "' en el stock.");
+            return;
+        }
+
+        System.out.print("¿Está seguro de eliminar '" + productoAEliminar.getNombre() +
+                "' de " + productoAEliminar.getMarca() + "? (S/N): ");
         if (!scanner.nextLine().equalsIgnoreCase("S")) {
             System.out.println("Operación cancelada");
             return;
         }
-        controlador.eliminarProductoStock(unidadActual, producto);
-        System.out.println("Producto eliminado del stock.");
+
+        int resultado = controlador.eliminarProductoStock(unidadActual, productoAEliminar);
+        if (resultado >= 0) {
+            System.out.println("Producto eliminado del stock correctamente.");
+        } else {
+            System.out.println("Error al eliminar el producto del stock.");
+        }
     }
 
     /**
