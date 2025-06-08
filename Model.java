@@ -476,18 +476,28 @@ public class Model {
      * @author Daniel Figueroa
      */
     public static List<Producto> obtenerProductosPorSubcategoria(String subcategoria) {
-        // Corrección: Usar igualdad exacta
-        final String SQL = "SELECT * FROM producto WHERE categoria = ?";
+        final String SQL = """
+        SELECT p.*, COALESCE(AVG(pt.puntuacion), 0) as puntuacion_media
+        FROM producto p
+        LEFT JOIN puntua pt ON p.nombre = pt.nombre 
+            AND p.marca = pt.marca 
+            AND p.supermercado = pt.supermercado
+        WHERE p.categoria LIKE ?
+        GROUP BY p.codigo_barras, p.nombre, p.marca, p.precio, p.categoria, 
+                 p.supermercado, p.descripcion
+    """;
 
         try (Connection conn = Conexion.abrir();
              PreparedStatement stmt = conn.prepareStatement(SQL)) {
 
-            stmt.setString(1, subcategoria); // Sin agregar "%"
-            ResultSet rs = stmt.executeQuery();
+            // Buscar productos que coincidan exactamente con la subcategoría
+            stmt.setString(1, "%" + subcategoria);
 
+            ResultSet rs = stmt.executeQuery();
             List<Producto> productos = new ArrayList<>();
+
             while (rs.next()) {
-                productos.add(new Producto(
+                Producto p = new Producto(
                         rs.getLong("codigo_barras"),
                         rs.getString("nombre"),
                         rs.getString("marca"),
@@ -495,15 +505,18 @@ public class Model {
                         rs.getString("categoria"),
                         rs.getString("supermercado"),
                         rs.getString("descripcion")
-                ));
+                );
+                p.setPuntuacion((int)rs.getDouble("puntuacion_media"));
+                productos.add(p);
             }
-            return productos;
 
+            return productos;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
+            System.err.println("Error al obtener productos por subcategoría: " + e.getMessage());
+            return new ArrayList<>();
         }
     }
+
     /**
      * Obtiene todas las marcas de productos disponibles en la base de datos.
      * Se consulta la tabla producto y se extraen las marcas únicas.

@@ -686,19 +686,29 @@ public class VistaConsola {
 
     // Metodo para mostrar las subcategorías de una categoría
     private void verSubcategorias(String categoria, List<String> subcategorias) {
+        if (subcategorias.isEmpty()) {
+            System.out.println("\nNo hay subcategorías disponibles para " + categoria);
+            return;
+        }
+
         System.out.println("\n=== SUBCATEGORÍAS DE " + categoria.toUpperCase() + " ===");
-        // Muestra todas las subcategorías numeradas
         for (int i = 0; i < subcategorias.size(); i++) {
             System.out.println((i + 1) + ". " + subcategorias.get(i));
         }
 
-        int opcion = leerEntero("\nSeleccione una categoría (0 para volver): ");
+        System.out.print("\nSeleccione una categoría (0 para volver): ");
+        int opcion = leerEntero("");
 
-        // Si seleccionó una subcategoría válida, muestra sus productos
         if (opcion > 0 && opcion <= subcategorias.size()) {
-            String subcategoria = subcategorias.get(opcion - 1);
-            List<Producto> productos = controlador.obtenerProductosPorSubcategoria(subcategoria);
-            mostrarProductosTabla(productos); // Muestra en formato de tabla
+            String subcategoriaSeleccionada = categoria + "." + subcategorias.get(opcion - 1);
+            List<Producto> productos = controlador.obtenerProductosPorSubcategoria(subcategoriaSeleccionada);
+
+            if (productos.isEmpty()) {
+                System.out.println("\nNo hay productos en esta subcategoría.");
+            } else {;
+                System.out.println("-------------------------------------------------------------");
+                mostrarProductosTabla(productos);
+            }
         }
     }
 
