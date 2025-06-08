@@ -1,4 +1,7 @@
-import java.io.PrintWriter;
+
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 // Definición de la clase principal de la vista en consola
@@ -193,7 +196,10 @@ public class VistaConsola {
         }
     }
 
-    // Metodo para crear una nueva unidad familiar
+    /**
+     * Metodo para crear una nueva unidad familiar.
+     * Solicita al usuario un nombre y lo crea a través del controlador.
+     */
     private void crearUnidadFamiliar() {
         System.out.print("Introduce el nombre para tu nueva Unidad Familiar: ");
         String nombre = scanner.nextLine();
@@ -204,13 +210,16 @@ public class VistaConsola {
         menuPrincipal(); // Va al menú principal
     }
 
-    // Menú principal de la aplicación
+    /**
+     * Metodo para leer un número entero desde la entrada estándar.
+     * Si la entrada no es un número válido, solicita al usuario que vuelva a intentarlo.
+     */
     private void menuPrincipal() {
         int opcion;
         do {
             inicializarStock();
             System.out.println("\n=== MENÚ PRINCIPAL ===");
-            System.out.println("1. Ver lista de la compra");
+            System.out.println("1. mostrar menú de lista de la compra");
             System.out.println("2. Ver productos");
             System.out.println("3. Gestión de stock");
             System.out.println("4. Configuración");
@@ -220,7 +229,7 @@ public class VistaConsola {
 
             switch (opcion) {
                 case 1:
-                    menuListaCompra();
+                    mostrarMenu();
                     break;
                 case 2:
                     menuProductos();
@@ -242,7 +251,11 @@ public class VistaConsola {
             }
         } while (opcion != 0);
     }
-    // Menú de gestión de productos
+
+    /**
+     * Metodo para leer un número entero desde la entrada estándar.
+     * Si la entrada no es un número válido, solicita al usuario que vuelva a intentarlo.
+     */
     private void menuProductos() {
         int opcion;
         do {
@@ -337,20 +350,15 @@ public class VistaConsola {
             // Obtiene todos los productos de la unidad familiar
             List<Producto> productos = controlador.obtenerTodosProductos();
 
-            // Crea el Map<Producto, Integer> con cantidad 0 por defecto
-            Map<Producto, Integer> productosMap = new HashMap<>();
-            for (Producto p : productos) {
-                productosMap.put(p, 0); // O la cantidad real si la tienes
-            }
-
             System.out.println("\n=== TODOS LOS PRODUCTOS ===");
-            mostrarProductosTabla(productos, productosMap); // Muestra en formato de tabla
+            mostrarProductosTabla(productos); // Muestra en formato de tabla
 
             System.out.println("\n1. Filtrar");
             System.out.println("2. Seleccionar producto");
             System.out.println("0. Volver atrás");
 
             opcion = leerEntero("Seleccione una opción: ");
+
 
             switch (opcion) {
                 case 1:
@@ -656,11 +664,7 @@ public class VistaConsola {
         if (opcion > 0 && opcion <= subcategorias.size()) {
             String subcategoria = subcategorias.get(opcion - 1);
             List<Producto> productos = controlador.obtenerProductosPorSubcategoria(subcategoria);
-            Map<Producto, Integer> productosMap = new HashMap<>();
-            for (Producto p : productos) {
-                productosMap.put(p, 0); // O la cantidad real si la tienes
-            }
-            mostrarProductosTabla(productos, productosMap);
+            mostrarProductosTabla(productos); // Muestra en formato de tabla
         }
     }
 
@@ -681,11 +685,7 @@ public class VistaConsola {
         if (opcion > 0 && opcion <= marcas.size()) {
             String marca = marcas.get(opcion - 1);
             List<Producto> productos = controlador.obtenerProductosPorMarca(marca);
-            Map<Producto, Integer> productosMap = new HashMap<>();
-            for (Producto p : productos) {
-                productosMap.put(p, 0); // O la cantidad real si la tienes
-            }
-            mostrarProductosTabla(productos, productosMap);
+            mostrarProductosTabla(productos); // Muestra en formato de tabla
         }
     }
 
@@ -698,11 +698,7 @@ public class VistaConsola {
         int opcion = leerEntero("\nSeleccione una categoría (0 para volver): ");
         if (opcion > 0 && opcion <= supermercados.size()) {
             List<Producto> productos = controlador.filtrarPorSupermercado(supermercados.get(opcion - 1));
-            Map<Producto, Integer> productosMap = new HashMap<>();
-            for (Producto p : productos) {
-                productosMap.put(p, 0); // O la cantidad real si la tienes
-            }
-            mostrarProductosTabla(productos, productosMap);
+            mostrarProductosTabla(productos);
         }
     }
 
@@ -723,13 +719,10 @@ public class VistaConsola {
 
             opcion = leerEntero("Seleccione una opción: ");
 
+            // Si seleccionó un orden válido, muestra los productos ordenados
             if (opcion >= 1 && opcion <= 8) {
                 List<Producto> productos = controlador.ordenarProductos(opcion);
-                Map<Producto, Integer> productosMap = new HashMap<>();
-                for (Producto p : productos) {
-                    productosMap.put(p, 0); // O la cantidad real si la tienes
-                }
-                mostrarProductosTabla(productos, productosMap);
+                mostrarProductosTabla(productos);
             } else if (opcion != 0) {
                 System.out.println("Opción inválida.");
             }
@@ -944,113 +937,156 @@ public class VistaConsola {
         System.out.println("Producto añadido correctamente con categoría: " + catFull);
     }
 
+    private void mostrarMenu() {
+        int opcion;
+        do {
+            System.out.println("\n=== MENÚ DE LISTA ===");
+            System.out.println("1. Ver lista de la compra");
+            System.out.println("2. Exportar lista de la compra en TXT");
+            System.out.println("0. Volver");
+            System.out.print("Seleccione una opción: ");
+            opcion = scanner.nextInt();
+            scanner.nextLine(); // Limpiar el buffer
+
+            switch (opcion) {
+                case 1 -> verLista(); // Llama al metodo de optimización
+                case 2 -> exportarListaTXT();
+                case 0 -> System.out.println("Volviendo...");
+                default -> System.out.println("Opción inválida. Intente de nuevo.");
+            }
+        } while (opcion != 0);
+    }
 
     /**
-     * Muestra el menú de la lista de la compra, permitiendo al usuario
+     * Exporta la lista de productos optimizada a un archivo TXT.
+     * Agrupa los productos por nombre, seleccionando el mejor producto
+     * de cada grupo según la cantidad en stock, puntuación y precio.
      */
-    private void menuListaCompra() {
-        Map<Producto, Integer> productosMap = controlador.obtenerProductosListaCompra(unidadActual);
-        List<Producto> productosLista = new ArrayList<>(productosMap.keySet());
-        boolean salir = false;
-
-        while (!salir) {
-            System.out.println("\n=== MENÚ LISTA DE LA COMPRA ===");
-            System.out.println("1. Ver lista de la compra");
-            System.out.println("2. Filtrar por cantidad");
-            System.out.println("3. Filtrar por supermercado");
-            System.out.println("4. Ordenar por nombre");
-            System.out.println("5. Ordenar por precio");
-            System.out.println("6. Exportar lista actual");
-            System.out.println("0. Volver");
-
-            int opcion = leerEntero("Seleccione una opción: ");
-            switch (opcion) {
-                case 1 -> mostrarProductosTabla(productosLista, productosMap);
-                case 2 -> {
-                    int min = leerEntero("Cantidad mínima: ");
-                    productosLista = filtrarPorCantidad(productosMap, min);
-                    mostrarProductosTabla(productosLista, productosMap);
-                }
-                case 3 -> {
-                    System.out.print("Supermercado: ");
-                    scanner.nextLine();
-                    String supermercado = scanner.nextLine();
-                    productosLista = filtrarPorSupermercado(productosLista, supermercado);
-                    mostrarProductosTabla(productosLista, productosMap);
-                }
-                case 4 -> {
-                    productosLista = ordenarPorNombre(productosLista);
-                    mostrarProductosTabla(productosLista, productosMap);
-                }
-                case 5 -> {
-                    productosLista = ordenarPorPrecio(productosLista);
-                    mostrarProductosTabla(productosLista, productosMap);
-                }
-                case 6 -> {
-                    System.out.print("Ruta del archivo para exportar: ");
-                    String ruta = scanner.nextLine();
-                    exportarListaCompra(productosLista, productosMap, ruta);
-                }
-                case 0 -> salir = true;
-                default -> System.out.println("Opción no válida.");
+    private void exportarListaTXT() {
+        Map<Producto, Integer> productosMap = controlador.obtenerProductosUnidadFamiliar(unidadActual);
+        if (productosMap == null || productosMap.isEmpty()) {
+            System.out.println("No hay productos para exportar.");
+            return;
+        }
+        // Puedes pedir aquí filtros/orden al usuario si lo deseas
+        List<Producto> listaFinal = obtenerListaOptimizada(productosMap, null, 0);
+        try (FileWriter writer = new FileWriter("lista_optimizada.txt")) {
+            writer.write("Nombre | Marca | Categoría | Punt. | Precio | Supermercados\n");
+            writer.write("-------------------------------------------------------------\n");
+            for (Producto p : listaFinal) {
+                writer.write(String.format("%s | %s | %s | %.1f | %.2f | %s%n",
+                        p.getNombre(),
+                        p.getMarca(),
+                        p.getSubcategoria(),
+                        Controlador.getPuntuacionMedia(p.getNombre(), p.getMarca()),
+                        p.getPrecio(),
+                        String.join(", ", Controlador.getSupermercados(p))));
             }
-        }
-    }
-
-    // Métodos auxiliares para filtrar, ordenar y exportar la lista de la compra
-    private List<Producto> filtrarPorCantidad(Map<Producto, Integer> productosMap, int min) {
-        List<Producto> filtrados = new ArrayList<>();
-        for (Map.Entry<Producto, Integer> entry : productosMap.entrySet()) {
-            if (entry.getValue() >= min) filtrados.add(entry.getKey());
-        }
-        return filtrados;
-    }
-
-    private List<Producto> filtrarPorSupermercado(List<Producto> productos, String supermercado) {
-        List<Producto> filtrados = new ArrayList<>();
-        for (Producto p : productos) {
-            if (p.getSupermercado().equalsIgnoreCase(supermercado)) filtrados.add(p);
-        }
-        return filtrados;
-    }
-
-    private List<Producto> ordenarPorNombre(List<Producto> productos) {
-        productos.sort(Comparator.comparing(Producto::getNombre, String.CASE_INSENSITIVE_ORDER));
-        return productos;
-    }
-
-    private List<Producto> ordenarPorPrecio(List<Producto> productos) {
-        productos.sort(Comparator.comparingDouble(Producto::getPrecio));
-        return productos;
-    }
-
-    private void exportarListaCompra(List<Producto> productos, Map<Producto, Integer> productosMap, String ruta) {
-        try (PrintWriter writer = new PrintWriter(ruta)) {
-            for (Producto p : productos) {
-                writer.printf("%s | %s | %s | %d | %.2f | %s%n",
-                        p.getNombre(), p.getMarca(), p.getSubcategoria(),
-                        productosMap.getOrDefault(p, 0), p.getPrecio(), p.getSupermercado());
-            }
-            System.out.println("Lista exportada correctamente.");
-        } catch (Exception e) {
+            System.out.println("Lista exportada correctamente a lista_optimizada.txt");
+        } catch (SecurityException e) {
+            System.out.println("Error: No tiene permisos para escribir en esta ubicación.");
+        } catch (IOException e) {
             System.out.println("Error al exportar la lista: " + e.getMessage());
         }
     }
 
+    private List<Producto> obtenerListaOptimizada(Map<Producto, Integer> productosMap, String supermercado, int orden) {
+        Map<String, List<Producto>> agrupados = new HashMap<>();
+        for (Producto p : productosMap.keySet()) {
+            agrupados.computeIfAbsent(p.getNombre().toLowerCase(), k -> new ArrayList<>()).add(p);
+        }
+        List<Producto> listaFinal = new ArrayList<>();
+        for (List<Producto> grupo : agrupados.values()) {
+            grupo.sort(
+                    Comparator
+                            .comparing((Producto p) -> productosMap.get(p))
+                            .thenComparing(p -> -Controlador.getPuntuacionMedia(p.getNombre(), p.getMarca()))
+                            .thenComparing(Producto::getPrecio)
+            );
+            listaFinal.add(grupo.get(0));
+        }
+        // Filtro por supermercado
+        if (supermercado != null) {
+            listaFinal.removeIf(p -> !Controlador.getSupermercados(p).contains(supermercado));
+        }
+        // Ordenación
+        switch (orden) {
+            case 1 -> listaFinal.sort(Comparator.comparing(Producto::getPrecio));
+            case 2 -> listaFinal.sort(Comparator.comparing(Producto::getNombre, String.CASE_INSENSITIVE_ORDER));
+            default -> {}
+        }
+        return listaFinal;
+    }
+    // Añade este metodo para mostrar la lista con opciones de filtro y ordenación
+    private void verLista() {
+        Map<Producto, Integer> productosMap = controlador.obtenerProductosUnidadFamiliar(unidadActual);
+        if (productosMap == null || productosMap.isEmpty()) {
+            System.out.println("No hay productos en la lista.");
+            return;
+        }
+        String supermercado = null;
+        int orden = 0;
+        int opcion;
+        do {
+            System.out.println("\n=== OPCIONES DE FILTRO Y ORDENACIÓN ===");
+            System.out.println("1. Filtrar por supermercado");
+            System.out.println("2. Ordenar por precio (más barato primero)");
+            System.out.println("3. Ordenar por nombre (A-Z)");
+            System.out.println("0. Mostrar lista");
+            opcion = leerEntero("Seleccione una opción: ");
+            switch (opcion) {
+                case 1 -> {
+                    List<String> supermercados = controlador.obtenerTodosSupermercados();
+                    for (int i = 0; i < supermercados.size(); i++) {
+                        System.out.printf("%d. %s%n", i + 1, supermercados.get(i));
+                    }
+                    int sel = leerEntero("Seleccione un supermercado (0 para cancelar): ");
+                    if (sel > 0 && sel <= supermercados.size()) {
+                        supermercado = supermercados.get(sel - 1);
+                    }
+                }
+                case 2 -> orden = 1;
+                case 3 -> orden = 2;
+                case 0 -> {}
+                default -> System.out.println("Opción inválida.");
+            }
+        } while (opcion != 0);
+
+        List<Producto> listaFinal = obtenerListaOptimizada(productosMap, supermercado, orden);
+        System.out.println("\n=== LISTA DE PRODUCTOS ===");
+        mostrarProductosTabla(listaFinal);
+    }
+
     // Metodo auxiliar para mostrar productos en formato de tabla
-    private void mostrarProductosTabla(List<Producto> productos, Map<Producto, Integer> productosMap) {
-        System.out.println("Nombre | Marca | Categoría | Cantidad | Punt. | Precio | Supermercados");
-        System.out.println("--------------------------------------------------------------------------");
+    private void mostrarProductosTabla(List<Producto> productos) {
+        // Encabezado simple
+        System.out.println("Nombre | Marca | Categoría | Punt. | Precio | Supermercados");
+        System.out.println("-------------------------------------------------------------");
+
+        // Mostrar cad producto sin formato de ancho fijo
         for (Producto p : productos) {
-            int cantidad = productosMap.getOrDefault(p, 0);
-            System.out.printf("%s | %s | %s | %d | %.1f | %.2f | %s%n",
+            System.out.printf("%s | %s | %s | %.1f | %.2f | %s%n",
                     p.getNombre(),
                     p.getMarca(),
                     p.getSubcategoria(),
-                    cantidad,
                     Controlador.getPuntuacionMedia(p.getNombre(), p.getMarca()),
                     p.getPrecio(),
                     String.join(", ", Controlador.getSupermercados(p)));
+        }
+    }
+
+    // Supón que tienes acceso a una instancia de tu controlador y a la unidad familiar
+    private void verProductosListaCompra(Lista_UnidadFamiliar unidad) {
+        Map<Integer, Producto> productosConStock = controlador.obtenerProductosConStock(unidad);
+        if (productosConStock == null || productosConStock.isEmpty()) {
+            System.out.println("No hay productos con stock.");
+            return;
+        }
+        System.out.println("Productos con stock:");
+        for (Map.Entry<Integer, Producto> entry : productosConStock.entrySet()) {
+            int cantidad = entry.getKey();
+            Producto producto = entry.getValue();
+            System.out.println("Cantidad: " + cantidad + " - Producto: " + producto.getNombre() + " (" + producto.getMarca() + ")");
         }
     }
 
