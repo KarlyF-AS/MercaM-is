@@ -35,10 +35,10 @@ public class VistaConsola {
             switch (opcion) {
                 case 1:
                     iniciarSesion(); // Llama al metodo de inicio de sesión
-                    continue;
+                    break;
                 case 2:
                     registrarUsuario(); // Llama al metodo de registro
-                    continue;
+                    break;
                 case 3: {
                     System.out.println("Saliendo...");
                     return;
@@ -949,10 +949,18 @@ public class VistaConsola {
             scanner.nextLine(); // Limpiar el buffer
 
             switch (opcion) {
-                case 1 : {verLista(); break;} // Llama al metodo de optimización
-                case 2 : {exportarListaTXT(); break;}
-                case 0 : System.out.println("Volviendo...");
-                default : System.out.println("Opción inválida. Intente de nuevo.");
+                case 1 :
+                    verLista(); // Llama al metodo de optimización
+                    break;
+                case 2 :
+                    exportarListaTXT();
+                    break;
+                case 0 :
+                    System.out.println("Volviendo...");
+                    break;
+                default :
+                    System.out.println("Opción inválida. Intente de nuevo.");
+                    break;
             }
         } while (opcion != 0);
     }
@@ -988,11 +996,18 @@ public class VistaConsola {
                     if (sel > 0 && sel <= supermercados.size()) {
                         supermercado = supermercados.get(sel - 1);
                     }
-                }
-                case 2 : orden = 1 ; break;
-                case 3 : orden = 2; break;
-                case 0 : {break;}
-                default : System.out.println("Opción inválida.");
+                } break;
+                case 2 :
+                    orden = 1;
+                    break;
+                case 3 :
+                    orden = 2;
+                    break;
+                case 0 :
+                    break;
+                default :
+                    System.out.println("Opción inválida.");
+                    break;
             }
         } while (opcion != 0);
 
@@ -1048,14 +1063,20 @@ public class VistaConsola {
             listaFinal.removeIf(p -> !Controlador.getSupermercados(p).contains(supermercado));
         }
         switch (orden) {
-            case 1 -> listaFinal.sort(Comparator.comparing(Producto::getPrecio));
-            case 2 -> listaFinal.sort(Comparator.comparing(Producto::getNombre, String.CASE_INSENSITIVE_ORDER));
-            default -> {}
+            case 1:
+                listaFinal.sort(Comparator.comparing(Producto::getPrecio));
+                break;
+            case 2:
+                listaFinal.sort(Comparator.comparing(Producto::getNombre, String.CASE_INSENSITIVE_ORDER));
+                break;
+            default:
+                break;
         }
         return listaFinal;
     }
 
     // Añade este metodo para mostrar la lista con opciones de filtro y ordenación
+    // Cambia el bucle para que tras elegir filtro/ordenación se muestre la lista y se salga
     private void verLista() {
         Map<Producto, Integer> productosMap = controlador.obtenerProductosUnidadFamiliar(unidadActual);
         if (productosMap == null || productosMap.isEmpty()) {
@@ -1073,7 +1094,7 @@ public class VistaConsola {
             System.out.println("0. Mostrar lista");
             opcion = leerEntero("Seleccione una opción: ");
             switch (opcion) {
-                case 1 : {
+                case 1: {
                     List<String> supermercados = controlador.obtenerTodosSupermercados();
                     for (int i = 0; i < supermercados.size(); i++) {
                         System.out.printf("%d. %s%n", i + 1, supermercados.get(i));
@@ -1082,12 +1103,21 @@ public class VistaConsola {
                     if (sel > 0 && sel <= supermercados.size()) {
                         supermercado = supermercados.get(sel - 1);
                     }
+                    break;
                 }
-                case 2 : {orden = 1; break;}
-                case 3 :{ orden = 2; break;}
-                case 0 : {break;}
-                default : System.out.println("Opción inválida.");
+                case 2:
+                    orden = 1;
+                    break;
+                case 3:
+                    orden = 2;
+                    break;
+                case 0:
+                    break;
+                default:
+                    System.out.println("Opción inválida.");
             }
+            // Si la opción es distinta de 0, salir del bucle y mostrar la lista
+            if (opcion != 0) break;
         } while (opcion != 0);
 
         List<Producto> listaFinal = obtenerListaOptimizada(productosMap, supermercado, orden);
@@ -1142,21 +1172,21 @@ public class VistaConsola {
 
             switch (opcion) {
                 case 1:
-                    cambiarNombreUsuario(); // Cambia nombre de usuario
-                    continue;
+                    cambiarNombreUsuario();
+                    break;
                 case 2:
-                    cambiarContrasena(); // Cambia contraseña
-                    continue;
-
+                    cambiarContrasena();
+                    break;
                 case 3:
-                    gestionarUnidadFamiliarConfig(); // Gestiona unidad familiar
-                    continue;
-
+                    gestionarUnidadFamiliarConfig();
+                    break;
                 case 0:
                     System.out.println("Volviendo...");
                     menuPrincipal();
+                    break;
                 default:
                     System.out.println("Opción inválida.");
+                    break;
             }
         } while (opcion != 0);
     }
@@ -1218,7 +1248,7 @@ public class VistaConsola {
                     String nuevoNombre = scanner.nextLine();
                     controlador.cambiarNombreUnidadFamiliar(unidadActual, nuevoNombre);
                     System.out.println("Nombre cambiado correctamente.");
-                    continue;
+                    break;
                 }
                 case 2: {
                     // Abandona la unidad familiar
@@ -1234,10 +1264,13 @@ public class VistaConsola {
 
                     }
                 }
+                break;
                 case 0:
                     System.out.println("Volviendo...");
+                    break;
                 default:
                     System.out.println("Opción inválida.");
+                    break;
             }
         } while (opcion != 0);
     }
@@ -1264,27 +1297,37 @@ public class VistaConsola {
         List<Producto> resultados = Collections.emptyList();
 
         switch (modo) {
-            case 1 : resultados = controlador.obtenerTodosProductos();
-            case 2 : {
+            case 0:
+                return null; // Cancelar
+            case 1:
+                resultados = controlador.obtenerTodosProductos();
+                break;
+            case 2:
                 System.out.print("Nombre del producto: ");
                 String nombre = scanner.nextLine().trim();
+                if (nombre.isEmpty()) {
+                    System.out.println("El nombre no puede estar vacío.");
+                    return null;
+                }
                 resultados = controlador.obtenerProductoPorNombre(nombre);
-
-            }
-            case 3 : {
+                break;
+            case 3:
                 System.out.print("Código de barras: ");
                 try {
                     long cb = Long.parseLong(scanner.nextLine().trim());
+                    if (cb <= 0) {
+                        System.out.println("Código no válido.");
+                        return null;
+                    }
                     resultados = controlador.buscarProductoPorCodigoBarras(cb);
                 } catch (NumberFormatException e) {
                     System.out.println("Código no válido.");
                     return null;
                 }
-            }
-            default : {
-                System.out.println("Opción fuera de rango.");
                 break;
-            }
+            default:
+                System.out.println("Opción fuera de rango.");
+                return null;
         }
 
         // 4) Manejo de resultados
