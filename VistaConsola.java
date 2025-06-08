@@ -332,36 +332,59 @@ public class VistaConsola {
 
     // Metodo para mostrar todos los productos
     private void verTodosProductos() {
-        int opcion;
-        do {
-            // Obtiene todos los productos de la unidad familiar
+        try {
             List<Producto> productos = controlador.obtenerTodosProductos();
 
-            System.out.println("\n=== TODOS LOS PRODUCTOS ===");
-            mostrarProductosTabla(productos); // Muestra en formato de tabla
+            if (productos.isEmpty()) {
+                System.out.println("\nNo hay productos disponibles.");
+                return;
+            }
+
+            System.out.println(String.format("\nMostrando %d productos", productos.size()));
+            System.out.println("Nombre              | Marca          | Categoría           | Supermercado      | Precio  | Punt.");
+            System.out.println("------------------------------------------------------------------------------------------");
+
+            String formatoProducto = "%-20s | %-15s | %-20s | %-17s | %6.2f€ | %4.1f★%n";
+            for (Producto p : productos) {
+                // Obtener puntuaciones del producto
+                Map<Usuario, Integer> puntuaciones = controlador.getPuntuaciones(p);
+
+                // Calcular media de puntuaciones
+                double puntuacionMedia = 0.0;
+                if (!puntuaciones.isEmpty()) {
+                    puntuacionMedia = puntuaciones.values().stream()
+                            .mapToInt(Integer::intValue)
+                            .average()
+                            .orElse(0.0);
+                }
+
+                System.out.printf(formatoProducto,
+                        p.getNombre(),
+                        p.getMarca(),
+                        p.getCategoria(),
+                        p.getSupermercado(),
+                        p.getPrecio(),
+                        puntuacionMedia);
+            }
 
             System.out.println("\n1. Filtrar");
             System.out.println("2. Seleccionar producto");
             System.out.println("0. Volver atrás");
 
-            opcion = leerEntero("Seleccione una opción: ");
-
-
+            int opcion = leerEntero("\nSeleccione una opción: ");
             switch (opcion) {
-                case 1:
-                    menuFiltros(); // Muestra menú de filtros
-                    continue;
-                case 2:
-                    seleccionarProducto(); // Permite seleccionar un producto
-                    continue;
-                case 0:
-                    System.out.println("Volviendo...");
-                    menuPrincipal();
-                default:
-                    System.out.println("Opción inválida.");
+                case 1 -> menuFiltros();
+                case 2 -> seleccionarProducto();
+                case 0 -> { /* volver */ }
+                default -> System.out.println("Opción no válida");
             }
-        } while (opcion != 0);
+
+        } catch (Model.BaseDatosException e) {
+            System.err.println("Error al obtener los productos: " + e.getMessage());
+        }
     }
+
+
 
     private void verStockActual() {
         // Imprime el encabezado de la sección de stock

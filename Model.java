@@ -1,7 +1,15 @@
 import java.sql.*;
 import java.util.*;
 
+
 public class Model {
+
+    public static class BaseDatosException extends RuntimeException {
+        public BaseDatosException(String mensaje, Throwable causa) {
+            super(mensaje, causa);
+        }
+    }
+
     /**
      * Registra un nuevo usuario en la base de datos.
      * El usuario se crea con un nombre, email y contraseña.
@@ -354,7 +362,7 @@ public class Model {
      * @author Daniel Figueroa
      */
     public static List<Producto> obtenerTodosProductos() {
-        final String SQL = """
+        final String CONSULTA_PRODUCTOS = """
         SELECT codigo_barras,
                nombre,
                marca,
@@ -365,30 +373,34 @@ public class Model {
         FROM producto
         """;
 
-        try (Connection conn = Conexion.abrir();
-             PreparedStatement stmt = conn.prepareStatement(SQL);
-             ResultSet rs = stmt.executeQuery()) {
+        List<Producto> productos = new ArrayList<>();
 
-            List<Producto> productos = new ArrayList<>();
-            while (rs.next()) {
-                productos.add(new Producto(
-                        rs.getLong("codigo_barras"),
-                        rs.getString("nombre"),
-                        rs.getString("marca"),
-                        rs.getDouble("precio"),
-                        rs.getString("categoria"),
-                        rs.getString("supermercado"),
-                        rs.getString("descripcion")
-                ));
+        try (var conexion = Conexion.abrir();
+             var consulta = conexion.prepareStatement(CONSULTA_PRODUCTOS);
+             var resultados = consulta.executeQuery()) {
+
+            while (resultados.next()) {
+                productos.add(construirProducto(resultados));
             }
-            return productos;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
+            throw new BaseDatosException("Error al obtener los productos", e);
         }
+
+        return productos;
     }
 
+    private static Producto construirProducto(ResultSet rs) throws SQLException {
+        return new Producto(
+                rs.getLong("codigo_barras"),
+                rs.getString("nombre"),
+                rs.getString("marca"),
+                rs.getDouble("precio"),
+                rs.getString("categoria"),
+                rs.getString("supermercado"),
+                rs.getString("descripcion")
+        );
+    }
 
     /**
      * Obtiene todas las categorías de productos disponibles en la base de datos.
