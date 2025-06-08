@@ -1420,6 +1420,7 @@ public class VistaConsola {
         }
     }
 
+
     private long leerLong(String mensaje) {
         while (true) {
             try {
