@@ -1089,7 +1089,9 @@ public class VistaConsola {
                         unidadActual = null;
                         System.out.println("Has abandonado la unidad familiar.");
                         opcion = 0; // Para salir del menú
-                        continue;
+                        unirseOCrearUnidadFamiliar();
+                        break;
+
                     }
                 }
                 case 0:
