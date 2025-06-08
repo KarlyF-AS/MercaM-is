@@ -235,6 +235,7 @@ public class VistaConsola {
                     usuarioActual = null;
                     unidadActual = null;
                     System.out.println("Sesión cerrada.");
+                    break;
 
                 default:
                     System.out.println("Opción inválida.");
