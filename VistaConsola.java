@@ -1091,7 +1091,6 @@ public class VistaConsola {
                         opcion = 0; // Para salir del menú
                         unirseOCrearUnidadFamiliar();
                         break;
-
                     }
                 }
                 case 0:
