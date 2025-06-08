@@ -1,11 +1,5 @@
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.*;
+import java.util.*;
 
 public class Model {
     /**
@@ -1259,10 +1253,16 @@ public class Model {
             }
 
         } catch (SQLException e) {
+            // Si es violación de FK, simplemente ignoramos y salimos
+            if ("23503".equals(e.getSQLState())) {
+                return;
+            }
+            // Para otras SQLExceptions, seguimos mostrando el error
             System.err.println("❌ Error añadiendo al stock: " + e.getMessage());
             e.printStackTrace();
         }
     }
+
 
 
 

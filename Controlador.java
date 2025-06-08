@@ -104,6 +104,10 @@ public class Controlador {
     public void anadirProductoStock(Lista_UnidadFamiliar unidad, Producto producto, int cantidad) {
         Model.añadirProductoStock(unidad, producto, cantidad);
     }
+    /**
+     * Inicializar el stock de una unidad familiar con productos iniciales.
+     */
+
 
     /**
      * Actualiza la cantidad de un producto en el stock.

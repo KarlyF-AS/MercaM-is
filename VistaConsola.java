@@ -208,6 +208,7 @@ public class VistaConsola {
     private void menuPrincipal() {
         int opcion;
         do {
+            inicializarStock();
             System.out.println("\n=== MENÚ PRINCIPAL ===");
             System.out.println("1. Ver lista de la compra");
             System.out.println("2. Ver productos");
@@ -272,6 +273,7 @@ public class VistaConsola {
     private void menuStock() {
         int opcion;
         do {
+
             System.out.println("\n=== GESTIÓN DE STOCK ===");
             System.out.println("1. Ver stock actual");
             System.out.println("2. Añadir producto al stock");
@@ -280,6 +282,8 @@ public class VistaConsola {
             System.out.println("0. Volver");
 
             opcion = leerEntero("Seleccione una opción: ");
+            // Producto de prueba
+
 
             switch (opcion) {
                 case 1:
@@ -303,6 +307,28 @@ public class VistaConsola {
         } while (opcion != 0);
     }
 
+    private void inicializarStock() {
+        // Creamos un producto de prueba
+        Producto productoPrueba = new Producto(
+                1234567890123L,
+                "Producto de prueba",
+                "Marca de prueba",
+                1.99,
+                "Categoría de prueba",
+                "Supermercado de prueba",
+                "Descripción de prueba"
+        );
+
+        // 1) Intentamos añadirlo al stock y 2) después lo borramos.
+        // Si falla (por FK), lo capturamos y no hacemos nada.
+        try {
+            controlador.anadirProductoStock(unidadActual, productoPrueba, 10);
+            controlador.eliminarProductoStock(unidadActual, productoPrueba);
+        } catch (Exception ignored) {
+            // Aquí ignoramos cualquier excepción (p.ej. FK violation)
+        }
+    }
+
     // Metodo para mostrar todos los productos
     private void verTodosProductos() {
         int opcion;
@@ -318,6 +344,7 @@ public class VistaConsola {
             System.out.println("0. Volver atrás");
 
             opcion = leerEntero("Seleccione una opción: ");
+
 
             switch (opcion) {
                 case 1:
