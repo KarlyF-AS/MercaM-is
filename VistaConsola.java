@@ -964,20 +964,22 @@ public class VistaConsola {
 
     // Metodo auxiliar para mostrar productos en formato de tabla
     private void mostrarProductosTabla(List<Producto> productos) {
-        // Encabezado simple
-        System.out.println("Nombre | Marca | Categoría | Punt. | Precio | Supermercados");
-        System.out.println("-------------------------------------------------------------");
-
-        // Mostrar cad producto sin formato de ancho fijo
-        for (Producto p : productos) {
-            System.out.printf("%s | %s | %s | %.1f | %.2f | %s%n",
-                    p.getNombre(),
-                    p.getMarca(),
-                    p.getSubcategoria(),
-                    Controlador.getPuntuacionMedia(p.getNombre(), p.getMarca()),
-                    p.getPrecio(),
-                    String.join(", ", Controlador.getSupermercados(p)));
+        if (productos == null || productos.isEmpty()) {
+            System.out.println("No hay productos para mostrar.");
+            return;
         }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("%-20s %-15s %-15s %-10s\n", "Nombre", "Marca", "Supermercado", "Precio"));
+        sb.append("--------------------------------------------------------------\n");
+
+        for (Producto p : productos) {
+            sb.append(String.format("%-20s %-15s %-15s %-10.2f\n",
+                    p.getNombre(), p.getMarca(), p.getSupermercado(), p.getPrecio()));
+        }
+
+        // Imprime TODO el bloque de texto de golpe
+        System.out.println(sb.toString());
     }
 
     // Supón que tienes acceso a una instancia de tu controlador y a la unidad familiar
