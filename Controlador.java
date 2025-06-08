@@ -228,5 +228,21 @@ public class Controlador {
         // Devolvemos todos los productos (los values del map)
         return new ArrayList<>(stockMap.values());
     }
+    // En Controlador.java
 
+    public Map<Producto, Integer> obtenerProductosListaCompra(Lista_UnidadFamiliar unidad) {
+        // Obtiene todos los productos de la unidad familiar y sus cantidades
+        Map<Producto, Integer> productosStock = Model.obtenerProductosUnidadFamiliar(unidad);
+        Map<Producto, Integer> listaCompra = new HashMap<>();
+
+        if (productosStock != null) {
+            for (Map.Entry<Producto, Integer> entry : productosStock.entrySet()) {
+                // Considera que un producto está en la lista de la compra si su cantidad es 0
+                if (entry.getValue() == 0) {
+                    listaCompra.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        return listaCompra;
+    }
 }
