@@ -4,7 +4,8 @@
  */
 public class ModelApp {
     public static void main(String[] args) {
-        //double precio, String categoria, String supermercado, String marca, String nombre, int codigoBarras
+        // Crear un producto de prueba con los siguientes datos:
+        // nombre, marca, precio, categoría, supermercado, código de barras, descripción
         Producto producto2 = Model.crearProducto(
                 "Pan",
                 "Panadería Artesana",

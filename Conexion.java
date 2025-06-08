@@ -13,9 +13,13 @@ public class Conexion {
      * @throws SQLException si ocurre un error al intentar conectarse.
      */
     public static Connection abrir() throws SQLException {
+        // URL del servidor, con puerto y nombre de base de datos
         String url  = "jdbc:postgresql://aws-0-eu-west-2.pooler.supabase.com:6543/postgres";
+        // Usuario de la base de datos
         String user = "postgres.yemzbvaexdjtmqabfacx";
+        // Contraseña del usuario
         String pass = "Tatofiguesaraykarly..";
+        // Devuelve una conexión activa usando los datos anteriores
         return DriverManager.getConnection(url, user, pass);
     }
 }

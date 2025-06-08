@@ -20,9 +20,7 @@ public class Producto {
     private String supermercado;
     private String descripcion;
 
-
-    // Getters y Setters
-
+    // Constructor usado cuando no se incluye descripción
 
     public Producto(double precio, String categoria, String supermercado, String marca, String nombre, long codigoBarras) {
         this.precio = precio;
@@ -32,7 +30,7 @@ public class Producto {
         this.nombre = nombre;
         this.codigoBarras = codigoBarras;
     }
-
+    // Constructor completo con descripción
     public Producto(long codigoBarras, String nombre, String marca, double precio, String categoria, String supermercado, String descripcion) {
         this.codigoBarras = codigoBarras;
         this.nombre = nombre;
@@ -42,7 +40,7 @@ public class Producto {
         this.supermercado = supermercado;
         this.descripcion = descripcion;
     }
-
+    // Devuelve una representación del producto como texto
     @Override
     public String toString() {
         return "Producto{" +
@@ -67,6 +65,9 @@ public class Producto {
         }
         return null; // o lanzar una excepción si no se encuentra la subcategoría
     }
+
+    // Getters y Setters
+
     public String getDescripcion() {
         return descripcion;
     }
@@ -114,6 +115,7 @@ public class Producto {
     public void setPrecio(double precio) {
         this.precio = precio;
     }
+
     /**
      * Devuelve solo la categoría principal antes del punto.
      * @return la categoría principal.
@@ -134,39 +136,39 @@ public class Producto {
         return supermercado;
     }
 
-    public void setSupermercado(String supermercado) {
-        this.supermercado = supermercado;
-    }
     /**
-     * Devuelve la puntuación media del producto usando el {@link Controlador}.
-     * @return puntuación media como {@code double}.
+     * Devuelve la puntuación media del producto según nombre y marca.
+     * @return puntuación promedio.
      */
     public double getPuntuacionMedia() {
-        // Devuelve la puntuación media del producto
-        return Controlador.getPuntuacionMedia(this.nombre,this.marca);
+        return Controlador.getPuntuacionMedia(this.nombre, this.marca);
     }
+
     /**
-     * Retorna el historial de precios del producto.
-     * @return lista de precios históricos.
+     * Devuelve el historial de precios del producto.
+     * @return lista de precios anteriores.
      */
     public List<Double> getHistorialPrecios() {
-        // Devuelve el historial de precios del producto
         return Controlador.getHistorialPrecio(this.nombre, this.marca);
     }
+
     /**
-     * Determina si dos productos son iguales según su código de barras, nombre y marca.
-     * @param o objeto a comparar
-     * @return {@code true} si son equivalentes, {@code false} en caso contrario.
+     * Compara si dos productos son iguales por código de barras, nombre y marca.
+     * @param o otro objeto
+     * @return true si son iguales.
      */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Producto producto = (Producto) o;
-        return codigoBarras == producto.codigoBarras && Objects.equals(nombre, producto.nombre) && Objects.equals(marca, producto.marca);
+        return codigoBarras == producto.codigoBarras &&
+                Objects.equals(nombre, producto.nombre) &&
+                Objects.equals(marca, producto.marca);
     }
+
     /**
-     * Devuelve el hash del producto basado en código de barras, nombre y marca.
-     * @return código hash.
+     * Devuelve un hash basado en código de barras, nombre y marca.
+     * @return hash único del producto.
      */
     @Override
     public int hashCode() {
