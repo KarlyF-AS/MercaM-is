@@ -1,3 +1,7 @@
+/**
+ * Representa un usuario del sistema con información básica como nombre, email, contraseña
+ * y una lista de unidades familiares asociadas.
+ */
 public class Usuario {
     private String nombre;
     private String email;

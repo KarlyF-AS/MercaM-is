@@ -1,5 +1,11 @@
-
 import java.util.*;
+
+/**
+ * Clase que representa la vista principal en consola de la aplicación.
+ * Esta clase gestiona la interacción con el usuario a través de menús y entrada estándar.
+ * Permite al usuario iniciar sesión o registrarse, y se comunica con la lógica de negocio
+ * a través del {@link Controlador}.
+ */
 
 // Definición de la clase principal de la vista en consola
 public class VistaConsola {

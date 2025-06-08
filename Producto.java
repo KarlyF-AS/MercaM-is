@@ -2,6 +2,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+/**
+ * Representa un producto con información relevante como nombre, marca, precio,
+ * categoría, supermercado, código de barras, puntuación y descripción.
+ *
+ * Esta clase incluye lógica para obtener subcategorías, historial de precios
+ * y puntuaciones mediante el {@link Controlador}.
+ */
 
 public class Producto {
     private long codigoBarras;
@@ -49,6 +56,10 @@ public class Producto {
                 ", descripcion='" + descripcion + '\'' +
                 '}';
     }
+    /**
+     * Obtiene la subcategoría a partir del campo {@code categoria}.
+     * @return la subcategoría si está definida; {@code null} en caso contrario.
+     */
     public String getSubcategoria() {
         //la categoria tiene el formato categoria.subcategoria, solo devolver lo que hay después del punto
         if (categoria != null && categoria.contains(".")) {
@@ -103,7 +114,10 @@ public class Producto {
     public void setPrecio(double precio) {
         this.precio = precio;
     }
-
+    /**
+     * Devuelve solo la categoría principal antes del punto.
+     * @return la categoría principal.
+     */
     public String getCategoria() {
         //la categoria tiene el formato categoria.subcategoria, devolver solo lo que hay antes del punto
         if (categoria != null && categoria.contains(".")) {
@@ -123,22 +137,37 @@ public class Producto {
     public void setSupermercado(String supermercado) {
         this.supermercado = supermercado;
     }
+    /**
+     * Devuelve la puntuación media del producto usando el {@link Controlador}.
+     * @return puntuación media como {@code double}.
+     */
     public double getPuntuacionMedia() {
         // Devuelve la puntuación media del producto
         return Controlador.getPuntuacionMedia(this.nombre,this.marca);
     }
+    /**
+     * Retorna el historial de precios del producto.
+     * @return lista de precios históricos.
+     */
     public List<Double> getHistorialPrecios() {
         // Devuelve el historial de precios del producto
         return Controlador.getHistorialPrecio(this.nombre, this.marca);
     }
-
+    /**
+     * Determina si dos productos son iguales según su código de barras, nombre y marca.
+     * @param o objeto a comparar
+     * @return {@code true} si son equivalentes, {@code false} en caso contrario.
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Producto producto = (Producto) o;
         return codigoBarras == producto.codigoBarras && Objects.equals(nombre, producto.nombre) && Objects.equals(marca, producto.marca);
     }
-
+    /**
+     * Devuelve el hash del producto basado en código de barras, nombre y marca.
+     * @return código hash.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(codigoBarras, nombre, marca);
