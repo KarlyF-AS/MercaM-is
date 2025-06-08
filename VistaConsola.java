@@ -949,8 +949,8 @@ public class VistaConsola {
             scanner.nextLine(); // Limpiar el buffer
 
             switch (opcion) {
-                case 1 : verLista(); // Llama al metodo de optimización
-                case 2 : exportarListaTXT();
+                case 1 : {verLista(); break;} // Llama al metodo de optimización
+                case 2 : {exportarListaTXT(); break;}
                 case 0 : System.out.println("Volviendo...");
                 default : System.out.println("Opción inválida. Intente de nuevo.");
             }
@@ -989,9 +989,9 @@ public class VistaConsola {
                         supermercado = supermercados.get(sel - 1);
                     }
                 }
-                case 2 : orden = 1;
-                case 3 : orden = 2;
-                case 0 : {}
+                case 2 : orden = 1 ; break;
+                case 3 : orden = 2; break;
+                case 0 : {break;}
                 default : System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
@@ -1083,9 +1083,9 @@ public class VistaConsola {
                         supermercado = supermercados.get(sel - 1);
                     }
                 }
-                case 2 : orden = 1;
-                case 3 : orden = 2;
-                case 0 : {}
+                case 2 : {orden = 1; break;}
+                case 3 :{ orden = 2; break;}
+                case 0 : {break;}
                 default : System.out.println("Opción inválida.");
             }
         } while (opcion != 0);
