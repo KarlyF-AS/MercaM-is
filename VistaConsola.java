@@ -4,6 +4,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * Clase que representa la vista principal en consola de la aplicación.
+ * Esta clase gestiona la interacción con el usuario a través de menús y entrada estándar.
+ * Permite al usuario iniciar sesión o registrarse, y se comunica con la lógica de negocio
+ * a través del {@link Controlador}.
+ */
+
 // Definición de la clase principal de la vista en consola
 public class VistaConsola {
     // Declaración de variables miembro de la clase
@@ -18,6 +25,11 @@ public class VistaConsola {
         this.scanner = new Scanner(System.in); // Inicializa el scanner para leer entrada
     }
 
+    /**
+     * Muestra el menú principal en consola y permite al usuario
+     * iniciar sesión, registrarse o salir del programa.
+     * Se ejecuta en bucle hasta que se elige la opción de salir.
+     */
     // Metodo principal que inicia la aplicación
     public void iniciar() {
         // Bucle infinito hasta que el usuario elija salir
@@ -48,7 +60,12 @@ public class VistaConsola {
             }
         }
     }
-
+    /**
+     * Maneja el proceso de inicio de sesión.
+     * Solicita al usuario su correo y contraseña, valida el formato del correo
+     * y verifica las credenciales con el controlador.
+     * Si el inicio es exitoso, continúa con la gestión de la unidad familiar.
+     */
     // Metodo para manejar el inicio de sesión
     private void iniciarSesion() {
         System.out.println("\n=== INICIAR SESIÓN ===");
@@ -82,6 +99,11 @@ public class VistaConsola {
         gestionarUnidadFamiliar();
     }
 
+    /**
+     * Registra un nuevo usuario solicitando nombre, correo y contraseña.
+     * Valida los datos ingresados y los envía al controlador.
+     * Si el registro es exitoso, continúa con la gestión de unidad familiar.
+     */
     // Metodo para registrar un nuevo usuario
     private void registrarUsuario() {
         System.out.println("\n=== REGISTRARSE ===");
@@ -137,7 +159,11 @@ public class VistaConsola {
         unirseOCrearUnidadFamiliar();
     }
 
-
+    /**
+     * Gestiona la unidad familiar del usuario.
+     * Si ya tiene una, le da opción de entrar o unirse a otra.
+     * Si no tiene, lo lleva directamente a crear o unirse a una.
+     */
     // Metodo para gestionar la unidad familiar del usuario
     private void gestionarUnidadFamiliar() {
         // Obtiene la unidad familiar del usuario actual
@@ -162,6 +188,10 @@ public class VistaConsola {
         }
     }
 
+    /**
+     * Permite al usuario unirse a una unidad familiar existente con código
+     * o crear una nueva si lo desea.
+     */
     // Metodo para unirse o crear una unidad familiar
     private void unirseOCrearUnidadFamiliar() {
         System.out.println("\n=== UNIRSE O CREAR UNIDAD FAMILIAR ===");
@@ -196,10 +226,7 @@ public class VistaConsola {
         }
     }
 
-    /**
-     * Metodo para crear una nueva unidad familiar.
-     * Solicita al usuario un nombre y lo crea a través del controlador.
-     */
+    // Metodo para crear una nueva unidad familiar
     private void crearUnidadFamiliar() {
         System.out.print("Introduce el nombre para tu nueva Unidad Familiar: ");
         String nombre = scanner.nextLine();
@@ -284,6 +311,9 @@ public class VistaConsola {
         } while (opcion != 0);
     }
 
+    /**
+     * Muestra el menú de gestión de stock.
+     */
     private void menuStock() {
         int opcion;
         do {
@@ -321,6 +351,9 @@ public class VistaConsola {
         } while (opcion != 0);
     }
 
+    /**
+     * Inicializa el stock con un producto de prueba para validar la conexión.
+     */
     private void inicializarStock() {
         // Creamos un producto de prueba
         Producto productoPrueba = new Producto(
@@ -343,6 +376,9 @@ public class VistaConsola {
         }
     }
 
+    /**
+     * Muestra todos los productos disponibles y permite filtrarlos o seleccionarlos.
+     */
     // Metodo para mostrar todos los productos
     private void verTodosProductos() {
         try {
@@ -399,6 +435,10 @@ public class VistaConsola {
 
 
 
+    /**
+     * Muestra el stock actual de productos de la unidad familiar en la consola.
+     * Esta función permite al usuario visualizar qué productos están disponibles y en qué cantidad.
+     */
     private void verStockActual() {
         // Imprime el encabezado de la sección de stock
         System.out.println("\n=== STOCK ACTUAL ===");
@@ -473,7 +513,11 @@ public class VistaConsola {
             );
         }
     }
-
+    /**
+     * Añade una cantidad inicial de un producto al stock.
+     * Busca el producto y, si existe, solicita la cantidad y actualiza el stock.
+     * Muestra el stock total actualizado.
+     */
     private void añadirProductoStock() {
         Producto producto = buscarProducto();
         if (producto == null) {
@@ -486,6 +530,11 @@ public class VistaConsola {
         System.out.println("Actaulmente el stock total es de : " + controlador.obtenerCantidadStock(unidadActual, producto) + " unidades.");
     }
 
+    /**
+     * Actualiza la cantidad en stock de un producto existente.
+     * Solicita el producto y la nueva cantidad, y realiza la actualización.
+     * Informa al usuario sobre el cambio.
+     */
     private void actualizarCantidadStock() {
         System.out.print("\nNombre del producto: ");
         String nombre = scanner.nextLine();
@@ -500,6 +549,10 @@ public class VistaConsola {
         System.out.println("Cantidad actualizada.");
     }
 
+    /**
+     * Elimina un producto del stock tras confirmación del usuario.
+     * Busca el producto, pide confirmación y lo elimina si se confirma.
+     */
     private void eliminarProductoStock() {
         System.out.print("\nNombre del producto: ");
         String nombreBusqueda = scanner.nextLine().trim();
@@ -602,7 +655,10 @@ public class VistaConsola {
         return entries.get(sel - 1).getValue();
     }
 
-
+    /**
+     * Muestra el menú para filtrar o ordenar productos.
+     * Permite al usuario elegir entre aplicar filtros o cambiar el orden.
+     */
     // Menú de filtros para productos
     private void menuFiltros() {
         int opcion;
@@ -630,6 +686,10 @@ public class VistaConsola {
         } while (opcion != 0);
     }
 
+    /**
+     * Menú para filtrar productos por categoría, marca o supermercado.
+     * Navega por opciones para seleccionar el criterio de filtrado.
+     */
     // Metodo para filtrar por categoría o marca
     private void filtrado() {
         int opcion;
@@ -661,6 +721,10 @@ public class VistaConsola {
         } while (opcion != 0);
     }
 
+    /**
+     * Muestra las categorías principales disponibles y permite seleccionar una.
+     * Luego muestra las subcategorías de la categoría seleccionada.
+     */
     // Metodo para mostrar todas las categorías disponibles
     private void verCategorias() {
         // 1) Sacamos solo las categorías (parte antes del punto)
@@ -696,7 +760,11 @@ public class VistaConsola {
         verSubcategorias(categoriaSeleccionada, subcategorias);
     }
 
-
+    /**
+     * Muestra las subcategorías de una categoría y permite seleccionar una para mostrar productos.
+     * @param categoria La categoría principal seleccionada.
+     * @param subcategorias Lista de subcategorías para esa categoría.
+     */
     // Metodo para mostrar las subcategorías de una categoría
     private void verSubcategorias(String categoria, List<String> subcategorias) {
         if (subcategorias.isEmpty()) {
@@ -724,7 +792,9 @@ public class VistaConsola {
             }
         }
     }
-
+    /**
+     * Muestra todas las marcas disponibles y permite filtrar productos por marca.
+     */
     // Metodo para mostrar todas las marcas disponibles
     private void verMarcas() {
         // Obtiene las marcas del controlador
@@ -746,6 +816,9 @@ public class VistaConsola {
         }
     }
 
+    /**
+     * Permite filtrar productos según el supermercado seleccionado.
+     */
     private void filtrarPorSupermercado() {
         List<String> supermercados = controlador.obtenerTodosSupermercados();
         System.out.println("\nSupermercados disponibles:");
@@ -758,7 +831,10 @@ public class VistaConsola {
             mostrarProductosTabla(productos);
         }
     }
-
+    /**
+     * Muestra opciones para ordenar productos por precio, nombre o marca.
+     * Aplica el orden seleccionado y muestra los productos.
+     */
     // Metodo para ordenar los productos por diferentes criterios
     private void ordenar() {
         int opcion;
@@ -786,6 +862,9 @@ public class VistaConsola {
         } while (opcion != 0);
     }
 
+    /**
+     * Permite buscar un producto por nombre y mostrar sus detalles.
+     */
     // Metodo para seleccionar un producto específico
     private void seleccionarProducto() {
         System.out.print("\nIntroduce el nombre del producto a seleccionar: ");
@@ -802,6 +881,11 @@ public class VistaConsola {
         verDetalleProducto(producto);
     }
 
+    /**
+     * Muestra la información completa de un producto y opciones para gestionar historial,
+     * puntuaciones y supermercados relacionados.
+     * @param producto El producto cuyo detalle se muestra.
+     */
     // Metodo para mostrar el detalle de un producto
     private void verDetalleProducto(Producto producto) {
         int opcion;
@@ -841,7 +925,10 @@ public class VistaConsola {
             }
         } while (opcion != 0);
     }
-
+    /**
+     * Muestra y permite gestionar el historial de precios de un producto.
+     * @param producto El producto cuyo historial de precios se gestiona.
+     */
     // Metodo para gestionar el historial de precios de un producto
     private void gestionarHistorialPrecios(Producto producto) {
         System.out.println("\n=== HISTORIAL DE PRECIOS ===");
@@ -867,6 +954,11 @@ public class VistaConsola {
         }
     }
 
+    /**
+     * Gestiona las puntuaciones de un producto.
+     * Muestra las puntuaciones actuales y permite al usuario añadir o modificar su puntuación.
+     * @param producto El producto cuyas puntuaciones se van a gestionar.
+     */
     // Metodo para gestionar las puntuaciones de un producto
     private void gestionarPuntuaciones(Producto producto) {
         System.out.println("\n=== PUNTUACIONES ===");
@@ -891,7 +983,11 @@ public class VistaConsola {
             System.out.println("Puntuación guardada correctamente.");
         }
     }
-
+    /**
+     * Modifica los supermercados asociados a un producto.
+     * Permite añadir o eliminar supermercados de la lista del producto.
+     * @param producto El producto cuyos supermercados se desean modificar.
+     */
     // Metodo para modificar los supermercados de un producto
     private void modificarSupermercados(Producto producto) {
         System.out.println("\n=== SUPERMERCADOS ===");
@@ -937,6 +1033,10 @@ public class VistaConsola {
         }
     }
 
+    /**
+     * Añade un nuevo producto, solicitando datos básicos, categoría y subcategoría (opcional),
+     * código de barras y descripción. Finalmente añade el producto al stock de la unidad familiar actual.
+     */
     // Metodo para añadir un nuevo producto, con categoría y subcategoría opcional
     private void anadirProducto() {
         System.out.println("\n=== AÑADIR PRODUCTO ===");
@@ -1200,6 +1300,11 @@ public class VistaConsola {
         }
     }
 
+    /**
+     * Muestra productos con stock de una lista de unidad familiar.
+     *
+     * @param unidad La unidad familiar para la cual se mostrarán los productos con stock.
+     */
     // Supón que tienes acceso a una instancia de tu controlador y a la unidad familiar
     private void verProductosListaCompra(Lista_UnidadFamiliar unidad) {
         Map<Integer, Producto> productosConStock = controlador.obtenerProductosConStock(unidad);
@@ -1215,6 +1320,10 @@ public class VistaConsola {
         }
     }
 
+    /**
+     * Muestra el menú de configuración general, permitiendo cambiar nombre de usuario,
+     * contraseña y gestionar la unidad familiar.
+     */
     // Menú de configuración
     private void menuConfiguracion() {
         int opcion;
@@ -1248,6 +1357,10 @@ public class VistaConsola {
         } while (opcion != 0);
     }
 
+    /**
+     * Cambia el nombre del usuario actual, solicitando el nuevo nombre.
+     * Verifica que el nuevo nombre no esté ya en uso.
+     */
     // Metodo para cambiar el nombre de usuario
     private void cambiarNombreUsuario() {
         System.out.print("\nNuevo nombre de usuario: ");
@@ -1261,7 +1374,11 @@ public class VistaConsola {
         }
     }
 
-
+    /**
+     * Cambia la contraseña del usuario actual.
+     * Solicita la contraseña actual y la nueva contraseña con confirmación.
+     * Verifica que la contraseña actual sea correcta y que la nueva coincida en confirmación.
+     */
     // Metodo para cambiar la contraseña
     private void cambiarContrasena() {
         System.out.print("\nContraseña actual: ");
@@ -1287,6 +1404,10 @@ public class VistaConsola {
         }
     }
 
+    /**
+     * Gestiona la configuración de la unidad familiar actual.
+     * Permite cambiar el nombre de la unidad o abandonarla.
+     */
     // Metodo para gestionar la configuración de la unidad familiar
     private void gestionarUnidadFamiliarConfig() {
         int opcion;
@@ -1476,7 +1597,12 @@ public class VistaConsola {
         }
     }
 
-
+    /**
+     * Lee un número largo desde la entrada estándar.
+     * Solicita al usuario ingresar un número largo válido y realiza validación.
+     * @param mensaje Mensaje que se muestra al usuario para solicitar la entrada.
+     * @return El número largo ingresado por el usuario.
+     */
     private long leerLong(String mensaje) {
         while (true) {
             try {

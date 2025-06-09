@@ -63,6 +63,7 @@ public class Controller2 {
     /**
      * Verifica si una contraseña tiene al menos 8 caracteres, 4 letras y 2 dígitos.
      * @param password contraseña a verificar.
+     * @author Karly Albarrán
      * @return "true" si cumple los requisitos.
      */
         //Filtro de contraseña
