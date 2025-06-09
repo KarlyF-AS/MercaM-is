@@ -5,7 +5,7 @@ import java.util.HashMap;
  */
 public class App {
     /**
-     * Método principal que arranca la ejecución del programa.
+     * Metodo principal que arranca la ejecución del programa.
      * @param args los argumentos de la línea de comandos (no se utilizan en esta implementación)
      */
     public static void main(String[] args) {
