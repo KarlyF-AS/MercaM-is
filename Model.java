@@ -390,6 +390,13 @@ public class Model {
         return productos;
     }
 
+    /**
+     * Constructs a Producto object using the data from the given ResultSet.
+     *
+     * @param rs the ResultSet containing the product data
+     * @return a Producto object populated with data from the ResultSet
+     * @throws SQLException if there is an error accessing the ResultSet
+     */
     private static Producto construirProducto(ResultSet rs) throws SQLException {
         return new Producto(
                 rs.getLong("codigo_barras"),
